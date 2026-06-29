@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { getPageData } from "@sun/ssr";
 import { LocateChecklistItemQuery } from "~/generated/graphql";
 import { Card, CardBody, CardHeader, CardTitle } from "@sun/components";
+import Icon from "~/components/icon";
 import styles from "./item-card.module.css";
 
 type ItemCardProps = {
@@ -31,7 +32,10 @@ const ItemCard = ({ id, pattern }: ItemCardProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{item.name}</CardTitle>
+        <CardTitle className={styles.title}>
+          <Icon name={item.icon} width={20} height={20} />
+          {item.name}
+        </CardTitle>
       </CardHeader>
       <CardBody className={styles.detail_body}>
         <label>{t("description")}</label>

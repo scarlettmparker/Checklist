@@ -366,6 +366,7 @@ export async function mutateCreateChecklistItem(
   name: string,
   description?: string,
   categoryId?: string,
+  icon?: string,
 ) {
   return fetchGraphQLData<CreateChecklistItemMutation>(
     "checklistMutations.createItem",
@@ -373,6 +374,7 @@ export async function mutateCreateChecklistItem(
       name,
       description: description ?? null,
       categoryId: categoryId ?? null,
+      icon: icon ?? null,
     },
   );
 }

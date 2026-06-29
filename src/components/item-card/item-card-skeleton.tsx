@@ -1,16 +1,12 @@
-import { Card, CardBody, CardHeader, Skeleton } from "@sun/components";
-import styles from "./item-card.module.css";
+import { Card, CardBody, Skeleton } from "@sun/components";
 
 /**
  * Skeleton placeholder for ItemCard.
  */
 const ItemCardSkeleton = () => (
   <Card>
-    <CardHeader>
-      <Skeleton className={styles.skeleton_title} />
-    </CardHeader>
     <CardBody>
-      <Skeleton className={styles.skeleton_block} />
+      <Skeleton style={{ width: "100%", height: "12rem" }} />
     </CardBody>
   </Card>
 );

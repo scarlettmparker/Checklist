@@ -22,7 +22,7 @@ const CreateItemPage = () => {
 async function handleCreateItem(
   body: Record<string, unknown>,
 ): Promise<MutationResult> {
-  const { name, description, categoryId } = body;
+  const { name, description, categoryId, icon } = body;
 
   if (typeof name !== "string" || name.trim() === "") {
     return {
@@ -35,6 +35,7 @@ async function handleCreateItem(
     name,
     description as string | undefined,
     categoryId as string | undefined,
+    icon as string | undefined,
   );
   const data = result.data?.checklistMutations.createItem as MutationResult;
 

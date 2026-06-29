@@ -5,13 +5,15 @@ import {
   FormLabel,
   FormItem,
   FormFooter,
+  Select,
+  SelectOption,
 } from "@sun/components";
-import { Button } from "@sun/components";
+import { Button, Input, MarkdownEditor } from "@sun/components";
 import { useState } from "react";
 import { createChecklistItem } from "~/server/actions/checklist-item";
 import { Link } from "react-router-dom";
-import { Input } from "@sun/components";
-import { MarkdownEditor } from "@sun/components";
+import Icon, { ICON_NAMES, FALLBACK_ICON } from "~/components/icon";
+import styles from "./create-item-form.module.css";
 
 const CreateItemForm = () => {
   const { t } = useTranslation("items");
@@ -29,7 +31,13 @@ const CreateItemForm = () => {
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
-    const result = await createChecklistItem(name, description);
+    const icon = formData.get("icon") as string;
+    const result = await createChecklistItem(
+      name,
+      description,
+      undefined,
+      icon,
+    );
 
     if (result.__typename === "QuerySuccess") {
       setSuccess(true);
@@ -42,12 +50,36 @@ const CreateItemForm = () => {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <FormField name="name">
-        <FormLabel>{t("name")}</FormLabel>
-        <FormItem>
-          <Input type="text" placeholder={t("name-placeholder")} required />
-        </FormItem>
-      </FormField>
+      <div className={styles.row}>
+        <FormField name="name" className={styles.name_field}>
+          <FormLabel>{t("name")}</FormLabel>
+          <FormItem>
+            <Input type="text" placeholder={t("name-placeholder")} required />
+          </FormItem>
+        </FormField>
+        <FormField name="icon" className={styles.icon_field}>
+          <FormLabel>{t("icon")}</FormLabel>
+          <FormItem>
+            <Select defaultValue={FALLBACK_ICON}>
+              {ICON_NAMES.map((iconName) => (
+                <SelectOption key={iconName} value={iconName}>
+                  <div className={styles.icon_option}>
+                    <Icon
+                      className={styles.icon}
+                      name={iconName}
+                      width={16}
+                      height={16}
+                    />
+                    <p className={styles.icon_name}>
+                      {iconName.replace(/Icon$/, "")}
+                    </p>
+                  </div>
+                </SelectOption>
+              ))}
+            </Select>
+          </FormItem>
+        </FormField>
+      </div>
       <FormField name="description">
         <FormLabel>{t("description")}</FormLabel>
         <FormItem>

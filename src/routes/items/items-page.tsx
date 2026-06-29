@@ -2,16 +2,29 @@ import { getPageData, pageDataRegistry } from "@sun/ssr";
 import { useTranslation } from "react-i18next";
 import { ListChecklistItemsQuery } from "~/generated/graphql";
 import { fetchListChecklistItems } from "~/utils/api";
-import { Link, Outlet } from "react-router-dom";
-import { Card, CardBody, CardHeader, CardTitle } from "@sun/components";
+import { Link, useOutlet } from "react-router-dom";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@sun/components";
+import Icon from "~/components/icon";
+import ItemDetailPlaceholder from "~/components/item-detail-placeholder";
 import styles from "./items-page.module.css";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 const ItemsPage = () => {
   const { t } = useTranslation("items");
+  const outlet = useOutlet();
 
   const { data } = getPageData<
     ListChecklistItemsQuery["checklistQueries"]["items"]
   >("checklistItems", "checklist");
+
+  const ICON_SIZE = 16;
 
   if (!data) {
     return null;
@@ -25,14 +38,39 @@ const ItemsPage = () => {
         </CardHeader>
         <CardBody className={styles.items_list_body}>
           {data.items.map((item) => (
-            <Link key={item.id} to={`/items/${item.id}`} className={styles.item_link}>
-              {item.name}
+            <Link
+              key={item.id}
+              to={`/items/${item.id}`}
+              className={styles.item_link}
+            >
+              <Button variant="secondary" className={styles.item_button}>
+                <Icon
+                  name={item.icon}
+                  className={styles.item_icon}
+                  width={ICON_SIZE}
+                  height={ICON_SIZE}
+                />
+                <span className={styles.item_name}>{item.name}</span>
+              </Button>
             </Link>
           ))}
         </CardBody>
+        <CardFooter>
+          {t("items-count", { count: data.items.length })}
+        </CardFooter>
       </Card>
       <div className={styles.items_detail_panel}>
-        <Outlet />
+        {outlet ?? <ItemDetailPlaceholder />}
+        <Link to="/items/create" className={styles.create_item_button}>
+          <Button title={t("create-new-item-label")}>
+            <PlusIcon
+              className={styles.create_item_icon}
+              width={ICON_SIZE}
+              height={ICON_SIZE}
+            />
+            <p>{t("create-new-item-label")}</p>
+          </Button>
+        </Link>
       </div>
     </div>
   );
