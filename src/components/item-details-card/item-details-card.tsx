@@ -3,6 +3,7 @@ import { getPageData } from "@sun/ssr";
 import { LocateChecklistItemDetailsQuery } from "~/generated/graphql";
 import { Card, CardBody, CardHeader, CardTitle } from "@sun/components";
 import styles from "./item-details-card.module.css";
+import { MarkdownViewer } from "@sun/components";
 
 type ItemDetailsCardProps = {
   id: string;
@@ -41,9 +42,9 @@ const ItemDetailsCard = ({ id, pattern }: ItemDetailsCardProps) => {
         <p className={styles.detail_value}>{details.ownerId}</p>
 
         <label>{t("description")}</label>
-        <p className={styles.detail_value}>
+        <MarkdownViewer className={styles.detail_value}>
           {details.description || t("no-description")}
-        </p>
+        </MarkdownViewer>
 
         <label>{t("remote-objects")}</label>
         <p className={styles.detail_value}>

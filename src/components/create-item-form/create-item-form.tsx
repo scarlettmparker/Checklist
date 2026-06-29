@@ -11,12 +11,14 @@ import {
 import { Button, Input, MarkdownEditor } from "@sun/components";
 import { useState } from "react";
 import { createChecklistItem } from "~/server/actions/checklist-item";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import Icon, { ICON_NAMES, FALLBACK_ICON } from "~/components/icon";
 import styles from "./create-item-form.module.css";
 
 const CreateItemForm = () => {
   const { t } = useTranslation("items");
+  const [searchParams] = useSearchParams();
+  const cancelTo = searchParams.get("from") || "/items";
 
   const DEFAULT_ROWS = 3;
 
@@ -91,7 +93,7 @@ const CreateItemForm = () => {
         </FormItem>
       </FormField>
       <FormFooter>
-        <Link to="/items">
+        <Link to={cancelTo}>
           <Button type="button" variant="secondary" title={t("cancel-title")}>
             {t("cancel-label")}
           </Button>

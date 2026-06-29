@@ -4,6 +4,7 @@ import { LocateChecklistItemQuery } from "~/generated/graphql";
 import { Card, CardBody, CardHeader, CardTitle } from "@sun/components";
 import Icon from "~/components/icon";
 import styles from "./item-card.module.css";
+import { MarkdownViewer } from "@sun/components";
 
 type ItemCardProps = {
   /**
@@ -39,9 +40,9 @@ const ItemCard = ({ id, pattern }: ItemCardProps) => {
       </CardHeader>
       <CardBody className={styles.detail_body}>
         <label>{t("description")}</label>
-        <p className={styles.detail_value}>
+        <MarkdownViewer className={styles.detail_value}>
           {item.description || t("no-description")}
-        </p>
+        </MarkdownViewer>
 
         <label>{t("lifecycle-status")}</label>
         <p className={styles.detail_value}>{item.lifecycleStatus}</p>
