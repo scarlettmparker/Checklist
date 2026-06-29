@@ -1,0 +1,13 @@
+mutation saveChecklistItem($input: ChecklistItemInput!) {
+  checklistMutations {
+    saveItem(input: $input) {
+      ... on QuerySuccess {
+        message
+        id
+      }
+      ... on StandardError {
+        message
+      }
+    }
+  }
+}

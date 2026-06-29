@@ -1,0 +1,13 @@
+mutation attachChecklistObject($source: ID!, $target: ID!, $ownerType: RemoteObjectType) {
+  checklistMutations {
+    attachObject(source: $source, target: $target, ownerType: $ownerType) {
+      ... on QuerySuccess {
+        message
+        id
+      }
+      ... on StandardError {
+        message
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+mutation removeChecklistItem($entryId: ID!, $itemId: ID!) {
+  checklistMutations {
+    removeItem(entryId: $entryId, itemId: $itemId) {
+      ... on QuerySuccess {
+        message
+        id
+      }
+      ... on StandardError {
+        message
+      }
+    }
+  }
+}

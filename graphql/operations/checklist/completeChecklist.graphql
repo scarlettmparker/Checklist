@@ -1,0 +1,13 @@
+mutation completeChecklist($id: ID!) {
+  checklistMutations {
+    completeChecklist(id: $id) {
+      ... on QuerySuccess {
+        message
+        id
+      }
+      ... on StandardError {
+        message
+      }
+    }
+  }
+}

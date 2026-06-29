@@ -1,0 +1,19 @@
+query listChecklistItems($page: Int, $size: Int, $sortBy: String, $sortDir: String) {
+  checklistQueries {
+    items(page: $page, size: $size, sortBy: $sortBy, sortDir: $sortDir) {
+      items {
+        id
+        name
+        description
+        categoryId
+        lifecycleStatus
+        createdAt
+        updatedAt
+      }
+      totalCount
+      page
+      size
+      totalPages
+    }
+  }
+}

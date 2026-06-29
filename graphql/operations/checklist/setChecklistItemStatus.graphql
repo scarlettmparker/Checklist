@@ -1,0 +1,13 @@
+mutation setChecklistItemStatus($entryId: ID!, $itemId: ID!, $status: String!) {
+  checklistMutations {
+    setItemStatus(entryId: $entryId, itemId: $itemId, status: $status) {
+      ... on QuerySuccess {
+        message
+        id
+      }
+      ... on StandardError {
+        message
+      }
+    }
+  }
+}

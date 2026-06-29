@@ -1,0 +1,10 @@
+query locateRemoteObjects($ids: [String!]!) {
+  checklistQueries {
+    locateRemoteObjects(ids: $ids) {
+      id
+      ownerType
+      ownerId
+      description
+    }
+  }
+}

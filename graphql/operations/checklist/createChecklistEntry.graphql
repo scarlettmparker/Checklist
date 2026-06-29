@@ -1,0 +1,13 @@
+mutation createChecklistEntry($name: String) {
+  checklistMutations {
+    createChecklist(name: $name) {
+      ... on QuerySuccess {
+        message
+        id
+      }
+      ... on StandardError {
+        message
+      }
+    }
+  }
+}

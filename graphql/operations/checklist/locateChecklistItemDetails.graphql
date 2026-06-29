@@ -1,0 +1,9 @@
+query locateChecklistItemDetails($id: ID!) {
+  checklistQueries {
+    itemDetails(id: $id) {
+      ownerId
+      description
+      remoteObject
+    }
+  }
+}

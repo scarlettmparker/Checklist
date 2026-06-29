@@ -1,0 +1,13 @@
+mutation addChecklistItem($entryId: ID!, $itemId: ID!, $position: Int) {
+  checklistMutations {
+    addItem(entryId: $entryId, itemId: $itemId, position: $position) {
+      ... on QuerySuccess {
+        message
+        id
+      }
+      ... on StandardError {
+        message
+      }
+    }
+  }
+}

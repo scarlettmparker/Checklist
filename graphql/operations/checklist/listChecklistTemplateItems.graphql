@@ -1,0 +1,10 @@
+query listChecklistTemplateItems($templateId: ID!) {
+  checklistQueries {
+    templateItems(templateId: $templateId) {
+      id
+      templateId
+      itemId
+      position
+    }
+  }
+}

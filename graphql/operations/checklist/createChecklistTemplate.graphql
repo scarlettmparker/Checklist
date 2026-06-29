@@ -1,0 +1,13 @@
+mutation createChecklistTemplate($name: String!, $description: String, $itemIds: [ID!]) {
+  checklistMutations {
+    createTemplate(name: $name, description: $description, itemIds: $itemIds) {
+      ... on QuerySuccess {
+        message
+        id
+      }
+      ... on StandardError {
+        message
+      }
+    }
+  }
+}

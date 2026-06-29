@@ -1,0 +1,13 @@
+mutation saveChecklistCategory($input: ChecklistCategoryInput!) {
+  checklistMutations {
+    saveCategory(input: $input) {
+      ... on QuerySuccess {
+        message
+        id
+      }
+      ... on StandardError {
+        message
+      }
+    }
+  }
+}

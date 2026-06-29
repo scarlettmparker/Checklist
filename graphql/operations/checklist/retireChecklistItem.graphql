@@ -1,0 +1,13 @@
+mutation retireChecklistItem($id: ID!) {
+  checklistMutations {
+    retireItem(id: $id) {
+      ... on QuerySuccess {
+        message
+        id
+      }
+      ... on StandardError {
+        message
+      }
+    }
+  }
+}

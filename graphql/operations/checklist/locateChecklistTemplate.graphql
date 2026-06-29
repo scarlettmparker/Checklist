@@ -1,0 +1,12 @@
+query locateChecklistTemplate($id: ID!) {
+  checklistQueries {
+    template(id: $id) {
+      id
+      name
+      description
+      status
+      createdAt
+      updatedAt
+    }
+  }
+}

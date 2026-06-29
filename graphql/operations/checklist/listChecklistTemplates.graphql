@@ -1,0 +1,12 @@
+query listChecklistTemplates {
+  checklistQueries {
+    listTemplates {
+      id
+      name
+      description
+      status
+      createdAt
+      updatedAt
+    }
+  }
+}

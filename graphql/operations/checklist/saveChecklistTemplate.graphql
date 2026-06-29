@@ -1,0 +1,13 @@
+mutation saveChecklistTemplate($input: ChecklistTemplateInput!) {
+  checklistMutations {
+    saveTemplate(input: $input) {
+      ... on QuerySuccess {
+        message
+        id
+      }
+      ... on StandardError {
+        message
+      }
+    }
+  }
+}

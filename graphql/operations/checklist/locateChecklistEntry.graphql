@@ -1,0 +1,13 @@
+query locateChecklistEntry($id: ID!) {
+  checklistQueries {
+    entry(id: $id) {
+      id
+      name
+      dueAt
+      completedAt
+      status
+      createdAt
+      updatedAt
+    }
+  }
+}

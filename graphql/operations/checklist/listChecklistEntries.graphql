@@ -1,0 +1,13 @@
+query listChecklistEntries {
+  checklistQueries {
+    listEntries {
+      id
+      name
+      dueAt
+      completedAt
+      status
+      createdAt
+      updatedAt
+    }
+  }
+}

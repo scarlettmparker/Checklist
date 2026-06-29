@@ -1,0 +1,13 @@
+mutation archiveChecklistTemplate($id: ID!) {
+  checklistMutations {
+    archiveTemplate(id: $id) {
+      ... on QuerySuccess {
+        message
+        id
+      }
+      ... on StandardError {
+        message
+      }
+    }
+  }
+}

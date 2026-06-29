@@ -1,0 +1,9 @@
+query locateChecklistTemplateDetails($id: ID!) {
+  checklistQueries {
+    templateDetails(id: $id) {
+      ownerId
+      description
+      remoteObject
+    }
+  }
+}

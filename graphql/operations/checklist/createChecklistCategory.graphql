@@ -1,0 +1,13 @@
+mutation createChecklistCategory($name: String!, $description: String) {
+  checklistMutations {
+    createCategory(name: $name, description: $description) {
+      ... on QuerySuccess {
+        message
+        id
+      }
+      ... on StandardError {
+        message
+      }
+    }
+  }
+}
