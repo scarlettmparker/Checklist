@@ -1,0 +1,5 @@
+.detail_layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lg);
+}

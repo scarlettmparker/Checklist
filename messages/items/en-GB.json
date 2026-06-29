@@ -8,5 +8,16 @@
   "creating-title": "Creating item...",
   "creating-label": "Loading...",
   "create-title": "Create item",
-  "create-label": "Create"
+  "create-label": "Create",
+  "items-title": "Items",
+  "details-title": "Details",
+  "lifecycle-status": "Status",
+  "category-id": "Category",
+  "created-at": "Created",
+  "updated-at": "Updated",
+  "owner-id": "Owner",
+  "remote-objects": "Linked objects",
+  "no-description": "No description",
+  "none": "None",
+  "no-details": "No details attached to this item yet."
 }
