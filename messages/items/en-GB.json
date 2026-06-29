@@ -1,0 +1,12 @@
+{
+  "name": "Name",
+  "name-placeholder": "Enter item name...",
+  "description": "Description",
+  "description-placeholder": "Enter item description...",
+  "cancel-title": "Cancel creation",
+  "cancel-label": "Cancel",
+  "creating-title": "Creating item...",
+  "creating-label": "Loading...",
+  "create-title": "Create item",
+  "create-label": "Create"
+}

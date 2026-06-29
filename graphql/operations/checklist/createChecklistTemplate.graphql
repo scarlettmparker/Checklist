@@ -2,11 +2,13 @@ mutation createChecklistTemplate($name: String!, $description: String, $itemIds:
   checklistMutations {
     createTemplate(name: $name, description: $description, itemIds: $itemIds) {
       ... on QuerySuccess {
-        message
+      __typename
+      message
         id
       }
       ... on StandardError {
-        message
+      __typename
+      message
       }
     }
   }

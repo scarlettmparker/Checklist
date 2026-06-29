@@ -1,3 +1,5 @@
+scalar Date
+
 # A reusable checklist item definition, optionally grouped into a category.
 type ChecklistItem {
   id: String!

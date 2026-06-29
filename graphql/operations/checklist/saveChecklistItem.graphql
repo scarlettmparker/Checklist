@@ -2,11 +2,13 @@ mutation saveChecklistItem($input: ChecklistItemInput!) {
   checklistMutations {
     saveItem(input: $input) {
       ... on QuerySuccess {
-        message
+      __typename
+      message
         id
       }
       ... on StandardError {
-        message
+      __typename
+      message
       }
     }
   }

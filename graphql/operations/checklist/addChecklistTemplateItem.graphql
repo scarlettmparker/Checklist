@@ -2,11 +2,13 @@ mutation addChecklistTemplateItem($templateId: ID!, $itemId: ID!, $position: Int
   checklistMutations {
     addTemplateItem(templateId: $templateId, itemId: $itemId, position: $position) {
       ... on QuerySuccess {
-        message
+      __typename
+      message
         id
       }
       ... on StandardError {
-        message
+      __typename
+      message
       }
     }
   }

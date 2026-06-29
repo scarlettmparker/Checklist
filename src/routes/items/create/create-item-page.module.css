@@ -1,0 +1,7 @@
+.create_item_form {
+  padding: calc(var(--lg) * 2);
+  margin: 0 auto;
+  width: calc(100% - var(--lg) * 2);
+  max-width: 36rem;
+  position: relative;
+}

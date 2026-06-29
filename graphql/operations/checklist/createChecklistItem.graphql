@@ -2,11 +2,13 @@ mutation createChecklistItem($name: String!, $description: String, $categoryId: 
   checklistMutations {
     createItem(name: $name, description: $description, categoryId: $categoryId) {
       ... on QuerySuccess {
-        message
+      __typename
+      message
         id
       }
       ... on StandardError {
-        message
+      __typename
+      message
       }
     }
   }

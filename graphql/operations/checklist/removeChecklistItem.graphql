@@ -2,11 +2,13 @@ mutation removeChecklistItem($entryId: ID!, $itemId: ID!) {
   checklistMutations {
     removeItem(entryId: $entryId, itemId: $itemId) {
       ... on QuerySuccess {
-        message
+      __typename
+      message
         id
       }
       ... on StandardError {
-        message
+      __typename
+      message
       }
     }
   }
