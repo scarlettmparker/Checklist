@@ -1,6 +1,6 @@
-mutation createChecklistItem($name: String!, $description: String, $categoryId: ID) {
+mutation createChecklistItem($name: String!, $description: String, $categoryId: ID, $icon: String) {
   checklistMutations {
-    createItem(name: $name, description: $description, categoryId: $categoryId) {
+    createItem(name: $name, description: $description, categoryId: $categoryId, icon: $icon) {
       ... on QuerySuccess {
       __typename
       message

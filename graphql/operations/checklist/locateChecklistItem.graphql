@@ -4,6 +4,7 @@ query locateChecklistItem($id: ID!) {
       id
       name
       description
+      icon
       categoryId
       lifecycleStatus
       createdAt

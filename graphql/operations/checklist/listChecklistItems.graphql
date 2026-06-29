@@ -5,6 +5,7 @@ query listChecklistItems($page: Int, $size: Int, $sortBy: String, $sortDir: Stri
         id
         name
         description
+        icon
         categoryId
         lifecycleStatus
         createdAt

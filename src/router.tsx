@@ -16,11 +16,11 @@ export const routes: RouteObject[] = [
   },
   {
     path: "/items",
-    element: <ItemsPage />
+    element: <ItemsPage />,
   },
   {
     path: "/items/create",
-    element: <CreateItemPage />
+    element: <CreateItemPage />,
   },
   {
     path: "*",

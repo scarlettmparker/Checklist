@@ -60,11 +60,7 @@ const CreateItemForm = () => {
       </FormField>
       <FormFooter>
         <Link to="/items">
-          <Button
-            type="button"
-            variant="secondary"
-            title={t("cancel-title")}
-          >
+          <Button type="button" variant="secondary" title={t("cancel-title")}>
             {t("cancel-label")}
           </Button>
         </Link>
@@ -78,7 +74,7 @@ const CreateItemForm = () => {
         </Button>
       </FormFooter>
     </Form>
-  )
-}
+  );
+};
 
 export default CreateItemForm;

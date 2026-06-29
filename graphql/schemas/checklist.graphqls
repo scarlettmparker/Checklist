@@ -5,6 +5,7 @@ type ChecklistItem {
   id: String!
   name: String!
   description: String
+  icon: String
   categoryId: ID
   lifecycleStatus: String!
   createdAt: Date
@@ -93,6 +94,7 @@ input ChecklistItemInput {
   id: ID
   name: String!
   description: String
+  icon: String
   categoryId: ID
   lifecycleStatus: String
 }

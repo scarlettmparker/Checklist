@@ -367,23 +367,32 @@ export async function mutateCreateChecklistItem(
   description?: string,
   categoryId?: string,
 ) {
-  return fetchGraphQLData<CreateChecklistItemMutation>("checklistMutations.createItem", {
-    name,
-    description: description ?? null,
-    categoryId: categoryId ?? null,
-  });
+  return fetchGraphQLData<CreateChecklistItemMutation>(
+    "checklistMutations.createItem",
+    {
+      name,
+      description: description ?? null,
+      categoryId: categoryId ?? null,
+    },
+  );
 }
 
 /** Creates or updates a checklist item from input. */
 export async function mutateSaveChecklistItem(input: ChecklistItemInput) {
-  return fetchGraphQLData<SaveChecklistItemMutation>("checklistMutations.saveItem", {
-    input,
-  });
+  return fetchGraphQLData<SaveChecklistItemMutation>(
+    "checklistMutations.saveItem",
+    {
+      input,
+    },
+  );
 }
 
 /** Soft-retires a checklist item. */
 export async function mutateRetireChecklistItem(id: string) {
-  return fetchGraphQLData<RetireChecklistItemMutation>("checklistMutations.retireItem", { id });
+  return fetchGraphQLData<RetireChecklistItemMutation>(
+    "checklistMutations.retireItem",
+    { id },
+  );
 }
 
 /** Creates a new checklist category. */
@@ -391,14 +400,19 @@ export async function mutateCreateChecklistCategory(
   name: string,
   description?: string,
 ) {
-  return fetchGraphQLData<CreateChecklistCategoryMutation>("checklistMutations.createCategory", {
-    name,
-    description: description ?? null,
-  });
+  return fetchGraphQLData<CreateChecklistCategoryMutation>(
+    "checklistMutations.createCategory",
+    {
+      name,
+      description: description ?? null,
+    },
+  );
 }
 
 /** Creates or updates a checklist category from input. */
-export async function mutateSaveChecklistCategory(input: ChecklistCategoryInput) {
+export async function mutateSaveChecklistCategory(
+  input: ChecklistCategoryInput,
+) {
   return fetchGraphQLData<SaveChecklistCategoryMutation>(
     "checklistMutations.saveCategory",
     { input },
@@ -407,9 +421,12 @@ export async function mutateSaveChecklistCategory(input: ChecklistCategoryInput)
 
 /** Creates an empty checklist entry. */
 export async function mutateCreateChecklistEntry(name?: string) {
-  return fetchGraphQLData<CreateChecklistEntryMutation>("checklistMutations.createChecklist", {
-    name: name ?? null,
-  });
+  return fetchGraphQLData<CreateChecklistEntryMutation>(
+    "checklistMutations.createChecklist",
+    {
+      name: name ?? null,
+    },
+  );
 }
 
 /** Creates a checklist entry seeded from a template. */
@@ -422,23 +439,32 @@ export async function mutateCreateChecklistFromTemplate(templateId: string) {
 
 /** Creates or updates a checklist entry from input. */
 export async function mutateSaveChecklistEntry(input: ChecklistEntryInput) {
-  return fetchGraphQLData<SaveChecklistEntryMutation>("checklistMutations.saveChecklist", {
-    input,
-  });
+  return fetchGraphQLData<SaveChecklistEntryMutation>(
+    "checklistMutations.saveChecklist",
+    {
+      input,
+    },
+  );
 }
 
 /** Marks a checklist entry as complete. */
 export async function mutateCompleteChecklist(id: string) {
-  return fetchGraphQLData<CompleteChecklistMutation>("checklistMutations.completeChecklist", {
-    id,
-  });
+  return fetchGraphQLData<CompleteChecklistMutation>(
+    "checklistMutations.completeChecklist",
+    {
+      id,
+    },
+  );
 }
 
 /** Archives a checklist entry. */
 export async function mutateArchiveChecklist(id: string) {
-  return fetchGraphQLData<ArchiveChecklistMutation>("checklistMutations.archiveChecklist", {
-    id,
-  });
+  return fetchGraphQLData<ArchiveChecklistMutation>(
+    "checklistMutations.archiveChecklist",
+    {
+      id,
+    },
+  );
 }
 
 /** Creates a template, optionally seeded with items. */
@@ -447,15 +473,20 @@ export async function mutateCreateChecklistTemplate(
   description?: string,
   itemIds?: string[],
 ) {
-  return fetchGraphQLData<CreateChecklistTemplateMutation>("checklistMutations.createTemplate", {
-    name,
-    description: description ?? null,
-    itemIds: itemIds ?? null,
-  });
+  return fetchGraphQLData<CreateChecklistTemplateMutation>(
+    "checklistMutations.createTemplate",
+    {
+      name,
+      description: description ?? null,
+      itemIds: itemIds ?? null,
+    },
+  );
 }
 
 /** Creates or updates a checklist template from input. */
-export async function mutateSaveChecklistTemplate(input: ChecklistTemplateInput) {
+export async function mutateSaveChecklistTemplate(
+  input: ChecklistTemplateInput,
+) {
   return fetchGraphQLData<SaveChecklistTemplateMutation>(
     "checklistMutations.saveTemplate",
     { input },
@@ -476,11 +507,14 @@ export async function mutateAddChecklistItem(
   itemId: string,
   position?: number,
 ) {
-  return fetchGraphQLData<AddChecklistItemMutation>("checklistMutations.addItem", {
-    entryId,
-    itemId,
-    position: position ?? null,
-  });
+  return fetchGraphQLData<AddChecklistItemMutation>(
+    "checklistMutations.addItem",
+    {
+      entryId,
+      itemId,
+      position: position ?? null,
+    },
+  );
 }
 
 /** Removes an item from an entry. */
@@ -488,10 +522,13 @@ export async function mutateRemoveChecklistItem(
   entryId: string,
   itemId: string,
 ) {
-  return fetchGraphQLData<RemoveChecklistItemMutation>("checklistMutations.removeItem", {
-    entryId,
-    itemId,
-  });
+  return fetchGraphQLData<RemoveChecklistItemMutation>(
+    "checklistMutations.removeItem",
+    {
+      entryId,
+      itemId,
+    },
+  );
 }
 
 /** Sets the status of an item within an entry. */
@@ -500,11 +537,14 @@ export async function mutateSetChecklistItemStatus(
   itemId: string,
   status: string,
 ) {
-  return fetchGraphQLData<SetChecklistItemStatusMutation>("checklistMutations.setItemStatus", {
-    entryId,
-    itemId,
-    status,
-  });
+  return fetchGraphQLData<SetChecklistItemStatusMutation>(
+    "checklistMutations.setItemStatus",
+    {
+      entryId,
+      itemId,
+      status,
+    },
+  );
 }
 
 /** Adds an item to a template. */
@@ -513,11 +553,14 @@ export async function mutateAddChecklistTemplateItem(
   itemId: string,
   position?: number,
 ) {
-  return fetchGraphQLData<AddChecklistTemplateItemMutation>("checklistMutations.addTemplateItem", {
-    templateId,
-    itemId,
-    position: position ?? null,
-  });
+  return fetchGraphQLData<AddChecklistTemplateItemMutation>(
+    "checklistMutations.addTemplateItem",
+    {
+      templateId,
+      itemId,
+      position: position ?? null,
+    },
+  );
 }
 
 /** Removes an item from a template. */
@@ -540,9 +583,12 @@ export async function mutateAttachChecklistObject(
   target: string,
   ownerType?: "ENTRY" | "TEMPLATE" | "ITEM",
 ) {
-  return fetchGraphQLData<AttachChecklistObjectMutation>("checklistMutations.attachObject", {
-    source,
-    target,
-    ownerType: ownerType ?? null,
-  });
+  return fetchGraphQLData<AttachChecklistObjectMutation>(
+    "checklistMutations.attachObject",
+    {
+      source,
+      target,
+      ownerType: ownerType ?? null,
+    },
+  );
 }

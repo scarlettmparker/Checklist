@@ -10,20 +10,20 @@ import { executeMutation, MutationResult } from "@sun/ssr";
 export async function createChecklistItem(
   name: string,
   description?: string,
-  categoryId?: string
+  categoryId?: string,
 ): Promise<MutationResult> {
   if (typeof name !== "string" || name.trim() === "") {
     return {
       __typename: "StandardError",
-      message: "Name is required and must be a non-empty string."
+      message: "Name is required and must be a non-empty string.",
     };
   }
-  
+
   const result = await executeMutation("checklist/createItem", {
     name,
     description: description || "",
-    categoryId: categoryId || null
-  })
+    categoryId: categoryId || null,
+  });
 
   if (result.__typename === "Redirect") {
     window.location.assign(result.redirectTo);

@@ -10,21 +10,21 @@ const ItemsPage = () => {
     ListChecklistItemsQuery["checklistQueries"]["items"]
   >("checklistItems", "checklist");
 
-
-  return (
-    <></>
-  )
+  return <></>;
 };
 
 /**
  * Server-side data fetching function for checklist items.
  */
-async function getChecklistItemsData(): Promise<Record<string, unknown> | null> {
+async function getChecklistItemsData(): Promise<Record<
+  string,
+  unknown
+> | null> {
   try {
     const result = await fetchListChecklistItems();
     if (result?.data && result.success) {
-      const checklistItems = (result.data as ListChecklistItemsQuery).checklistQueries
-        .items;
+      const checklistItems = (result.data as ListChecklistItemsQuery)
+        .checklistQueries.items;
       if (checklistItems) {
         return { checklistItems: checklistItems };
       }
@@ -42,6 +42,5 @@ async function getChecklistItemsData(): Promise<Record<string, unknown> | null> 
 export function registerChecklistItemsDataLoader(): void {
   pageDataRegistry.registerPageDataLoader("checklist", getChecklistItemsData);
 }
-
 
 export default ItemsPage;
