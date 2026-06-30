@@ -1,6 +1,12 @@
 import { Suspense } from "react";
 import { useParams } from "react-router-dom";
-import { MutationResult, mutationRegistry, pageDataRegistry } from "@sun/ssr";
+import {
+  invalidatePageData,
+  makeCacheKey,
+  MutationResult,
+  mutationRegistry,
+  pageDataRegistry,
+} from "@sun/ssr";
 import { Breadcrumb, Skeleton } from "@sun/components";
 import {
   ItemStatus,
@@ -18,7 +24,7 @@ import EntryHeader from "~/components/entry-header";
 import EntryItems from "~/components/entry-items";
 import styles from "./entry-checklist-page.module.css";
 
-const PAGE = "entries/:id";
+const PAGE = "entry/:id";
 
 /**
  * Entry checklist page: breadcrumb + entry header, and the checklist.
@@ -102,35 +108,36 @@ export function registerEntryDataAndMutations(): void {
     return getEntryItemsData(id);
   });
 
-  mutationRegistry.registerMutationHandler("entries/addItem", async (body) => {
+  mutationRegistry.registerMutationHandler("entry/addItem", async (body) => {
     const entryId = body?.entryId as string;
     const itemId = body?.itemId as string;
     const result = await mutateAddChecklistItem(entryId, itemId);
-    return (
-      (result.data?.checklistMutations.addItem as MutationResult) ?? {
+    invalidatePageData([makeCacheKey("entry/:id:entryItems", { id: entryId })]);
+    return {
+      ...((result.data?.checklistMutations.addItem as MutationResult) ?? {
         __typename: "StandardError",
         message: result.error || "Failed to add item.",
-      }
-    );
+      }),
+      invalidated: [makeCacheKey("entry/:id:entryItems", { id: entryId })],
+    };
+  });
+
+  mutationRegistry.registerMutationHandler("entry/removeItem", async (body) => {
+    const entryId = body?.entryId as string;
+    const itemId = body?.itemId as string;
+    const result = await mutateRemoveChecklistItem(entryId, itemId);
+    invalidatePageData([makeCacheKey("entry/:id:entryItems", { id: entryId })]);
+    return {
+      ...((result.data?.checklistMutations.removeItem as MutationResult) ?? {
+        __typename: "StandardError",
+        message: result.error || "Failed to remove item.",
+      }),
+      invalidated: [makeCacheKey("entry/:id:entryItems", { id: entryId })],
+    };
   });
 
   mutationRegistry.registerMutationHandler(
-    "entries/removeItem",
-    async (body) => {
-      const entryId = body?.entryId as string;
-      const itemId = body?.itemId as string;
-      const result = await mutateRemoveChecklistItem(entryId, itemId);
-      return (
-        (result.data?.checklistMutations.removeItem as MutationResult) ?? {
-          __typename: "StandardError",
-          message: result.error || "Failed to remove item.",
-        }
-      );
-    },
-  );
-
-  mutationRegistry.registerMutationHandler(
-    "entries/setItemStatus",
+    "entry/setItemStatus",
     async (body) => {
       const entryId = body?.entryId as string;
       const itemId = body?.itemId as string;
@@ -140,12 +147,17 @@ export function registerEntryDataAndMutations(): void {
         itemId,
         status,
       );
-      return (
-        (result.data?.checklistMutations.setItemStatus as MutationResult) ?? {
-          __typename: "StandardError",
-          message: result.error || "Failed to set item status.",
-        }
-      );
+      invalidatePageData([
+        makeCacheKey("entry/:id:entryItems", { id: entryId }),
+      ]);
+      return {
+        ...((result.data?.checklistMutations.setItemStatus as MutationResult) ??
+          {
+            __typename: "StandardError",
+            message: result.error || "Failed to set item status.",
+          }),
+        invalidated: [makeCacheKey("entry/:id:entryItems", { id: entryId })],
+      };
     },
   );
 }

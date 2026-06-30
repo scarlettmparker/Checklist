@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { invalidatePageData, makeCacheKey } from "@sun/ssr";
 import {
@@ -8,6 +8,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  Skeleton,
 } from "@sun/components";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { ChecklistEntryItem, ItemStatus } from "~/generated/graphql";
@@ -36,10 +37,12 @@ type EntryChecklistProps = {
 
 /**
  * Interactive checklist for an entry. Items picked via the picker are staged
- * (shown here without a completion checkbox) and committed to the entry by the
- * Submit button. Holds items in local state for optimistic updates.
+ * and committed to the entry by the submit button.
  */
-const EntryChecklist = ({ entryId, items: fetchedItems }: EntryChecklistProps) => {
+const EntryChecklist = ({
+  entryId,
+  items: fetchedItems,
+}: EntryChecklistProps) => {
   const { t } = useTranslation("entry");
   const [items, setItems] = useState<ChecklistEntryItem[]>(fetchedItems);
   const [pending, setPending] = useState<PickerItem[]>([]);
@@ -52,7 +55,7 @@ const EntryChecklist = ({ entryId, items: fetchedItems }: EntryChecklistProps) =
   const memberIds = new Set(items.map((i) => i.itemId));
   const pendingIds = new Set(pending.map((p) => p.id));
   const invalidate = () =>
-    invalidatePageData([makeCacheKey("entries/:id:entryItems", { id: entryId })]);
+    invalidatePageData([makeCacheKey("entry/:id:entryItems", { id: entryId })]);
 
   const toggleStatus = (itemId: string) => {
     const current = items.find((i) => i.itemId === itemId);
@@ -162,12 +165,28 @@ const EntryChecklist = ({ entryId, items: fetchedItems }: EntryChecklistProps) =
       </Card>
       {showPicker && (
         <Card>
+          <CardHeader className={styles.picker_header}>
+            <CardTitle>{t("add-items")}</CardTitle>
+            <Button
+              variant="secondary"
+              className={styles.close}
+              title={t("cancel")}
+              aria-label={t("cancel")}
+              onClick={() => setShowPicker(false)}
+            >
+              <XMarkIcon width={16} height={16} />
+            </Button>
+          </CardHeader>
           <CardBody>
-            <EntryAddItemsPicker
-              memberIds={memberIds}
-              pendingIds={pendingIds}
-              onTogglePending={togglePending}
-            />
+            <Suspense
+              fallback={<Skeleton style={{ width: "100%", height: "6rem" }} />}
+            >
+              <EntryAddItemsPicker
+                memberIds={memberIds}
+                pendingIds={pendingIds}
+                onTogglePending={togglePending}
+              />
+            </Suspense>
           </CardBody>
         </Card>
       )}

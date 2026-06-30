@@ -70,7 +70,7 @@ async function handleCreateEntry(
   if (data?.__typename === "QuerySuccess" && data.id) {
     throw new ServerRedirectError(
       `/entry/${data.id}`,
-      makeCacheKey("entries:entries", {}),
+      makeCacheKey("entry:entries", {}),
     );
   }
 
@@ -95,7 +95,7 @@ async function handleCreateEntryFromTemplate(
   if (data?.__typename === "QuerySuccess" && data.id) {
     throw new ServerRedirectError(
       `/entry/${data.id}`,
-      makeCacheKey("entries:entries", {}),
+      makeCacheKey("entry:entries", {}),
     );
   }
 
@@ -109,9 +109,9 @@ async function handleCreateEntryFromTemplate(
  * Register the entry-creation mutation handlers.
  */
 export function registerCreateEntryMutationHandlers(): void {
-  mutationRegistry.registerMutationHandler("entries/create", handleCreateEntry);
+  mutationRegistry.registerMutationHandler("entry/create", handleCreateEntry);
   mutationRegistry.registerMutationHandler(
-    "entries/createFromTemplate",
+    "entry/createFromTemplate",
     handleCreateEntryFromTemplate,
   );
 }

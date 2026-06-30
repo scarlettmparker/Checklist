@@ -39,3 +39,13 @@
   display: flex;
   gap: var(--md);
 }
+
+.picker_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.close {
+  flex-shrink: 0;
+}

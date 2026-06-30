@@ -24,7 +24,7 @@ const EntryList = () => {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t("entries-title")}</CardTitle>
+          <CardTitle>{t("entry-title")}</CardTitle>
         </CardHeader>
         <CardBody className={styles.empty_state}>
           <FolderIcon size={48} />

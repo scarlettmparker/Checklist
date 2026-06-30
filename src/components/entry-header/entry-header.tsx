@@ -17,11 +17,11 @@ const EntryHeader = ({ id }: EntryHeaderProps) => {
   const { setBreadcrumbs, setCurrent } = useBreadcrumbContext();
   const { data: entry } = getPageData<
     LocateChecklistEntryQuery["checklistQueries"]["entry"]
-  >("entry", "entries/:id", { id });
+  >("entry", "entry/:id", { id });
 
   useEffect(() => {
     setBreadcrumbs([
-      { label: t("entries-title"), href: "/" },
+      { label: t("entry-title"), href: "/" },
       { label: entry?.name || t("untitled-entry"), href: `/entry/${id}` },
     ]);
     setCurrent(`/entry/${id}`);
