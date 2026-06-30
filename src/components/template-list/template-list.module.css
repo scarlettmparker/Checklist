@@ -1,0 +1,32 @@
+.list_body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lg);
+}
+
+.template_link {
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+}
+
+.template_button {
+  display: flex;
+  align-items: center;
+  gap: var(--lg);
+  width: 100%;
+}
+
+.template_icon {
+  flex-shrink: 0;
+}
+
+.template_name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.no_templates {
+  margin: 0;
+}

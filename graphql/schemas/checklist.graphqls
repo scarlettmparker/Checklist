@@ -56,6 +56,8 @@ type ChecklistTemplateItem {
   id: ID!
   templateId: ID!
   itemId: ID!
+  name: String
+  icon: String
   position: Int!
 }
 

@@ -1,0 +1,32 @@
+.items {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--lg);
+}
+
+.subtitle {
+  margin-bottom: 0;
+}
+
+.item_row {
+  display: flex;
+  align-items: center;
+  gap: var(--lg);
+  width: 100%;
+}
+
+.item_icon {
+  flex-shrink: 0;
+}
+
+.item_name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.no_items {
+  margin: 0;
+  color: var(--muted);
+}

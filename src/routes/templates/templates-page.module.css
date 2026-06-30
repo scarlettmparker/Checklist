@@ -1,0 +1,30 @@
+.templates_layout {
+  display: flex;
+  gap: var(--lg);
+  padding: var(--xl);
+  align-items: flex-start;
+  width: 100%;
+  max-width: 72rem;
+  margin: 0 auto;
+  z-index: 10;
+}
+
+.templates_list_panel {
+  width: 40%;
+  min-width: 0;
+}
+
+.templates_detail_panel {
+  width: 60%;
+  flex-shrink: 0;
+}
+
+.create_template_icon {
+  margin-right: var(--md);
+}
+
+.create_template_button {
+  margin-top: var(--lg);
+  display: flex;
+  justify-self: flex-end;
+}

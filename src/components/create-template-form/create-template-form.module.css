@@ -1,0 +1,41 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sm);
+  max-height: 16rem;
+  overflow-y: auto;
+}
+
+.picker_row {
+  display: flex;
+  align-items: center;
+  gap: var(--lg);
+  padding: var(--sm) var(--md);
+  border-radius: var(--sm);
+  cursor: pointer;
+  user-select: none;
+}
+
+.picker_row:hover {
+  background-color: var(--secondary);
+}
+
+.picker_icon {
+  flex-shrink: 0;
+}
+
+.picker_name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.no_picker_items {
+  margin: 0;
+  color: var(--muted);
+}
+
+.error {
+  margin: 0;
+  color: var(--destructive);
+}

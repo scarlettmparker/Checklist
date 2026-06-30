@@ -4,6 +4,8 @@ query listChecklistTemplateItems($templateId: ID!) {
       id
       templateId
       itemId
+      name
+      icon
       position
     }
   }

@@ -40,7 +40,8 @@ async function handleCreateItem(
   const data = result.data?.checklistMutations.createItem as MutationResult;
 
   if (data?.__typename === "QuerySuccess" || data?.__typename === "Redirect") {
-    const keyToInvalidate = makeCacheKey("checklist", {});
+    // Must match the list's cache key exactly: makeCacheKey(`${pattern}:${key}`).
+    const keyToInvalidate = makeCacheKey("checklist:checklistItems", {});
     throw new ServerRedirectError("/items", keyToInvalidate);
   }
 
