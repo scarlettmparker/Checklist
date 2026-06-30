@@ -69,15 +69,18 @@ function AppWithI18n() {
   );
 }
 
-// Initialize i18n on the client with translations injected from the server
+// Initialize i18n on the client with translations injected from the server.
+const locale = window.__locale__ || "en";
+const initialPage = getPageName(window.location.pathname);
+const NAMESPACES = ["home", "items", "templates"];
+
 i18n
   .use(initReactI18next)
   .init({
-    lng: window.__locale__ || "en",
+    lng: locale,
     resources: {
-      [window.__locale__ || "en"]: {
-        home: window.__translations__ || {},
-        items: window.__translations__ || {},
+      [locale]: {
+        [initialPage]: window.__translations__ || {},
       },
     },
     interpolation: { escapeValue: false },
@@ -101,6 +104,20 @@ i18n
         </BrowserRouter>
       </PostHogProvider>,
     );
+
+    for (const ns of NAMESPACES) {
+      if (ns === initialPage || i18n.hasResourceBundle(locale, ns)) continue;
+      fetch(`/messages/${ns}/${locale}.json`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((translations) => {
+          if (translations) {
+            i18n.addResourceBundle(locale, ns, translations, true, true);
+          }
+        })
+        .catch(() => {
+          // namespace optional; ignore fetch failures
+        });
+    }
   })
   .catch((error) => {
     console.error("i18n initialization failed", error);
