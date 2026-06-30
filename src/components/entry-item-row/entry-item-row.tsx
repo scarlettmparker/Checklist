@@ -20,10 +20,13 @@ type EntryItemRowProps = {
 };
 
 /**
- * A single item within an entry: status checkbox + icon + name + edit
- * (placeholder) + remove.
+ * A single item within an entry.
  */
-const EntryItemRow = ({ item, onToggleStatus, onRemove }: EntryItemRowProps) => {
+const EntryItemRow = ({
+  item,
+  onToggleStatus,
+  onRemove,
+}: EntryItemRowProps) => {
   const ICON_SIZE = 16;
   const checked = item.status === ItemStatus.Complete;
 
@@ -32,14 +35,19 @@ const EntryItemRow = ({ item, onToggleStatus, onRemove }: EntryItemRowProps) => 
       <Checkbox
         checked={checked}
         onChange={() => onToggleStatus(item.itemId)}
+        className={styles.label_wrapper}
+        label={
+          <div className={styles.label}>
+            <Icon
+              name={item.icon}
+              className={styles.icon}
+              width={ICON_SIZE}
+              height={ICON_SIZE}
+            />
+            <span className={styles.name}>{item.name}</span>
+          </div>
+        }
       />
-      <Icon
-        name={item.icon}
-        className={styles.icon}
-        width={ICON_SIZE}
-        height={ICON_SIZE}
-      />
-      <span className={styles.name}>{item.name}</span>
       <Button
         variant="secondary"
         className={styles.action}

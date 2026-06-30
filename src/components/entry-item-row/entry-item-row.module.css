@@ -4,12 +4,22 @@
   gap: var(--lg);
 }
 
+.label_wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+}
+
 .icon {
   flex-shrink: 0;
+  margin: 0 var(--md);
 }
 
 .name {
-  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

@@ -16,7 +16,6 @@ import EntryItemRow from "~/components/entry-item-row";
 import EntryAddItemsPicker, {
   type PickerItem,
 } from "~/components/entry-add-items-picker";
-import Icon from "~/components/icon";
 import {
   addEntryItem,
   removeEntryItem,
@@ -36,16 +35,13 @@ type EntryChecklistProps = {
 };
 
 /**
- * Interactive checklist for an entry. Items picked via the picker are staged
- * and committed to the entry by the submit button.
+ * Interactive checklist for an entry. Holds items in local state for optimistic
+ * updates. The picker selects items and commits them via its own "Add selected"
+ * button.
  */
-const EntryChecklist = ({
-  entryId,
-  items: fetchedItems,
-}: EntryChecklistProps) => {
+const EntryChecklist = ({ entryId, items: fetchedItems }: EntryChecklistProps) => {
   const { t } = useTranslation("entry");
   const [items, setItems] = useState<ChecklistEntryItem[]>(fetchedItems);
-  const [pending, setPending] = useState<PickerItem[]>([]);
   const [showPicker, setShowPicker] = useState(false);
 
   useEffect(() => {
@@ -53,7 +49,6 @@ const EntryChecklist = ({
   }, [fetchedItems]);
 
   const memberIds = new Set(items.map((i) => i.itemId));
-  const pendingIds = new Set(pending.map((p) => p.id));
   const invalidate = () =>
     invalidatePageData([makeCacheKey("entry/:id:entryItems", { id: entryId })]);
 
@@ -72,17 +67,9 @@ const EntryChecklist = ({
     setEntryItemStatus(entryId, itemId, next);
   };
 
-  const togglePending = (item: PickerItem) => {
-    setPending((prev) =>
-      prev.some((p) => p.id === item.id)
-        ? prev.filter((p) => p.id !== item.id)
-        : [...prev, item],
-    );
-  };
-
-  const submitPending = async () => {
+  const handleAddItems = async (newItems: PickerItem[]) => {
     const added = await Promise.all(
-      pending.map(async (item) => {
+      newItems.map(async (item) => {
         const result = await addEntryItem(entryId, item.id);
         const id =
           result.__typename === "QuerySuccess"
@@ -102,7 +89,7 @@ const EntryChecklist = ({
       ...prev,
       ...added.map((a, i) => ({ ...a, position: prev.length + i })),
     ]);
-    setPending([]);
+    setShowPicker(false);
     invalidate();
   };
 
@@ -119,48 +106,27 @@ const EntryChecklist = ({
           <CardTitle>{t("checklist")}</CardTitle>
         </CardHeader>
         <CardBody className={styles.body}>
-          {items.length === 0 && pending.length === 0 ? (
+          {items.length === 0 ? (
             <p className={styles.empty}>{t("no-items")}</p>
           ) : (
-            <>
-              {items.map((item) => (
-                <EntryItemRow
-                  key={item.itemId}
-                  item={item}
-                  onToggleStatus={toggleStatus}
-                  onRemove={handleRemove}
-                />
-              ))}
-              {pending.map((item) => (
-                <div key={item.id} className={styles.pending_row}>
-                  <Icon
-                    name={item.icon}
-                    className={styles.pending_icon}
-                    width={16}
-                    height={16}
-                  />
-                  <span className={styles.pending_name}>{item.name}</span>
-                  <Button
-                    variant="secondary"
-                    className={styles.action}
-                    title={t("cancel")}
-                    aria-label={t("cancel")}
-                    onClick={() => togglePending(item)}
-                  >
-                    <XMarkIcon width={16} height={16} />
-                  </Button>
-                </div>
-              ))}
-            </>
+            items.map((item) => (
+              <EntryItemRow
+                key={item.itemId}
+                item={item}
+                onToggleStatus={toggleStatus}
+                onRemove={handleRemove}
+              />
+            ))
           )}
         </CardBody>
         <CardFooter className={styles.footer}>
-          <Button variant="secondary" onClick={() => setShowPicker((s) => !s)}>
+          <Button
+            variant="secondary"
+            className={styles.add_toggle}
+            onClick={() => setShowPicker((s) => !s)}
+          >
             {t("add-items")}
           </Button>
-          {pending.length > 0 && (
-            <Button onClick={submitPending}>{t("submit")}</Button>
-          )}
         </CardFooter>
       </Card>
       {showPicker && (
@@ -183,8 +149,7 @@ const EntryChecklist = ({
             >
               <EntryAddItemsPicker
                 memberIds={memberIds}
-                pendingIds={pendingIds}
-                onTogglePending={togglePending}
+                onSubmit={handleAddItems}
               />
             </Suspense>
           </CardBody>

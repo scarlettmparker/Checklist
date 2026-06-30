@@ -1,3 +1,9 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lg);
+}
+
 .picker {
   display: flex;
   flex-direction: column;
@@ -12,6 +18,11 @@
   gap: var(--lg);
 }
 
+.label_wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
 .icon {
   flex-shrink: 0;
 }
@@ -20,6 +31,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.submit {
+  margin-left: auto;
+  margin-top: calc(var(--lg) * -4);
 }
 
 .empty {
