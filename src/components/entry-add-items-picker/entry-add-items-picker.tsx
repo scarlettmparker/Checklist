@@ -67,7 +67,7 @@ const EntryAddItemsPicker = ({
               onChange={() => toggle(item.id)}
               className={styles.label_wrapper}
               label={
-                <>
+                <div className={styles.label}>
                   <Icon
                     name={item.icon}
                     className={styles.icon}
@@ -75,7 +75,7 @@ const EntryAddItemsPicker = ({
                     height={16}
                   />
                   <span className={styles.name}>{item.name}</span>
-                </>
+                </div>
               }
             />
           </div>
