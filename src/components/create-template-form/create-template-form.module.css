@@ -32,7 +32,6 @@
 
 .no_picker_items {
   margin: 0;
-  color: var(--muted);
 }
 
 .error {

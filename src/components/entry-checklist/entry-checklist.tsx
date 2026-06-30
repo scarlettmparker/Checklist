@@ -9,9 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@sun/components";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { ChecklistEntryItem, ItemStatus } from "~/generated/graphql";
 import EntryItemRow from "~/components/entry-item-row";
-import EntryAddItemsPicker from "~/components/entry-add-items-picker";
+import EntryAddItemsPicker, {
+  type PickerItem,
+} from "~/components/entry-add-items-picker";
+import Icon from "~/components/icon";
 import {
   addEntryItem,
   removeEntryItem,
@@ -31,14 +35,14 @@ type EntryChecklistProps = {
 };
 
 /**
- * Interactive checklist for an entry. Holds items in local state for optimistic updates.
+ * Interactive checklist for an entry. Items picked via the picker are staged
+ * (shown here without a completion checkbox) and committed to the entry by the
+ * Submit button. Holds items in local state for optimistic updates.
  */
-const EntryChecklist = ({
-  entryId,
-  items: fetchedItems,
-}: EntryChecklistProps) => {
+const EntryChecklist = ({ entryId, items: fetchedItems }: EntryChecklistProps) => {
   const { t } = useTranslation("entry");
   const [items, setItems] = useState<ChecklistEntryItem[]>(fetchedItems);
+  const [pending, setPending] = useState<PickerItem[]>([]);
   const [showPicker, setShowPicker] = useState(false);
 
   useEffect(() => {
@@ -46,10 +50,9 @@ const EntryChecklist = ({
   }, [fetchedItems]);
 
   const memberIds = new Set(items.map((i) => i.itemId));
+  const pendingIds = new Set(pending.map((p) => p.id));
   const invalidate = () =>
-    invalidatePageData([
-      makeCacheKey("entries/:id:entryItems", { id: entryId }),
-    ]);
+    invalidatePageData([makeCacheKey("entries/:id:entryItems", { id: entryId })]);
 
   const toggleStatus = (itemId: string) => {
     const current = items.find((i) => i.itemId === itemId);
@@ -66,36 +69,38 @@ const EntryChecklist = ({
     setEntryItemStatus(entryId, itemId, next);
   };
 
-  const handleAddItems = async (
-    newItems: { id: string; name: string; icon: string }[],
-  ) => {
+  const togglePending = (item: PickerItem) => {
+    setPending((prev) =>
+      prev.some((p) => p.id === item.id)
+        ? prev.filter((p) => p.id !== item.id)
+        : [...prev, item],
+    );
+  };
+
+  const submitPending = async () => {
     const added = await Promise.all(
-      newItems.map(async (item) => {
+      pending.map(async (item) => {
         const result = await addEntryItem(entryId, item.id);
-        const entryItemId =
-          result.__typename === "QuerySuccess" ? (result.id ?? item.id) : item.id;
+        const id =
+          result.__typename === "QuerySuccess"
+            ? (result.id ?? item.id)
+            : item.id;
         return {
-          entryItemId,
+          id,
+          entryId,
           itemId: item.id,
           name: item.name,
           icon: item.icon,
+          status: ItemStatus.NotStarted,
         };
       }),
     );
     setItems((prev) => [
       ...prev,
-      ...added.map((a, i) => ({
-        id: a.entryItemId,
-        entryId,
-        itemId: a.itemId,
-        name: a.name,
-        icon: a.icon,
-        status: ItemStatus.NotStarted,
-        position: prev.length + i,
-      })),
+      ...added.map((a, i) => ({ ...a, position: prev.length + i })),
     ]);
+    setPending([]);
     invalidate();
-    setShowPicker(false);
   };
 
   const handleRemove = async (itemId: string) => {
@@ -111,23 +116,48 @@ const EntryChecklist = ({
           <CardTitle>{t("checklist")}</CardTitle>
         </CardHeader>
         <CardBody className={styles.body}>
-          {items.length === 0 ? (
-            <p>{t("no-items")}</p>
+          {items.length === 0 && pending.length === 0 ? (
+            <p className={styles.empty}>{t("no-items")}</p>
           ) : (
-            items.map((item) => (
-              <EntryItemRow
-                key={item.itemId}
-                item={item}
-                onToggleStatus={toggleStatus}
-                onRemove={handleRemove}
-              />
-            ))
+            <>
+              {items.map((item) => (
+                <EntryItemRow
+                  key={item.itemId}
+                  item={item}
+                  onToggleStatus={toggleStatus}
+                  onRemove={handleRemove}
+                />
+              ))}
+              {pending.map((item) => (
+                <div key={item.id} className={styles.pending_row}>
+                  <Icon
+                    name={item.icon}
+                    className={styles.pending_icon}
+                    width={16}
+                    height={16}
+                  />
+                  <span className={styles.pending_name}>{item.name}</span>
+                  <Button
+                    variant="secondary"
+                    className={styles.action}
+                    title={t("cancel")}
+                    aria-label={t("cancel")}
+                    onClick={() => togglePending(item)}
+                  >
+                    <XMarkIcon width={16} height={16} />
+                  </Button>
+                </div>
+              ))}
+            </>
           )}
         </CardBody>
-        <CardFooter>
+        <CardFooter className={styles.footer}>
           <Button variant="secondary" onClick={() => setShowPicker((s) => !s)}>
             {t("add-items")}
           </Button>
+          {pending.length > 0 && (
+            <Button onClick={submitPending}>{t("submit")}</Button>
+          )}
         </CardFooter>
       </Card>
       {showPicker && (
@@ -135,8 +165,8 @@ const EntryChecklist = ({
           <CardBody>
             <EntryAddItemsPicker
               memberIds={memberIds}
-              onSubmit={handleAddItems}
-              onCancel={() => setShowPicker(false)}
+              pendingIds={pendingIds}
+              onTogglePending={togglePending}
             />
           </CardBody>
         </Card>

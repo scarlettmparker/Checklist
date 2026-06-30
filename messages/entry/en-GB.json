@@ -8,6 +8,8 @@
   "no-items": "No items in this entry",
   "add-items": "Add items",
   "no-items-to-add": "All items are already added",
+  "submit": "Add selected",
+  "cancel": "Cancel",
   "templates-count_zero": "No templates",
   "templates-count_one": "{{count}} template",
   "templates-count_other": "{{count}} templates"
