@@ -37,7 +37,7 @@ const EntryChecklist = ({
   entryId,
   items: fetchedItems,
 }: EntryChecklistProps) => {
-  const { t } = useTranslation("entries");
+  const { t } = useTranslation("entry");
   const [items, setItems] = useState<ChecklistEntryItem[]>(fetchedItems);
   const [showPicker, setShowPicker] = useState(false);
 
@@ -66,23 +66,36 @@ const EntryChecklist = ({
     setEntryItemStatus(entryId, itemId, next);
   };
 
-  const handleAdd = async (itemId: string, name: string, icon: string) => {
-    const result = await addEntryItem(entryId, itemId);
-    const id =
-      result.__typename === "QuerySuccess" ? (result.id ?? itemId) : itemId;
+  const handleAddItems = async (
+    newItems: { id: string; name: string; icon: string }[],
+  ) => {
+    const added = await Promise.all(
+      newItems.map(async (item) => {
+        const result = await addEntryItem(entryId, item.id);
+        const entryItemId =
+          result.__typename === "QuerySuccess" ? (result.id ?? item.id) : item.id;
+        return {
+          entryItemId,
+          itemId: item.id,
+          name: item.name,
+          icon: item.icon,
+        };
+      }),
+    );
     setItems((prev) => [
       ...prev,
-      {
-        id,
+      ...added.map((a, i) => ({
+        id: a.entryItemId,
         entryId,
-        itemId,
-        name,
-        icon,
+        itemId: a.itemId,
+        name: a.name,
+        icon: a.icon,
         status: ItemStatus.NotStarted,
-        position: prev.length,
-      },
+        position: prev.length + i,
+      })),
     ]);
     invalidate();
+    setShowPicker(false);
   };
 
   const handleRemove = async (itemId: string) => {
@@ -99,7 +112,7 @@ const EntryChecklist = ({
         </CardHeader>
         <CardBody className={styles.body}>
           {items.length === 0 ? (
-            <p className={styles.empty}>{t("no-items")}</p>
+            <p>{t("no-items")}</p>
           ) : (
             items.map((item) => (
               <EntryItemRow
@@ -120,7 +133,11 @@ const EntryChecklist = ({
       {showPicker && (
         <Card>
           <CardBody>
-            <EntryAddItemsPicker memberIds={memberIds} onAdd={handleAdd} />
+            <EntryAddItemsPicker
+              memberIds={memberIds}
+              onSubmit={handleAddItems}
+              onCancel={() => setShowPicker(false)}
+            />
           </CardBody>
         </Card>
       )}

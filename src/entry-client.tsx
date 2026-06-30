@@ -21,6 +21,7 @@ window.hydratePageDataFromPostlude = hydratePageData;
  * @param pathname Path of page.
  */
 function getPageName(pathname: string) {
+  if (pathname === "/") return "entry";
   const page = pathname.split("/")[1];
   return page || "home";
 }
@@ -72,7 +73,7 @@ function AppWithI18n() {
 // Initialize i18n on the client with translations injected from the server.
 const locale = window.__locale__ || "en";
 const initialPage = getPageName(window.location.pathname);
-const NAMESPACES = ["home", "items", "templates"];
+const NAMESPACES = ["home", "items", "templates", "entry"];
 
 i18n
   .use(initReactI18next)

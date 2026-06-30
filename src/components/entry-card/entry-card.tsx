@@ -12,10 +12,10 @@ type EntryCardProps = {
  * A carousel card representing a checklist entry; clicks into the entry.
  */
 const EntryCard = ({ entry }: EntryCardProps) => {
-  const { t } = useTranslation("entries");
+  const { t } = useTranslation("entry");
 
   return (
-    <Link to={`/entries/${entry.id}`} className={styles.link}>
+    <Link to={`/entry/${entry.id}`} className={styles.link}>
       <Card className={styles.card}>
         <CardBody>
           <CardTitle className={styles.title}>

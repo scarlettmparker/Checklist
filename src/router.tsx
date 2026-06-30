@@ -4,11 +4,13 @@ import ItemsPage from "./routes/items";
 import CreateItemPage from "./routes/items/create";
 import TemplatesPage from "./routes/templates";
 import CreateTemplatePage from "./routes/templates/create";
+import EntriesPage from "./routes/entry";
+import CreateEntryFromTemplatePage from "./routes/entry/create";
 
-const Index = lazy(() => import("~/routes/index"));
 const NotFound = lazy(() => import("~/routes/not-found"));
 const ItemDetailsPage = lazy(() => import("~/routes/items/[id]"));
 const TemplateDetailsPage = lazy(() => import("~/routes/templates/[id]"));
+const EntryChecklistPage = lazy(() => import("~/routes/entry/[id]"));
 
 /**
  * List of routes.
@@ -16,7 +18,19 @@ const TemplateDetailsPage = lazy(() => import("~/routes/templates/[id]"));
 export const routes: RouteObject[] = [
   {
     path: "/",
-    element: <Index />,
+    element: <EntriesPage />,
+  },
+  {
+    path: "entry/create",
+    element: <CreateEntryFromTemplatePage />,
+  },
+  {
+    path: "entry/:id",
+    element: (
+      <Suspense fallback={null}>
+        <EntryChecklistPage />
+      </Suspense>
+    ),
   },
   {
     path: "items",

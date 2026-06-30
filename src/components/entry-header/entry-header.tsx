@@ -13,7 +13,7 @@ type EntryHeaderProps = {
  * Entry title + breadcrumb.
  */
 const EntryHeader = ({ id }: EntryHeaderProps) => {
-  const { t } = useTranslation("entries");
+  const { t } = useTranslation("entry");
   const { setBreadcrumbs, setCurrent } = useBreadcrumbContext();
   const { data: entry } = getPageData<
     LocateChecklistEntryQuery["checklistQueries"]["entry"]
@@ -21,10 +21,10 @@ const EntryHeader = ({ id }: EntryHeaderProps) => {
 
   useEffect(() => {
     setBreadcrumbs([
-      { label: t("entries-title"), href: "/entries" },
-      { label: entry?.name || t("untitled-entry"), href: `/entries/${id}` },
+      { label: t("entries-title"), href: "/" },
+      { label: entry?.name || t("untitled-entry"), href: `/entry/${id}` },
     ]);
-    setCurrent(`/entries/${id}`);
+    setCurrent(`/entry/${id}`);
   }, [entry?.name, id, setBreadcrumbs, setCurrent, t]);
 
   if (!entry) {

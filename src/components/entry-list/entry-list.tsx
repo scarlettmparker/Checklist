@@ -7,29 +7,36 @@ import Carousel from "~/components/carousel";
 import EntryCard from "~/components/entry-card";
 import { createEntry } from "~/server/actions/checklist-entry";
 import styles from "./entry-list.module.css";
+import { CardHeader, CardTitle } from "@sun/components";
+import { FolderIcon } from "lucide-react";
 
 /**
- * The entries carousel or the empty state. Suspends on getPageData; wrap in a
- * Suspense boundary.
+ * The entries carousel or the empty state.
  */
 const EntryList = () => {
-  const { t } = useTranslation("entries");
+  const { t } = useTranslation("entry");
   const { data } = getPageData<
     ListChecklistEntriesQuery["checklistQueries"]["listEntries"]
-  >("entries", "entries");
+  >("entry", "entry");
   const entries = data ?? [];
 
   if (entries.length === 0) {
     return (
       <Card>
+        <CardHeader>
+          <CardTitle>{t("entries-title")}</CardTitle>
+        </CardHeader>
         <CardBody className={styles.empty_state}>
+          <FolderIcon size={48} />
           <p className={styles.empty_text}>{t("no-entries")}</p>
-          <Button onClick={() => createEntry()}>
-            {t("create-entry-label")}
-          </Button>
-          <Link to="/entries/create" className={styles.from_template_link}>
-            {t("create-from-template")}
-          </Link>
+          <div className={styles.create_buttons}>
+            <Button onClick={() => createEntry()}>
+              {t("create-entry-label")}
+            </Button>
+            <Link to="/entry/create">
+              <Button variant="secondary">{t("create-from-template")}</Button>
+            </Link>
+          </div>
         </CardBody>
       </Card>
     );
@@ -42,10 +49,7 @@ const EntryList = () => {
           <EntryCard key={entry.id} entry={entry} />
         ))}
       </Carousel>
-      <Button
-        className={styles.create_button}
-        onClick={() => createEntry()}
-      >
+      <Button className={styles.create_button} onClick={() => createEntry()}>
         {t("create-entry-label")}
       </Button>
     </div>

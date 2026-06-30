@@ -7,12 +7,16 @@ import styles from "./template-picker.module.css";
 type TemplatePickerProps = {
   onCreate: (templateId: string) => void;
   disabled?: boolean;
+  /**
+   * i18n translation function
+   */
+  t: (key: string, options?: Record<string, unknown>) => string;
 };
 
 /**
  * Lists templates as clickable rows.
  */
-const TemplatePicker = ({ onCreate, disabled }: TemplatePickerProps) => {
+const TemplatePicker = ({ onCreate, disabled, t }: TemplatePickerProps) => {
   const { data } = getPageData<
     ListChecklistTemplatesQuery["checklistQueries"]["listTemplates"]
   >("templates", "templates");
@@ -37,6 +41,7 @@ const TemplatePicker = ({ onCreate, disabled }: TemplatePickerProps) => {
           <span className={styles.name}>{tpl.name}</span>
         </Button>
       ))}
+      <p>{t("templates-count", { count: templates.length })}</p>
     </div>
   );
 };

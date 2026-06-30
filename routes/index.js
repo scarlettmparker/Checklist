@@ -67,7 +67,6 @@ export function setupRoutes(app, vite) {
 
     // Compute pageName the same way as client getPageName()
     const pageName = url.split("/")[1] || "home";
-
     const frontendMode = "checklist";
 
     try {
