@@ -1,0 +1,22 @@
+.carousel {
+  display: flex;
+  align-items: stretch;
+  gap: var(--lg);
+  width: 100%;
+}
+
+.nav {
+  flex-shrink: 0;
+}
+
+.track {
+  display: flex;
+  gap: var(--lg);
+  flex: 1;
+  min-width: 0;
+}
+
+.track > * {
+  flex: 1;
+  min-width: 0;
+}

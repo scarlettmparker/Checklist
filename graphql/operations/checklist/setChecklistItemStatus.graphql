@@ -1,4 +1,4 @@
-mutation setChecklistItemStatus($entryId: ID!, $itemId: ID!, $status: String!) {
+mutation setChecklistItemStatus($entryId: ID!, $itemId: ID!, $status: ItemStatus!) {
   checklistMutations {
     setItemStatus(entryId: $entryId, itemId: $itemId, status: $status) {
       ... on QuerySuccess {

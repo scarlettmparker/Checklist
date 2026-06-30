@@ -1,0 +1,13 @@
+.link {
+  text-decoration: none;
+  color: inherit;
+  height: 100%;
+}
+
+.card {
+  height: 100%;
+}
+
+.title {
+  margin-bottom: 0;
+}

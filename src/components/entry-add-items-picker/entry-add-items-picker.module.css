@@ -1,0 +1,23 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sm);
+  max-height: 16rem;
+  overflow-y: auto;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--lg);
+}
+
+.icon {
+  flex-shrink: 0;
+}
+
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

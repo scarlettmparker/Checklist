@@ -1,0 +1,13 @@
+query listChecklistEntryItems($entryId: ID!) {
+  checklistQueries {
+    entryItems(entryId: $entryId) {
+      id
+      entryId
+      itemId
+      name
+      icon
+      status
+      position
+    }
+  }
+}

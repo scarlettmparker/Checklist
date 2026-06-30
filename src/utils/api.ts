@@ -14,6 +14,7 @@ import {
   LocateChecklistEntryDetailsDocument,
   LocateChecklistItemDetailsDocument,
   ListChecklistTemplateItemsDocument,
+  ListChecklistEntryItemsDocument,
   ListChecklistCategoriesDocument,
   LocateRemoteObjectsDocument,
   CreateChecklistItemDocument,
@@ -52,6 +53,7 @@ import {
   RemoveChecklistItemMutation,
   SetChecklistItemStatusDocument,
   SetChecklistItemStatusMutation,
+  ItemStatus,
   AddChecklistTemplateItemDocument,
   AddChecklistTemplateItemMutation,
   RemoveChecklistTemplateItemDocument,
@@ -80,6 +82,7 @@ type OperationRegistry = {
     entryDetails: DocumentNode;
     itemDetails: DocumentNode;
     templateItems: DocumentNode;
+    entryItems: DocumentNode;
     listEntries: DocumentNode;
     listTemplates: DocumentNode;
     listCategories: DocumentNode;
@@ -121,6 +124,7 @@ const operationRegistry: OperationRegistry = {
     entryDetails: LocateChecklistEntryDetailsDocument,
     itemDetails: LocateChecklistItemDetailsDocument,
     templateItems: ListChecklistTemplateItemsDocument,
+    entryItems: ListChecklistEntryItemsDocument,
     listEntries: ListChecklistEntriesDocument,
     listTemplates: ListChecklistTemplatesDocument,
     listCategories: ListChecklistCategoriesDocument,
@@ -351,6 +355,11 @@ export async function fetchListChecklistTemplateItems(templateId: string) {
   return fetchGraphQLData("checklistQueries.templateItems", { templateId });
 }
 
+/** Lists the items belonging to an entry. */
+export async function fetchListChecklistEntryItems(entryId: string) {
+  return fetchGraphQLData("checklistQueries.entryItems", { entryId });
+}
+
 /** Lists all checklist categories. */
 export async function fetchListChecklistCategories() {
   return fetchGraphQLData("checklistQueries.listCategories");
@@ -537,7 +546,7 @@ export async function mutateRemoveChecklistItem(
 export async function mutateSetChecklistItemStatus(
   entryId: string,
   itemId: string,
-  status: string,
+  status: ItemStatus,
 ) {
   return fetchGraphQLData<SetChecklistItemStatusMutation>(
     "checklistMutations.setItemStatus",

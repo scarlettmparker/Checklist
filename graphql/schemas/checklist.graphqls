@@ -47,7 +47,9 @@ type ChecklistEntryItem {
   id: ID!
   entryId: ID!
   itemId: ID!
-  status: String!
+  name: String
+  icon: String
+  status: ItemStatus!
   position: Int!
 }
 
@@ -82,6 +84,14 @@ enum RemoteObjectType {
   ENTRY
   TEMPLATE
   ITEM
+}
+
+# Runtime status of an item within a checklist entry.
+enum ItemStatus {
+  NOT_STARTED
+  COMPLETE
+  FAILED
+  NOT_NEEDED
 }
 
 # A reference returned by locateRemoteObjects.
@@ -131,6 +141,7 @@ type ChecklistQueries {
   entryDetails(id: ID!): ChecklistDetail
   itemDetails(id: ID!): ChecklistDetail
   templateItems(templateId: ID!): [ChecklistTemplateItem!]
+  entryItems(entryId: ID!): [ChecklistEntryItem!]
   listEntries: [ChecklistEntry!]
   listTemplates: [ChecklistTemplate!]
   listCategories: [ChecklistCategory!]
@@ -158,7 +169,7 @@ type ChecklistMutations {
 
   addItem(entryId: ID!, itemId: ID!, position: Int): QueryResult
   removeItem(entryId: ID!, itemId: ID!): QueryResult
-  setItemStatus(entryId: ID!, itemId: ID!, status: String!): QueryResult
+  setItemStatus(entryId: ID!, itemId: ID!, status: ItemStatus!): QueryResult
 
   addTemplateItem(templateId: ID!, itemId: ID!, position: Int): QueryResult
   removeTemplateItem(templateId: ID!, itemId: ID!): QueryResult
