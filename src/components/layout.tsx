@@ -1,12 +1,10 @@
 import styles from "./layout.module.css";
 import { getBackgroundHex } from "~/utils/background-colour";
 import { useEffect, useState } from "react";
+import { BreadcrumbProvider } from "@sun/components";
 
 type LayoutProps = React.PropsWithChildren;
 
-/**
- * We don't actually have a layout now but maybe we will want one.
- */
 const Layout = (props: LayoutProps) => {
   const { children } = props;
   const [backgroundColour, setBackgroundColour] = useState(getBackgroundHex());
@@ -16,13 +14,13 @@ const Layout = (props: LayoutProps) => {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => updateBackgroundColour(), 5000); // 5 seconds
+    const interval = setInterval(() => updateBackgroundColour(), 5000);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <main style={{ backgroundColor: backgroundColour }} className={styles.main}>
-      {children}
+      <BreadcrumbProvider>{children}</BreadcrumbProvider>
     </main>
   );
 };

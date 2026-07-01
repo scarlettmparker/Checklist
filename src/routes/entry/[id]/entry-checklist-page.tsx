@@ -38,17 +38,16 @@ const EntryChecklistPage = () => {
 
   return (
     <div className={styles.layout}>
-      <Breadcrumb>
-        <Suspense fallback={<Skeleton className={styles.sk} />}>
-          <EntryHeader id={id} />
-        </Suspense>
-        <Suspense fallback={<Skeleton className={styles.sk} />}>
-          <EntryItems id={id} />
-        </Suspense>
-        <Suspense fallback={null}>
-          <ChecklistItemsPrefetch id={id} pattern={PAGE} />
-        </Suspense>
-      </Breadcrumb>
+      <Breadcrumb />
+      <Suspense fallback={<Skeleton className={styles.sk} />}>
+        <EntryHeader id={id} />
+      </Suspense>
+      <Suspense fallback={<Skeleton className={styles.sk} />}>
+        <EntryItems id={id} />
+      </Suspense>
+      <Suspense fallback={null}>
+        <ChecklistItemsPrefetch id={id} pattern={PAGE} />
+      </Suspense>
     </div>
   );
 };

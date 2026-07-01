@@ -13,6 +13,10 @@
   min-width: 0;
 }
 
+.icon {
+  margin-right: var(--lg);
+}
+
 .icon_option {
   display: flex;
   align-items: center;

@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
   makeCacheKey,
@@ -12,9 +12,10 @@ import {
   LocateChecklistItemQuery,
 } from "~/generated/graphql";
 import { fetchLocateChecklistItem, mutateSaveChecklistItem } from "~/utils/api";
-import { Skeleton } from "@sun/components";
+import { Breadcrumb, Skeleton, useBreadcrumbContext } from "@sun/components";
 import EditItemForm from "~/components/edit-item-form";
 import styles from "./edit-item-page.module.css";
+import { Card, CardBody } from "@sun/components";
 
 const PAGE = "items/:id/edit";
 
@@ -23,6 +24,15 @@ const PAGE = "items/:id/edit";
  */
 const EditItemPage = () => {
   const { id } = useParams<{ id: string }>();
+  const { setBreadcrumbs, setCurrent } = useBreadcrumbContext();
+
+  useEffect(() => {
+    setBreadcrumbs([
+      { label: "Items", href: "/items" },
+      { label: "Edit", href: `/items/${id}/edit` },
+    ]);
+    setCurrent(`/items/${id}/edit`);
+  }, [id, setBreadcrumbs, setCurrent]);
 
   if (!id) {
     return null;
@@ -30,9 +40,16 @@ const EditItemPage = () => {
 
   return (
     <div className={styles.edit_item_form}>
-      <Suspense fallback={<Skeleton style={{ width: "100%", height: "10rem" }} />}>
-        <EditItemForm itemId={id} pattern={PAGE} />
-      </Suspense>
+      <Breadcrumb />
+      <Card>
+        <CardBody>
+          <Suspense
+            fallback={<Skeleton style={{ width: "100%", height: "10rem" }} />}
+          >
+            <EditItemForm itemId={id} pattern={PAGE} />
+          </Suspense>
+        </CardBody>
+      </Card>
     </div>
   );
 };
@@ -109,7 +126,10 @@ export function registerEditItemPageHandlers(): void {
     return getItemData(id);
   });
 
-  mutationRegistry.registerMutationHandler("checklist/saveItem", handleSaveItem);
+  mutationRegistry.registerMutationHandler(
+    "checklist/saveItem",
+    handleSaveItem,
+  );
 }
 
 export default EditItemPage;

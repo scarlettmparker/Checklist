@@ -1,17 +1,38 @@
+import { useEffect } from "react";
 import {
   makeCacheKey,
   mutationRegistry,
   MutationResult,
   ServerRedirectError,
 } from "@sun/ssr";
+import { Breadcrumb, useBreadcrumbContext } from "@sun/components";
 import CreateItemForm from "~/components/create-item-form";
 import { mutateCreateChecklistItem } from "~/utils/api";
 import styles from "./create-item-page.module.css";
+import { Card, CardBody } from "@sun/components";
 
+/**
+ * Page for creating a new checklist item.
+ */
 const CreateItemPage = () => {
+  const { setBreadcrumbs, setCurrent } = useBreadcrumbContext();
+
+  useEffect(() => {
+    setBreadcrumbs([
+      { label: "Items", href: "/items" },
+      { label: "New", href: "/items/create" },
+    ]);
+    setCurrent("/items/create");
+  }, [setBreadcrumbs, setCurrent]);
+
   return (
     <div className={styles.create_item_form}>
-      <CreateItemForm />
+      <Breadcrumb />
+      <Card>
+        <CardBody>
+          <CreateItemForm />
+        </CardBody>
+      </Card>
     </div>
   );
 };

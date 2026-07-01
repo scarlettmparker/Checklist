@@ -93,7 +93,12 @@ const EditItemForm = ({ itemId, pattern }: EditItemFormProps) => {
               {ICON_NAMES.map((iconName) => (
                 <SelectOption key={iconName} value={iconName}>
                   <div className={styles.icon_option}>
-                    <Icon name={iconName} width={16} height={16} />
+                    <Icon
+                      name={iconName}
+                      width={16}
+                      height={16}
+                      className={styles.icon}
+                    />
                     <span className={styles.icon_name}>
                       {iconName.replace(/Icon$/, "")}
                     </span>
@@ -108,7 +113,7 @@ const EditItemForm = ({ itemId, pattern }: EditItemFormProps) => {
         <FormLabel>{t("description")}</FormLabel>
         <FormItem>
           <MarkdownEditor
-            defaultValue={item.description || ""}
+            value={item.description || ""}
             placeholder={t("description-placeholder")}
             rows={DEFAULT_ROWS}
             aria-label={t("description")}
