@@ -13,9 +13,7 @@ export type PickerItem = {
 };
 
 type EntryAddItemsPickerProps = {
-  /**
-   * Item ids already in the entry (hidden from the picker).
-   */
+  entryId: string;
   memberIds: Set<string>;
   /**
    * Called with the selected items when "Add selected" is pressed.
@@ -27,13 +25,14 @@ type EntryAddItemsPickerProps = {
  * Lists items not yet in the entry with checkboxes to select them.
  */
 const EntryAddItemsPicker = ({
+  entryId,
   memberIds,
   onSubmit,
 }: EntryAddItemsPickerProps) => {
   const { t } = useTranslation("entry");
   const { data } = getPageData<
     ListChecklistItemsQuery["checklistQueries"]["items"]
-  >("checklistItems", "checklist");
+  >("checklistItems", "entry/:id", { id: entryId });
   const items = (data?.items ?? []).filter((i) => !memberIds.has(i.id));
   const [selected, setSelected] = useState<Set<string>>(new Set());
 

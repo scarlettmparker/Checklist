@@ -148,6 +148,7 @@ const EntryChecklist = ({ entryId, items: fetchedItems }: EntryChecklistProps) =
               fallback={<Skeleton style={{ width: "100%", height: "6rem" }} />}
             >
               <EntryAddItemsPicker
+                entryId={entryId}
                 memberIds={memberIds}
                 onSubmit={handleAddItems}
               />

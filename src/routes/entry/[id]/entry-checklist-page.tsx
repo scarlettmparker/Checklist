@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { useParams } from "react-router-dom";
 import {
+  getPageData,
   invalidatePageData,
   makeCacheKey,
   MutationResult,
@@ -11,10 +12,12 @@ import { Breadcrumb, Skeleton } from "@sun/components";
 import {
   ItemStatus,
   ListChecklistEntryItemsQuery,
+  ListChecklistItemsQuery,
   LocateChecklistEntryQuery,
 } from "~/generated/graphql";
 import {
   fetchListChecklistEntryItems,
+  fetchListChecklistItems,
   fetchLocateChecklistEntry,
   mutateAddChecklistItem,
   mutateRemoveChecklistItem,
@@ -29,6 +32,20 @@ const PAGE = "entry/:id";
 /**
  * Entry checklist page: breadcrumb + entry header, and the checklist.
  */
+
+/**
+ * Preloads checklistItems during SSR so the add-items picker reads hydrated
+ * data instead of triggering a client-side RPC.
+ */
+const ChecklistItemsPrefetch = ({ id }: { id: string }) => {
+  getPageData<ListChecklistItemsQuery["checklistQueries"]["items"]>(
+    "checklistItems",
+    PAGE,
+    { id },
+  );
+  return null;
+};
+
 const EntryChecklistPage = () => {
   const { id } = useParams<{ id: string }>();
 
@@ -44,6 +61,9 @@ const EntryChecklistPage = () => {
         </Suspense>
         <Suspense fallback={<Skeleton className={styles.sk} />}>
           <EntryItems id={id} />
+        </Suspense>
+        <Suspense fallback={null}>
+          <ChecklistItemsPrefetch id={id} />
         </Suspense>
       </Breadcrumb>
     </div>
@@ -93,6 +113,29 @@ async function getEntryItemsData(
 }
 
 /**
+ * Loads all checklist items for the add-items picker.
+ */
+async function getChecklistItemsForPicker(): Promise<Record<
+  string,
+  unknown
+> | null> {
+  try {
+    const result = await fetchListChecklistItems();
+    if (result?.success && result.data) {
+      const items = (result.data as ListChecklistItemsQuery).checklistQueries
+        .items;
+      if (items) {
+        return { checklistItems: items };
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error("Failed to fetch checklist items for picker:", error);
+    return null;
+  }
+}
+
+/**
  * Register the data loaders and item mutation handlers for this page.
  */
 export function registerEntryDataAndMutations(): void {
@@ -106,6 +149,12 @@ export function registerEntryDataAndMutations(): void {
     const id = params?.id as string;
     if (!id) return null;
     return getEntryItemsData(id);
+  });
+
+  pageDataRegistry.registerPageDataLoader(PAGE, async (params) => {
+    const id = params?.id as string;
+    if (!id) return null;
+    return getChecklistItemsForPicker();
   });
 
   mutationRegistry.registerMutationHandler("entry/addItem", async (body) => {
@@ -151,11 +200,11 @@ export function registerEntryDataAndMutations(): void {
         makeCacheKey("entry/:id:entryItems", { id: entryId }),
       ]);
       return {
-        ...((result.data?.checklistMutations.setItemStatus as MutationResult) ??
-          {
-            __typename: "StandardError",
-            message: result.error || "Failed to set item status.",
-          }),
+        ...((result.data?.checklistMutations
+          .setItemStatus as MutationResult) ?? {
+          __typename: "StandardError",
+          message: result.error || "Failed to set item status.",
+        }),
         invalidated: [makeCacheKey("entry/:id:entryItems", { id: entryId })],
       };
     },
