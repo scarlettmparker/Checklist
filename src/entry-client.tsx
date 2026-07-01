@@ -6,6 +6,7 @@ import i18n from "i18next";
 import { Suspense, useEffect } from "react";
 
 import Layout from "./components/layout";
+import ErrorBoundary from "~/components/error-boundary";
 import { hydratePageData } from "@sun/ssr";
 import "./utils/configure-framework";
 import { PostHogProvider } from "./utils/hooks/posthog";
@@ -100,7 +101,9 @@ i18n
       <PostHogProvider client>
         <BrowserRouter>
           <Layout>
-            <AppWithI18n />
+            <ErrorBoundary>
+              <AppWithI18n />
+            </ErrorBoundary>
           </Layout>
         </BrowserRouter>
       </PostHogProvider>,

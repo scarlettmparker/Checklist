@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { useParams } from "react-router-dom";
 import {
-  getPageData,
   invalidatePageData,
   makeCacheKey,
   MutationResult,
@@ -25,26 +24,10 @@ import {
 } from "~/utils/api";
 import EntryHeader from "~/components/entry-header";
 import EntryItems from "~/components/entry-items";
+import ChecklistItemsPrefetch from "~/components/checklist-items-prefetch";
 import styles from "./entry-checklist-page.module.css";
 
 const PAGE = "entry/:id";
-
-/**
- * Entry checklist page: breadcrumb + entry header, and the checklist.
- */
-
-/**
- * Preloads checklistItems during SSR so the add-items picker reads hydrated
- * data instead of triggering a client-side RPC.
- */
-const ChecklistItemsPrefetch = ({ id }: { id: string }) => {
-  getPageData<ListChecklistItemsQuery["checklistQueries"]["items"]>(
-    "checklistItems",
-    PAGE,
-    { id },
-  );
-  return null;
-};
 
 const EntryChecklistPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -63,7 +46,7 @@ const EntryChecklistPage = () => {
           <EntryItems id={id} />
         </Suspense>
         <Suspense fallback={null}>
-          <ChecklistItemsPrefetch id={id} />
+          <ChecklistItemsPrefetch id={id} pattern={PAGE} />
         </Suspense>
       </Breadcrumb>
     </div>
