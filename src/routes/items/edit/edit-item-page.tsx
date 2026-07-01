@@ -106,7 +106,10 @@ async function handleSaveItem(
     const itemId = id as string;
     throw new ServerRedirectError(
       `/items/${itemId}`,
-      makeCacheKey("checklist:checklistItems", {}),
+      [
+        makeCacheKey("checklist:checklistItems", {}),
+        makeCacheKey("checklist/:id:item", { id: itemId }),
+      ],
     );
   }
 
