@@ -6,9 +6,7 @@ import { ListChecklistTemplatesQuery } from "~/generated/graphql";
 import { fetchListChecklistTemplates } from "~/utils/api";
 import { Button } from "@sun/components";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import TemplateList, {
-  TemplateListSkeleton,
-} from "~/components/template-list";
+import TemplateList, { TemplateListSkeleton } from "~/components/template-list";
 import TemplateDetailPlaceholder from "~/components/template-detail-placeholder";
 import styles from "./templates-page.module.css";
 
@@ -48,10 +46,7 @@ const TemplatesPage = () => {
 /**
  * Server-side data fetching function for checklist templates.
  */
-async function getTemplatesData(): Promise<Record<
-  string,
-  unknown
-> | null> {
+async function getTemplatesData(): Promise<Record<string, unknown> | null> {
   try {
     const result = await fetchListChecklistTemplates();
     if (result?.data && result.success) {

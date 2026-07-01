@@ -39,7 +39,10 @@ type EntryChecklistProps = {
  * updates. The picker selects items and commits them via its own "Add selected"
  * button.
  */
-const EntryChecklist = ({ entryId, items: fetchedItems }: EntryChecklistProps) => {
+const EntryChecklist = ({
+  entryId,
+  items: fetchedItems,
+}: EntryChecklistProps) => {
   const { t } = useTranslation("entry");
   const [items, setItems] = useState<ChecklistEntryItem[]>(fetchedItems);
   const [showPicker, setShowPicker] = useState(false);

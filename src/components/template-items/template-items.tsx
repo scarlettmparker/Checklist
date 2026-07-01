@@ -19,13 +19,13 @@ const TemplateItems = ({ id, pattern }: TemplateItemsProps) => {
   const { data } = getPageData<
     ListChecklistTemplateItemsQuery["checklistQueries"]["templateItems"]
   >("templateItems", pattern, { id });
-  const items = (data ?? [])
-    .slice()
-    .sort((a, b) => a.position - b.position);
+  const items = (data ?? []).slice().sort((a, b) => a.position - b.position);
 
   return (
     <div className={styles.items}>
-      <CardTitle className={styles.subtitle}>{t("items-in-template")}</CardTitle>
+      <CardTitle className={styles.subtitle}>
+        {t("items-in-template")}
+      </CardTitle>
       {items.length === 0 ? (
         <p className={styles.no_items}>{t("no-items")}</p>
       ) : (

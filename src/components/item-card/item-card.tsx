@@ -5,6 +5,7 @@ import { Card, CardBody, CardHeader, CardTitle } from "@sun/components";
 import Icon from "~/components/icon";
 import styles from "./item-card.module.css";
 import { MarkdownViewer } from "@sun/components";
+import { Link } from "react-router-dom";
 
 type ItemCardProps = {
   /**
@@ -33,10 +34,12 @@ const ItemCard = ({ id, pattern }: ItemCardProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className={styles.title}>
-          <Icon name={item.icon} width={20} height={20} />
-          {item.name}
-        </CardTitle>
+        <Link to={`/items/${id}/edit`}>
+          <CardTitle className={styles.title}>
+            <Icon name={item.icon} width={20} height={20} />
+            {item.name}
+          </CardTitle>
+        </Link>
       </CardHeader>
       <CardBody className={styles.detail_body}>
         <label>{t("description")}</label>

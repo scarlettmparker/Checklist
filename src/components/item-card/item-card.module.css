@@ -16,3 +16,11 @@
   align-items: center;
   gap: var(--md);
 }
+
+.title_link {
+  display: flex;
+  align-items: center;
+  gap: var(--md);
+  text-decoration: none;
+  color: inherit;
+}

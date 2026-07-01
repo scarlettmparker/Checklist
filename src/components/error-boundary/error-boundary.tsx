@@ -1,11 +1,13 @@
-import { Component, type ReactNode } from "react";
+import { Component } from "react";
 import { Card, CardBody } from "@sun/components";
+import styles from "./error-boundary.module.css";
 
-type ErrorBoundaryProps = {
-  children: ReactNode;
-};
+type ErrorBoundaryProps = React.PropsWithChildren;
 
 type ErrorBoundaryState = {
+  /**
+   * Error object if an error has been caught.
+   */
   error: Error | null;
 };
 
@@ -26,13 +28,15 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   render() {
     if (this.state.error) {
       return (
-        <Card>
-          <CardBody>
-            <p style={{ color: "var(--destructive)" }}>
-              {this.state.error.message}
-            </p>
-          </CardBody>
-        </Card>
+        <div className={styles.error_boundary_card}>
+          <Card>
+            <CardBody>
+              <p style={{ color: "var(--destructive)" }}>
+                {this.state.error.message}
+              </p>
+            </CardBody>
+          </Card>
+        </div>
       );
     }
     return this.props.children;

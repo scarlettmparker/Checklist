@@ -4,10 +4,17 @@
   gap: var(--lg);
 }
 
+.item_row {
+  display: flex;
+  align-items: center;
+  gap: var(--md);
+}
+
 .item_link {
   text-decoration: none;
   color: inherit;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
 }
 
 .item_button {
@@ -25,6 +32,15 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  pointer-events: none;
+  max-width: 50%;
+}
+
+.item_actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--lg);
 }
 
 .no_items {

@@ -9,7 +9,10 @@ type ChecklistItemsPrefetchProps = {
 /**
  * Forces SSR to load checklistItems so the picker reads hydrated data.
  */
-const ChecklistItemsPrefetch = ({ id, pattern }: ChecklistItemsPrefetchProps) => {
+const ChecklistItemsPrefetch = ({
+  id,
+  pattern,
+}: ChecklistItemsPrefetchProps) => {
   getPageData<ListChecklistItemsQuery["checklistQueries"]["items"]>(
     "checklistItems",
     pattern,

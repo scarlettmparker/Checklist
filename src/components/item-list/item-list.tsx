@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { getPageData } from "@sun/ssr";
 import { ListChecklistItemsQuery } from "~/generated/graphql";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Button,
   Card,
@@ -9,25 +9,39 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@sun/components";
+import {
+  EllipsisVerticalIcon,
+  PencilSquareIcon,
+} from "@heroicons/react/24/outline";
 import Icon from "~/components/icon";
 import styles from "./item-list.module.css";
 
 type ItemListProps = {
-  /** Route pattern used by getPageData. */
+  /**
+   * Route pattern used by getPageData.
+   */
   pattern: string;
 };
 
 /**
- * The checklist items list card. Suspends on its own getPageData call, so it
- * must be wrapped in a Suspense boundary (with ItemListSkeleton) by the page.
+ * Displays checklist items in a card list with edit dropdown and double-click.
  */
 const ItemList = ({ pattern }: ItemListProps) => {
   const { t } = useTranslation("items");
+  const navigate = useNavigate();
   const { data } = getPageData<
     ListChecklistItemsQuery["checklistQueries"]["items"]
   >("checklistItems", pattern);
   const items = data?.items ?? [];
+
+  const handleDoubleClick = (id: string) => {
+    navigate(`/items/${id}/edit`);
+  };
 
   return (
     <Card>
@@ -44,7 +58,14 @@ const ItemList = ({ pattern }: ItemListProps) => {
               to={`/items/${item.id}`}
               className={styles.item_link}
             >
-              <Button variant="secondary" className={styles.item_button}>
+              <Button
+                variant="secondary"
+                className={styles.item_button}
+                onDoubleClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.preventDefault();
+                  handleDoubleClick(item.id);
+                }}
+              >
                 <Icon
                   name={item.icon}
                   className={styles.item_icon}
@@ -52,14 +73,34 @@ const ItemList = ({ pattern }: ItemListProps) => {
                   height={16}
                 />
                 <span className={styles.item_name}>{item.name}</span>
+                <span className={styles.item_actions}>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <EllipsisVerticalIcon
+                        width={16}
+                        height={16}
+                        onClick={(e: React.MouseEvent) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                        }}
+                      />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem
+                        onClick={() => navigate(`/items/${item.id}/edit`)}
+                      >
+                        <PencilSquareIcon width={16} height={16} />
+                        {t("edit-label")}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </span>
               </Button>
             </Link>
           ))
         )}
       </CardBody>
-      <CardFooter>
-        {t("items-count", { count: items.length })}
-      </CardFooter>
+      <CardFooter>{t("items-count", { count: items.length })}</CardFooter>
     </Card>
   );
 };
