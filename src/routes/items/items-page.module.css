@@ -7,15 +7,17 @@
   max-width: 72rem;
   margin: 0 auto;
   z-index: 10;
+  flex-wrap: wrap;
 }
 
 .items_list_panel {
   width: 40%;
-  min-width: 0;
+  min-width: 350px;
 }
 
 .items_detail_panel {
   width: 60%;
+  min-width: 350px;
   flex-shrink: 0;
 }
 

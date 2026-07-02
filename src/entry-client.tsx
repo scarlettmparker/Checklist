@@ -9,7 +9,7 @@ import Layout from "./components/layout";
 import ErrorBoundary from "~/components/error-boundary";
 import { hydratePageData } from "@sun/ssr";
 import "./utils/configure-framework";
-import { PostHogProvider } from "./utils/hooks/posthog";
+import { PostHogProvider } from "@sun/utils";
 
 import "@sun/components/style.css";
 

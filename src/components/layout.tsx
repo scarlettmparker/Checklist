@@ -1,5 +1,5 @@
 import styles from "./layout.module.css";
-import { getBackgroundHex } from "~/utils/background-colour";
+import { getBackgroundHex } from "@sun/utils";
 import { useEffect, useState } from "react";
 import { BreadcrumbProvider } from "@sun/components";
 
