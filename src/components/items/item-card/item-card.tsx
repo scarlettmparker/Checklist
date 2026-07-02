@@ -55,14 +55,10 @@ const ItemCard = ({ id, pattern }: ItemCardProps) => {
         <p className={styles.detail_value}>{item.categoryId || t("none")}</p>
 
         <label>{t("created-at")}</label>
-        <p className={styles.detail_value}>
-          {formatDate(item.createdAt)}
-        </p>
+        <p className={styles.detail_value}>{formatDate(item.createdAt)}</p>
 
         <label>{t("updated-at")}</label>
-        <p className={styles.detail_value}>
-          {formatDate(item.updatedAt)}
-        </p>
+        <p className={styles.detail_value}>{formatDate(item.updatedAt)}</p>
       </CardBody>
     </Card>
   );

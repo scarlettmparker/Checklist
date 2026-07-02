@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import {
   makeCacheKey,
   mutationRegistry,
@@ -7,6 +7,7 @@ import {
 } from "@sun/ssr";
 import { Breadcrumb, useBreadcrumbContext } from "@sun/components";
 import CreateItemForm from "~/components/items/create-item-form";
+import { CreateItemPageSkeleton } from "~/components/items/skeletons";
 import { mutateCreateChecklistItem } from "~/utils/api";
 import styles from "./create-item-page.module.css";
 import { Card, CardBody } from "@sun/components";
@@ -28,11 +29,13 @@ const CreateItemPage = () => {
   return (
     <div className={styles.create_item_form}>
       <Breadcrumb />
-      <Card>
-        <CardBody>
-          <CreateItemForm />
-        </CardBody>
-      </Card>
+      <Suspense fallback={<CreateItemPageSkeleton />}>
+        <Card>
+          <CardBody>
+            <CreateItemForm />
+          </CardBody>
+        </Card>
+      </Suspense>
     </div>
   );
 };

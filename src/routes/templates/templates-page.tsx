@@ -6,7 +6,9 @@ import { ListChecklistTemplatesQuery } from "~/generated/graphql";
 import { fetchListChecklistTemplates } from "~/utils/api";
 import { Button } from "@sun/components";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import TemplateList, { TemplateListSkeleton } from "~/components/templates/template-list";
+import TemplateList, {
+  TemplateListSkeleton,
+} from "~/components/templates/template-list";
 import TemplateDetailPlaceholder from "~/components/templates/template-detail-placeholder";
 import styles from "./templates-page.module.css";
 

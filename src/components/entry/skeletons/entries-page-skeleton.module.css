@@ -1,0 +1,9 @@
+.skeleton_row {
+  width: 33%;
+  height: 8rem;
+}
+
+.skeleton_body {
+  display: flex;
+  gap: var(--lg);
+}
