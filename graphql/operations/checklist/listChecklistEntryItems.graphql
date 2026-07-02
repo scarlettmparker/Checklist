@@ -1,13 +1,23 @@
-query listChecklistEntryItems($entryId: ID!) {
+query listChecklistEntryItems($entryId: ID!, $pagination: PaginationInput) {
   checklistQueries {
-    entryItems(entryId: $entryId) {
-      id
-      entryId
-      itemId
-      name
-      icon
-      status
-      position
+    entryItems(entryId: $entryId, pagination: $pagination) {
+      items {
+        id
+        entryId
+        itemId
+        name
+        icon
+        status
+        position
+      }
+      pageInfo {
+        page
+        size
+        totalPages
+        totalCount
+        hasNextPage
+        hasPreviousPage
+      }
     }
   }
 }

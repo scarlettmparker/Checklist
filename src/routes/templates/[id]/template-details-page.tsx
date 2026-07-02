@@ -73,22 +73,41 @@ async function getTemplateData(
 }
 
 /**
+ * Default used when a template has no items or the fetch fails (see item-details
+ * for the non-null sentinel pattern).
+ */
+const EMPTY_TEMPLATE_ITEMS = {
+  items: [],
+  pageInfo: {
+    page: 0,
+    size: 0,
+    totalPages: 0,
+    totalCount: 0,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  },
+};
+
+/**
  * Server-side data fetcher for the template's items.
  */
 async function getTemplateItemsData(
   id: string,
 ): Promise<Record<string, unknown> | null> {
   try {
-    const result = await fetchListChecklistTemplateItems(id);
+    const result = await fetchListChecklistTemplateItems(id, {
+      page: 0,
+      size: 100,
+    });
     if (result?.success && result.data) {
-      const items = (result.data as ListChecklistTemplateItemsQuery)
+      const templateItems = (result.data as ListChecklistTemplateItemsQuery)
         .checklistQueries.templateItems;
-      return { templateItems: items ?? [] };
+      return { templateItems: templateItems ?? EMPTY_TEMPLATE_ITEMS };
     }
-    return { templateItems: [] };
+    return { templateItems: EMPTY_TEMPLATE_ITEMS };
   } catch (error) {
     console.error("Failed to fetch checklist template items:", error);
-    return { templateItems: [] };
+    return { templateItems: EMPTY_TEMPLATE_ITEMS };
   }
 }
 

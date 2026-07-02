@@ -50,3 +50,15 @@
 .title {
   position: relative;
 }
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lg);
+  flex-wrap: wrap;
+}
+
+.pagination {
+  margin-top: var(--lg);
+}

@@ -19,7 +19,7 @@ const TemplateItems = ({ id, pattern }: TemplateItemsProps) => {
   const { data } = getPageData<
     ListChecklistTemplateItemsQuery["checklistQueries"]["templateItems"]
   >("templateItems", pattern, { id });
-  const items = (data ?? []).slice().sort((a, b) => a.position - b.position);
+  const items = (data?.items ?? []).slice().sort((a, b) => a.position - b.position);
 
   return (
     <div className={styles.items}>

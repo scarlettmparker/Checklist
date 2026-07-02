@@ -13,7 +13,7 @@ const EntryItems = ({ id }: EntryItemsProps) => {
   const { data } = getPageData<
     ListChecklistEntryItemsQuery["checklistQueries"]["entryItems"]
   >("entryItems", "entry/:id", { id });
-  const items = (data ?? []).slice().sort((a, b) => a.position - b.position);
+  const items = (data?.items ?? []).slice().sort((a, b) => a.position - b.position);
 
   return <EntryChecklist entryId={id} items={items} />;
 };

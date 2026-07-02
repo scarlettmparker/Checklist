@@ -1,6 +1,6 @@
-query listChecklistItems($page: Int, $size: Int, $sortBy: String, $sortDir: String) {
+query listChecklistItems($pagination: PaginationInput) {
   checklistQueries {
-    items(page: $page, size: $size, sortBy: $sortBy, sortDir: $sortDir) {
+    items(pagination: $pagination) {
       items {
         id
         name
@@ -11,10 +11,14 @@ query listChecklistItems($page: Int, $size: Int, $sortBy: String, $sortDir: Stri
         createdAt
         updatedAt
       }
-      totalCount
-      page
-      size
-      totalPages
+      pageInfo {
+        page
+        size
+        totalPages
+        totalCount
+        hasNextPage
+        hasPreviousPage
+      }
     }
   }
 }

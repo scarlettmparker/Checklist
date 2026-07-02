@@ -8,3 +8,24 @@ type QuerySuccess {
 }
 
 union QueryResult = QuerySuccess | StandardError
+
+input PaginationInput {
+  page: Int
+  size: Int
+  sortBy: String
+  sortDir: SortDirection
+}
+
+enum SortDirection {
+  ASC
+  DESC
+}
+
+type PageInfo {
+  page: Int!
+  size: Int!
+  totalPages: Int!
+  totalCount: Int!
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+}

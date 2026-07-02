@@ -1,12 +1,22 @@
-query listChecklistTemplateItems($templateId: ID!) {
+query listChecklistTemplateItems($templateId: ID!, $pagination: PaginationInput) {
   checklistQueries {
-    templateItems(templateId: $templateId) {
-      id
-      templateId
-      itemId
-      name
-      icon
-      position
+    templateItems(templateId: $templateId, pagination: $pagination) {
+      items {
+        id
+        templateId
+        itemId
+        name
+        icon
+        position
+      }
+      pageInfo {
+        page
+        size
+        totalPages
+        totalCount
+        hasNextPage
+        hasPreviousPage
+      }
     }
   }
 }

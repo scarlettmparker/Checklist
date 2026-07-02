@@ -60,6 +60,7 @@ import {
   RemoveChecklistTemplateItemMutation,
   AttachChecklistObjectDocument,
   AttachChecklistObjectMutation,
+  PaginationInput,
 } from "~/generated/graphql";
 
 export type ApiResponse<T> = {
@@ -296,17 +297,9 @@ export async function fetchGraphQLData<
 }
 
 /** Lists checklist items. */
-export async function fetchListChecklistItems(
-  page?: number,
-  size?: number,
-  sortBy?: string,
-  sortDir?: string,
-) {
+export async function fetchListChecklistItems(pagination?: PaginationInput | null) {
   return fetchGraphQLData("checklistQueries.items", {
-    page: page ?? null,
-    size: size ?? null,
-    sortBy: sortBy ?? null,
-    sortDir: sortDir ?? null,
+    pagination: pagination ?? null,
   });
 }
 
@@ -351,13 +344,25 @@ export async function fetchLocateChecklistItemDetails(id: string) {
 }
 
 /** Lists the items belonging to a template. */
-export async function fetchListChecklistTemplateItems(templateId: string) {
-  return fetchGraphQLData("checklistQueries.templateItems", { templateId });
+export async function fetchListChecklistTemplateItems(
+  templateId: string,
+  pagination?: PaginationInput | null,
+) {
+  return fetchGraphQLData("checklistQueries.templateItems", {
+    templateId,
+    pagination: pagination ?? null,
+  });
 }
 
 /** Lists the items belonging to an entry. */
-export async function fetchListChecklistEntryItems(entryId: string) {
-  return fetchGraphQLData("checklistQueries.entryItems", { entryId });
+export async function fetchListChecklistEntryItems(
+  entryId: string,
+  pagination?: PaginationInput | null,
+) {
+  return fetchGraphQLData("checklistQueries.entryItems", {
+    entryId,
+    pagination: pagination ?? null,
+  });
 }
 
 /** Lists all checklist categories. */

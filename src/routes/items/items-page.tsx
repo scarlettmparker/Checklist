@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Link, useLocation, useOutlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { pageDataRegistry } from "@sun/ssr";
-import { ListChecklistItemsQuery } from "~/generated/graphql";
+import { ListChecklistItemsQuery, PaginationInput } from "~/generated/graphql";
 import { fetchListChecklistItems } from "~/utils/api";
 import { Button } from "@sun/components";
 import { PlusIcon } from "@heroicons/react/24/outline";
@@ -25,7 +25,7 @@ const ItemsPage = () => {
               to={`/items/create?from=${encodeURIComponent(location.pathname)}`}
               className={styles.create_item_button}
             >
-              <Button title={t("create-new-item-label")}>
+              <Button title={t("create-new-item-label")} variant="secondary">
                 <PlusIcon
                   className={styles.create_item_icon}
                   width={ICON_SIZE}
@@ -46,13 +46,18 @@ const ItemsPage = () => {
 
 /**
  * Server-side data fetching function for checklist items.
+ *
+ * @param params page data params, carrying the 1-based `page` from the URL
  */
-async function getChecklistItemsData(): Promise<Record<
-  string,
-  unknown
-> | null> {
+async function getChecklistItemsData(
+  params?: Record<string, unknown>,
+): Promise<Record<string, unknown> | null> {
   try {
-    const result = await fetchListChecklistItems();
+    // URL page is 1-based; the backend (Spring PageRequest) is 0-based.
+    const pagination: PaginationInput = {
+      page: Number(params?.page ?? 1) - 1,
+    };
+    const result = await fetchListChecklistItems(pagination);
     if (result?.data && result.success) {
       const checklistItems = (result.data as ListChecklistItemsQuery)
         .checklistQueries.items;

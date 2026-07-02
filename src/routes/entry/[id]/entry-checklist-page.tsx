@@ -75,22 +75,38 @@ async function getEntryData(
 }
 
 /**
+ * Default used when an entry has no items or the fetch fails (non-null sentinel
+ * so the page doesn't crash on read).
+ */
+const EMPTY_ENTRY_ITEMS = {
+  items: [],
+  pageInfo: {
+    page: 0,
+    size: 0,
+    totalPages: 0,
+    totalCount: 0,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  },
+};
+
+/**
  * Server-side data fetcher for the entry's items.
  */
 async function getEntryItemsData(
   id: string,
 ): Promise<Record<string, unknown> | null> {
   try {
-    const result = await fetchListChecklistEntryItems(id);
+    const result = await fetchListChecklistEntryItems(id, { page: 0, size: 100 });
     if (result?.success && result.data) {
-      const items = (result.data as ListChecklistEntryItemsQuery)
+      const entryItems = (result.data as ListChecklistEntryItemsQuery)
         .checklistQueries.entryItems;
-      return { entryItems: items ?? [] };
+      return { entryItems: entryItems ?? EMPTY_ENTRY_ITEMS };
     }
-    return { entryItems: [] };
+    return { entryItems: EMPTY_ENTRY_ITEMS };
   } catch (error) {
     console.error("Failed to fetch checklist entry items:", error);
-    return { entryItems: [] };
+    return { entryItems: EMPTY_ENTRY_ITEMS };
   }
 }
 
