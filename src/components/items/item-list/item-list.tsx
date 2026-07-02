@@ -63,7 +63,7 @@ const ItemList = ({ pattern, children }: ItemListProps) => {
             items.map((item) => (
               <Link
                 key={item.id}
-                to={`/items/${item.id}`}
+                to={{ pathname: `/items/${item.id}`, search: searchParams.toString() }}
                 className={styles.item_link}
               >
                 <Button
