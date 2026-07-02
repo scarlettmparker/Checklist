@@ -6,7 +6,7 @@ import {
   ServerRedirectError,
 } from "@sun/ssr";
 import { Breadcrumb, useBreadcrumbContext } from "@sun/components";
-import CreateItemForm from "~/components/create-item-form";
+import CreateItemForm from "~/components/items/create-item-form";
 import { mutateCreateChecklistItem } from "~/utils/api";
 import styles from "./create-item-page.module.css";
 import { Card, CardBody } from "@sun/components";

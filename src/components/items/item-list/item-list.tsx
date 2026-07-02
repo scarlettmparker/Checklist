@@ -18,7 +18,7 @@ import {
   EllipsisVerticalIcon,
   PencilSquareIcon,
 } from "@heroicons/react/24/outline";
-import Icon from "~/components/icon";
+import Icon from "~/components/shared/icon";
 import styles from "./item-list.module.css";
 
 type ItemListProps = {

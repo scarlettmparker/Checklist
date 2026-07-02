@@ -9,10 +9,10 @@ import {
   fetchLocateChecklistItem,
   fetchLocateChecklistItemDetails,
 } from "~/utils/api";
-import ItemCard, { ItemCardSkeleton } from "~/components/item-card";
+import ItemCard, { ItemCardSkeleton } from "~/components/items/item-card";
 import ItemDetailsCard, {
   ItemDetailsCardSkeleton,
-} from "~/components/item-details-card";
+} from "~/components/items/item-details-card";
 import styles from "./item-details-page.module.css";
 
 const PAGE = "checklist/:id";

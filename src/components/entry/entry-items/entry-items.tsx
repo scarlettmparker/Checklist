@@ -1,6 +1,6 @@
 import { getPageData } from "@sun/ssr";
 import { ListChecklistEntryItemsQuery } from "~/generated/graphql";
-import EntryChecklist from "~/components/entry-checklist";
+import EntryChecklist from "~/components/entry/entry-checklist";
 
 type EntryItemsProps = {
   id: string;

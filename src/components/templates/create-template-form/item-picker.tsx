@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { getPageData } from "@sun/ssr";
 import { ListChecklistItemsQuery } from "~/generated/graphql";
 import { Checkbox } from "@sun/components";
-import Icon from "~/components/icon";
+import Icon from "~/components/shared/icon";
 import styles from "./create-template-form.module.css";
 import { CardBody } from "@sun/components";
 import { Card } from "@sun/components";

@@ -1,30 +1,53 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   Form,
   FormField,
-  FormLabel,
   FormItem,
+  FormLabel,
   FormFooter,
+  Input,
+  Button,
   Select,
   SelectOption,
+  MarkdownEditor,
 } from "@sun/components";
-import { Button, Input, MarkdownEditor } from "@sun/components";
-import { useState } from "react";
-import { createChecklistItem } from "~/server/actions/checklist-item";
-import { Link, useSearchParams } from "react-router-dom";
-import Icon, { ICON_NAMES, FALLBACK_ICON } from "~/components/icon";
-import styles from "./create-item-form.module.css";
+import Icon, { ICON_NAMES, FALLBACK_ICON } from "~/components/shared/icon";
+import { getPageData } from "@sun/ssr";
+import { LocateChecklistItemQuery } from "~/generated/graphql";
+import { saveChecklistItem } from "~/server/actions/checklist-item";
+import styles from "./edit-item-form.module.css";
 
-const CreateItemForm = () => {
+type EditItemFormProps = {
+  /**
+   * Id of the checklist item to edit.
+   */
+  itemId: string;
+  /**
+   * Route pattern used by getPageData.
+   */
+  pattern: string;
+};
+
+/**
+ * Form for editing an existing checklist item.
+ */
+const EditItemForm = ({ itemId, pattern }: EditItemFormProps) => {
   const { t } = useTranslation("items");
   const [searchParams] = useSearchParams();
-  const cancelTo = searchParams.get("from") || "/items";
+  const cancelTo = searchParams.get("from") || `/items/${itemId}`;
+
+  const { data: item } = getPageData<
+    LocateChecklistItemQuery["checklistQueries"]["item"]
+  >("item", pattern, { id: itemId });
 
   const DEFAULT_ROWS = 3;
-
   const [loading, setLoading] = useState(false);
-  const [_error, setError] = useState<string | null>(null);
-  const [_success, setSuccess] = useState(false);
+
+  if (!item) {
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,17 +57,16 @@ const CreateItemForm = () => {
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
     const icon = formData.get("icon") as string;
-    const result = await createChecklistItem(
+    const result = await saveChecklistItem(
+      itemId,
       name,
       description,
       undefined,
       icon,
     );
 
-    if (result.__typename === "QuerySuccess") {
-      setSuccess(true);
-    } else if (result.__typename === "StandardError") {
-      setError(result.message);
+    if (result.__typename === "StandardError") {
+      console.error(result.message);
     }
 
     setLoading(false);
@@ -56,25 +78,30 @@ const CreateItemForm = () => {
         <FormField name="name" className={styles.name_field}>
           <FormLabel>{t("name")}</FormLabel>
           <FormItem>
-            <Input type="text" placeholder={t("name-placeholder")} required />
+            <Input
+              type="text"
+              defaultValue={item.name}
+              placeholder={t("name-placeholder")}
+              required
+            />
           </FormItem>
         </FormField>
         <FormField name="icon" className={styles.icon_field}>
           <FormLabel>{t("icon")}</FormLabel>
           <FormItem>
-            <Select defaultValue={FALLBACK_ICON}>
+            <Select defaultValue={item.icon || FALLBACK_ICON}>
               {ICON_NAMES.map((iconName) => (
                 <SelectOption key={iconName} value={iconName}>
                   <div className={styles.icon_option}>
                     <Icon
-                      className={styles.icon}
                       name={iconName}
                       width={16}
                       height={16}
+                      className={styles.icon}
                     />
-                    <p className={styles.icon_name}>
+                    <span className={styles.icon_name}>
                       {iconName.replace(/Icon$/, "")}
-                    </p>
+                    </span>
                   </div>
                 </SelectOption>
               ))}
@@ -86,6 +113,7 @@ const CreateItemForm = () => {
         <FormLabel>{t("description")}</FormLabel>
         <FormItem>
           <MarkdownEditor
+            value={item.description || ""}
             placeholder={t("description-placeholder")}
             rows={DEFAULT_ROWS}
             aria-label={t("description")}
@@ -100,15 +128,14 @@ const CreateItemForm = () => {
         </Link>
         <Button
           type="submit"
-          title={loading ? t("creating-title") : t("create-title")}
+          title={loading ? t("saving-title") : t("save-title")}
           disabled={loading}
-          data-testid="create-blog-submit-button"
         >
-          {loading ? t("creating-label") : t("create-label")}
+          {loading ? t("saving-label") : t("save-label")}
         </Button>
       </FormFooter>
     </Form>
   );
 };
 
-export default CreateItemForm;
+export default EditItemForm;

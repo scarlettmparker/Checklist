@@ -22,9 +22,9 @@ import {
   mutateRemoveChecklistItem,
   mutateSetChecklistItemStatus,
 } from "~/utils/api";
-import EntryHeader from "~/components/entry-header";
-import EntryItems from "~/components/entry-items";
-import ChecklistItemsPrefetch from "~/components/checklist-items-prefetch";
+import EntryHeader from "~/components/entry/entry-header";
+import EntryItems from "~/components/entry/entry-items";
+import ChecklistItemsPrefetch from "~/components/entry/checklist-items-prefetch";
 import styles from "./entry-checklist-page.module.css";
 
 const PAGE = "entry/:id";

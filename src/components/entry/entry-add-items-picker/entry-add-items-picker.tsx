@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { getPageData } from "@sun/ssr";
 import { ListChecklistItemsQuery } from "~/generated/graphql";
 import { Button, Checkbox } from "@sun/components";
-import Icon from "~/components/icon";
+import Icon from "~/components/shared/icon";
 import styles from "./entry-add-items-picker.module.css";
 
 export type PickerItem = {

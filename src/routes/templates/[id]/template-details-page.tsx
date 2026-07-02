@@ -12,11 +12,11 @@ import {
   fetchLocateChecklistTemplateDetails,
 } from "~/utils/api";
 import { Card, CardBody, Skeleton } from "@sun/components";
-import TemplateInfo from "~/components/template-info";
-import TemplateItems from "~/components/template-items";
+import TemplateInfo from "~/components/templates/template-info";
+import TemplateItems from "~/components/templates/template-items";
 import TemplateDetailsCard, {
   TemplateDetailsCardSkeleton,
-} from "~/components/template-details-card";
+} from "~/components/templates/template-details-card";
 import styles from "./template-details-page.module.css";
 
 const PAGE = "templates/:id";

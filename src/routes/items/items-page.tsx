@@ -6,8 +6,8 @@ import { ListChecklistItemsQuery } from "~/generated/graphql";
 import { fetchListChecklistItems } from "~/utils/api";
 import { Button } from "@sun/components";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import ItemList, { ItemListSkeleton } from "~/components/item-list";
-import ItemDetailPlaceholder from "~/components/item-detail-placeholder";
+import ItemList, { ItemListSkeleton } from "~/components/items/item-list";
+import ItemDetailPlaceholder from "~/components/items/item-detail-placeholder";
 import styles from "./items-page.module.css";
 
 const ItemsPage = () => {

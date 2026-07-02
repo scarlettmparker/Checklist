@@ -17,7 +17,7 @@ import {
   mutateCreateChecklistEntry,
   mutateCreateChecklistFromTemplate,
 } from "~/utils/api";
-import TemplatePicker from "~/components/template-picker";
+import TemplatePicker from "~/components/entry/template-picker";
 import { createEntryFromTemplate } from "~/server/actions/checklist-entry";
 import styles from "./create-entry-from-template-page.module.css";
 

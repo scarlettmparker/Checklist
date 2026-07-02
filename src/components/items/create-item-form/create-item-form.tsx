@@ -1,53 +1,30 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useSearchParams } from "react-router-dom";
 import {
   Form,
   FormField,
-  FormItem,
   FormLabel,
+  FormItem,
   FormFooter,
-  Input,
-  Button,
   Select,
   SelectOption,
-  MarkdownEditor,
 } from "@sun/components";
-import Icon, { ICON_NAMES, FALLBACK_ICON } from "~/components/icon";
-import { getPageData } from "@sun/ssr";
-import { LocateChecklistItemQuery } from "~/generated/graphql";
-import { saveChecklistItem } from "~/server/actions/checklist-item";
-import styles from "./edit-item-form.module.css";
+import { Button, Input, MarkdownEditor } from "@sun/components";
+import { useState } from "react";
+import { createChecklistItem } from "~/server/actions/checklist-item";
+import { Link, useSearchParams } from "react-router-dom";
+import Icon, { ICON_NAMES, FALLBACK_ICON } from "~/components/shared/icon";
+import styles from "./create-item-form.module.css";
 
-type EditItemFormProps = {
-  /**
-   * Id of the checklist item to edit.
-   */
-  itemId: string;
-  /**
-   * Route pattern used by getPageData.
-   */
-  pattern: string;
-};
-
-/**
- * Form for editing an existing checklist item.
- */
-const EditItemForm = ({ itemId, pattern }: EditItemFormProps) => {
+const CreateItemForm = () => {
   const { t } = useTranslation("items");
   const [searchParams] = useSearchParams();
-  const cancelTo = searchParams.get("from") || `/items/${itemId}`;
-
-  const { data: item } = getPageData<
-    LocateChecklistItemQuery["checklistQueries"]["item"]
-  >("item", pattern, { id: itemId });
+  const cancelTo = searchParams.get("from") || "/items";
 
   const DEFAULT_ROWS = 3;
-  const [loading, setLoading] = useState(false);
 
-  if (!item) {
-    return null;
-  }
+  const [loading, setLoading] = useState(false);
+  const [_error, setError] = useState<string | null>(null);
+  const [_success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -57,16 +34,17 @@ const EditItemForm = ({ itemId, pattern }: EditItemFormProps) => {
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
     const icon = formData.get("icon") as string;
-    const result = await saveChecklistItem(
-      itemId,
+    const result = await createChecklistItem(
       name,
       description,
       undefined,
       icon,
     );
 
-    if (result.__typename === "StandardError") {
-      console.error(result.message);
+    if (result.__typename === "QuerySuccess") {
+      setSuccess(true);
+    } else if (result.__typename === "StandardError") {
+      setError(result.message);
     }
 
     setLoading(false);
@@ -78,30 +56,25 @@ const EditItemForm = ({ itemId, pattern }: EditItemFormProps) => {
         <FormField name="name" className={styles.name_field}>
           <FormLabel>{t("name")}</FormLabel>
           <FormItem>
-            <Input
-              type="text"
-              defaultValue={item.name}
-              placeholder={t("name-placeholder")}
-              required
-            />
+            <Input type="text" placeholder={t("name-placeholder")} required />
           </FormItem>
         </FormField>
         <FormField name="icon" className={styles.icon_field}>
           <FormLabel>{t("icon")}</FormLabel>
           <FormItem>
-            <Select defaultValue={item.icon || FALLBACK_ICON}>
+            <Select defaultValue={FALLBACK_ICON}>
               {ICON_NAMES.map((iconName) => (
                 <SelectOption key={iconName} value={iconName}>
                   <div className={styles.icon_option}>
                     <Icon
+                      className={styles.icon}
                       name={iconName}
                       width={16}
                       height={16}
-                      className={styles.icon}
                     />
-                    <span className={styles.icon_name}>
+                    <p className={styles.icon_name}>
                       {iconName.replace(/Icon$/, "")}
-                    </span>
+                    </p>
                   </div>
                 </SelectOption>
               ))}
@@ -113,7 +86,6 @@ const EditItemForm = ({ itemId, pattern }: EditItemFormProps) => {
         <FormLabel>{t("description")}</FormLabel>
         <FormItem>
           <MarkdownEditor
-            value={item.description || ""}
             placeholder={t("description-placeholder")}
             rows={DEFAULT_ROWS}
             aria-label={t("description")}
@@ -128,14 +100,15 @@ const EditItemForm = ({ itemId, pattern }: EditItemFormProps) => {
         </Link>
         <Button
           type="submit"
-          title={loading ? t("saving-title") : t("save-title")}
+          title={loading ? t("creating-title") : t("create-title")}
           disabled={loading}
+          data-testid="create-blog-submit-button"
         >
-          {loading ? t("saving-label") : t("save-label")}
+          {loading ? t("creating-label") : t("create-label")}
         </Button>
       </FormFooter>
     </Form>
   );
 };
 
-export default EditItemForm;
+export default CreateItemForm;

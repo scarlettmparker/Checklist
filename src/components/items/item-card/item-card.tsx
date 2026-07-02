@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { getPageData } from "@sun/ssr";
 import { LocateChecklistItemQuery } from "~/generated/graphql";
 import { Card, CardBody, CardHeader, CardTitle } from "@sun/components";
-import Icon from "~/components/icon";
+import Icon from "~/components/shared/icon";
 import styles from "./item-card.module.css";
 import { MarkdownViewer } from "@sun/components";
 import { Link } from "react-router-dom";

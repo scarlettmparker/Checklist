@@ -1,7 +1,7 @@
 import { getPageData } from "@sun/ssr";
 import { ListChecklistTemplatesQuery } from "~/generated/graphql";
 import { Button } from "@sun/components";
-import Icon from "~/components/icon";
+import Icon from "~/components/shared/icon";
 import styles from "./template-picker.module.css";
 
 type TemplatePickerProps = {

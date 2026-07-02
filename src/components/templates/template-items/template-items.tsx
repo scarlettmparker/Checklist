@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { getPageData } from "@sun/ssr";
 import { ListChecklistTemplateItemsQuery } from "~/generated/graphql";
 import { CardTitle } from "@sun/components";
-import Icon from "~/components/icon";
+import Icon from "~/components/shared/icon";
 import styles from "./template-items.module.css";
 
 type TemplateItemsProps = {

@@ -1,6 +1,6 @@
 import { Button, Checkbox } from "@sun/components";
 import { PencilSquareIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import Icon from "~/components/icon";
+import Icon from "~/components/shared/icon";
 import { ChecklistEntryItem, ItemStatus } from "~/generated/graphql";
 import styles from "./entry-item-row.module.css";
 

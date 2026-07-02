@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@sun/components";
-import Icon from "~/components/icon";
+import Icon from "~/components/shared/icon";
 import styles from "./template-list.module.css";
 
 type TemplateListProps = {

@@ -4,7 +4,7 @@ import {
   MutationResult,
   ServerRedirectError,
 } from "@sun/ssr";
-import CreateTemplateForm from "~/components/create-template-form";
+import CreateTemplateForm from "~/components/templates/create-template-form";
 import { mutateCreateChecklistTemplate } from "~/utils/api";
 import styles from "./create-template-page.module.css";
 

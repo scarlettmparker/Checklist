@@ -13,7 +13,7 @@ import {
 } from "~/generated/graphql";
 import { fetchLocateChecklistItem, mutateSaveChecklistItem } from "~/utils/api";
 import { Breadcrumb, Skeleton, useBreadcrumbContext } from "@sun/components";
-import EditItemForm from "~/components/edit-item-form";
+import EditItemForm from "~/components/items/edit-item-form";
 import styles from "./edit-item-page.module.css";
 import { Card, CardBody } from "@sun/components";
 

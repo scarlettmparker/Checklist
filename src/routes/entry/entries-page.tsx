@@ -3,7 +3,7 @@ import { pageDataRegistry } from "@sun/ssr";
 import { ListChecklistEntriesQuery } from "~/generated/graphql";
 import { fetchListChecklistEntries } from "~/utils/api";
 import { Skeleton } from "@sun/components";
-import EntryList from "~/components/entry-list";
+import EntryList from "~/components/entry/entry-list";
 import styles from "./entries-page.module.css";
 
 const EntriesPage = () => {

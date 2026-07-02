@@ -12,10 +12,10 @@ import {
 } from "@sun/components";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { ChecklistEntryItem, ItemStatus } from "~/generated/graphql";
-import EntryItemRow from "~/components/entry-item-row";
+import EntryItemRow from "~/components/entry/entry-item-row";
 import EntryAddItemsPicker, {
   type PickerItem,
-} from "~/components/entry-add-items-picker";
+} from "~/components/entry/entry-add-items-picker";
 import {
   addEntryItem,
   removeEntryItem,
