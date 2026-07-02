@@ -46,3 +46,7 @@
 .no_items {
   margin: 0;
 }
+
+.title {
+  position: relative;
+}

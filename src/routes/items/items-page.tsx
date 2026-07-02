@@ -20,24 +20,25 @@ const ItemsPage = () => {
     <div className={styles.items_layout}>
       <div className={styles.items_list_panel}>
         <Suspense fallback={<ItemListSkeleton />}>
-          <ItemList pattern="checklist" />
+          <ItemList pattern="checklist">
+            <Link
+              to={`/items/create?from=${encodeURIComponent(location.pathname)}`}
+              className={styles.create_item_button}
+            >
+              <Button title={t("create-new-item-label")}>
+                <PlusIcon
+                  className={styles.create_item_icon}
+                  width={ICON_SIZE}
+                  height={ICON_SIZE}
+                />
+                <p>{t("create-new-item-label")}</p>
+              </Button>
+            </Link>
+          </ItemList>
         </Suspense>
       </div>
       <div className={styles.items_detail_panel}>
         {outlet ?? <ItemDetailPlaceholder />}
-        <Link
-          to={`/items/create?from=${encodeURIComponent(location.pathname)}`}
-          className={styles.create_item_button}
-        >
-          <Button title={t("create-new-item-label")}>
-            <PlusIcon
-              className={styles.create_item_icon}
-              width={ICON_SIZE}
-              height={ICON_SIZE}
-            />
-            <p>{t("create-new-item-label")}</p>
-          </Button>
-        </Link>
       </div>
     </div>
   );

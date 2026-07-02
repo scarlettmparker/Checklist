@@ -6,6 +6,7 @@ import Icon from "~/components/icon";
 import styles from "./item-card.module.css";
 import { MarkdownViewer } from "@sun/components";
 import { Link } from "react-router-dom";
+import { formatDate } from "@sun/utils";
 
 type ItemCardProps = {
   /**
@@ -55,12 +56,12 @@ const ItemCard = ({ id, pattern }: ItemCardProps) => {
 
         <label>{t("created-at")}</label>
         <p className={styles.detail_value}>
-          {item.createdAt ? String(item.createdAt) : "-"}
+          {formatDate(item.createdAt)}
         </p>
 
         <label>{t("updated-at")}</label>
         <p className={styles.detail_value}>
-          {item.updatedAt ? String(item.updatedAt) : "-"}
+          {formatDate(item.updatedAt)}
         </p>
       </CardBody>
     </Card>

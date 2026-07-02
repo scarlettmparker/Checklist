@@ -26,12 +26,12 @@ type ItemListProps = {
    * Route pattern used by getPageData.
    */
   pattern: string;
-};
+} & React.PropsWithChildren;
 
 /**
  * Displays checklist items in a card list with edit dropdown and double-click.
  */
-const ItemList = ({ pattern }: ItemListProps) => {
+const ItemList = ({ pattern, children }: ItemListProps) => {
   const { t } = useTranslation("items");
   const navigate = useNavigate();
   const { data } = getPageData<
@@ -46,7 +46,10 @@ const ItemList = ({ pattern }: ItemListProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("items-title")}</CardTitle>
+        <CardTitle className={styles.title}>
+          {t("items-title")}
+          {children}
+        </CardTitle>
       </CardHeader>
       <CardBody className={styles.list_body}>
         {items.length === 0 ? (

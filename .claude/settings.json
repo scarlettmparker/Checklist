@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /home/scarlettp/Desktop/GitHub -type d -name \"dionysus-graphql\" 2>/dev/null)",
+      "Read(//home/scarlettp/Desktop/GitHub/**)",
+      "Bash(grep -n \"createdAt\\\\|updatedAt\\\\|String\\(\" src/components/template-details-card/template-details-card.tsx)",
+      "Bash(grep -n \"createdAt\\\\|updatedAt\\\\|String\\(\" src/components/entry-header/entry-header.tsx)"
+    ]
+  }
+}
