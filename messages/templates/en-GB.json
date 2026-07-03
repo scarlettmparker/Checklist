@@ -25,5 +25,16 @@
   "remote-objects": "Linked objects",
   "none": "None",
   "no-description": "No description",
-  "no-details": "No details attached to this template yet."
+  "no-details": "No details attached to this template yet.",
+  "edit-label": "Edit",
+  "edit-template-title": "Edit template",
+  "save-title": "Save changes",
+  "save-label": "Save",
+  "saving-title": "Saving...",
+  "saving-label": "Saving...",
+  "add-item": "Add item",
+  "remove-item-label": "Remove",
+  "archive-label": "Archive",
+  "archive-template-title": "Archive template",
+  "archive-template-body": "Archive {{name}}? This template will be archived."
 }

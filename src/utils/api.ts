@@ -33,6 +33,8 @@ import {
   CreateChecklistEntryMutation,
   CreateChecklistFromTemplateDocument,
   CreateChecklistFromTemplateMutation,
+  CreateChecklistFromTemplatesDocument,
+  CreateChecklistFromTemplatesMutation,
   SaveChecklistEntryDocument,
   SaveChecklistEntryMutation,
   ChecklistEntryInput,
@@ -97,6 +99,7 @@ type OperationRegistry = {
     saveCategory: DocumentNode;
     createChecklist: DocumentNode;
     createChecklistFromTemplate: DocumentNode;
+    createChecklistFromTemplates: DocumentNode;
     saveChecklist: DocumentNode;
     completeChecklist: DocumentNode;
     archiveChecklist: DocumentNode;
@@ -139,6 +142,7 @@ const operationRegistry: OperationRegistry = {
     saveCategory: SaveChecklistCategoryDocument,
     createChecklist: CreateChecklistEntryDocument,
     createChecklistFromTemplate: CreateChecklistFromTemplateDocument,
+    createChecklistFromTemplates: CreateChecklistFromTemplatesDocument,
     saveChecklist: SaveChecklistEntryDocument,
     completeChecklist: CompleteChecklistDocument,
     archiveChecklist: ArchiveChecklistDocument,
@@ -450,6 +454,14 @@ export async function mutateCreateChecklistFromTemplate(templateId: string) {
   return fetchGraphQLData<CreateChecklistFromTemplateMutation>(
     "checklistMutations.createChecklistFromTemplate",
     { templateId },
+  );
+}
+
+/** Creates a checklist entry composed from multiple templates. */
+export async function mutateCreateChecklistFromTemplates(templateIds: string[]) {
+  return fetchGraphQLData<CreateChecklistFromTemplatesMutation>(
+    "checklistMutations.createChecklistFromTemplates",
+    { templateIds },
   );
 }
 

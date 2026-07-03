@@ -4,6 +4,21 @@
   gap: var(--lg);
 }
 
+.header {
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: var(--md);
+}
+
+.badge {
+  font-weight: var(--bold);
+}
+
 .body {
   display: flex;
   flex-direction: column;
@@ -17,6 +32,10 @@
 .footer {
   display: flex;
   gap: var(--md);
+}
+
+.pagination {
+  margin-top: var(--sm);
 }
 
 .picker_header {

@@ -14,6 +14,9 @@ import {
   MarkdownEditor,
 } from "@sun/components";
 import Icon, { ICON_NAMES, FALLBACK_ICON } from "~/components/shared/icon";
+import CategorySelect, {
+  CATEGORY_NONE,
+} from "~/components/categories/category-select";
 import { getPageData } from "@sun/ssr";
 import { LocateChecklistItemQuery } from "~/generated/graphql";
 import { saveChecklistItem } from "~/server/actions/checklist-item";
@@ -57,11 +60,14 @@ const EditItemForm = ({ itemId, pattern }: EditItemFormProps) => {
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
     const icon = formData.get("icon") as string;
+    const categoryIdRaw = formData.get("categoryId") as string;
+    const categoryId =
+      categoryIdRaw && categoryIdRaw !== CATEGORY_NONE ? categoryIdRaw : undefined;
     const result = await saveChecklistItem(
       itemId,
       name,
       description,
-      undefined,
+      categoryId,
       icon,
     );
 
@@ -109,6 +115,10 @@ const EditItemForm = ({ itemId, pattern }: EditItemFormProps) => {
           </FormItem>
         </FormField>
       </div>
+      <FormField name="categoryId">
+        <FormLabel>{t("category-id")}</FormLabel>
+        <CategorySelect name="categoryId" defaultValue={item.categoryId} />
+      </FormField>
       <FormField name="description">
         <FormLabel>{t("description")}</FormLabel>
         <FormItem>

@@ -1,52 +1,66 @@
-import { Suspense, useState } from "react";
+import { Suspense, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   makeCacheKey,
   MutationResult,
   mutationRegistry,
+  pageDataRegistry,
   ServerRedirectError,
 } from "@sun/ssr";
 import {
+  Breadcrumb,
   Card,
   CardBody,
   CardHeader,
   CardTitle,
   Skeleton,
+  useBreadcrumbContext,
 } from "@sun/components";
 import {
+  ListChecklistTemplateItemsQuery,
+  ListChecklistTemplatesQuery,
+} from "~/generated/graphql";
+import {
+  fetchListChecklistTemplateItems,
+  fetchListChecklistTemplates,
   mutateCreateChecklistEntry,
   mutateCreateChecklistFromTemplate,
+  mutateCreateChecklistFromTemplates,
 } from "~/utils/api";
-import TemplatePicker from "~/components/entry/template-picker";
-import { createEntryFromTemplate } from "~/server/actions/checklist-entry";
+import ComposeFromTemplates from "~/components/entry/compose-from-templates";
 import styles from "./create-entry-from-template-page.module.css";
 
+const PAGE = "entry/create";
+
 /**
- * "Create entry from template": lists templates; selecting one creates an entry
- * seeded from it and lands in the new entry.
+ * "Create from templates": multi-select templates to compose a checklist from,
+ * with a live preview of the merged items.
  */
 const CreateEntryFromTemplatePage = () => {
   const { t } = useTranslation("entry");
-  const [creating, setCreating] = useState(false);
+  const { setBreadcrumbs, setCurrent } = useBreadcrumbContext();
+
+  useEffect(() => {
+    setBreadcrumbs([
+      { label: t("entry-title"), href: "/" },
+      { label: t("compose-title"), href: "/entry/create" },
+    ]);
+    setCurrent("/entry/create");
+  }, [setBreadcrumbs, setCurrent, t]);
 
   return (
     <div className={styles.layout}>
+      <Breadcrumb />
       <Card>
         <CardHeader>
-          <CardTitle>{t("create-from-template")}</CardTitle>
+          <CardTitle>{t("compose-title")}</CardTitle>
         </CardHeader>
         <CardBody>
+          <p className={styles.description}>{t("compose-description")}</p>
           <Suspense
-            fallback={<Skeleton style={{ width: "100%", height: "8rem" }} />}
+            fallback={<Skeleton style={{ width: "100%", height: "10rem" }} />}
           >
-            <TemplatePicker
-              disabled={creating}
-              onCreate={(templateId) => {
-                setCreating(true);
-                createEntryFromTemplate(templateId);
-              }}
-              t={t}
-            />
+            <ComposeFromTemplates pattern={PAGE} />
           </Suspense>
         </CardBody>
       </Card>
@@ -55,22 +69,49 @@ const CreateEntryFromTemplatePage = () => {
 };
 
 /**
+ * Loads every template and its items so the composer can preview a merged set
+ * without client-side RPC.
+ */
+async function getComposeData(): Promise<Record<string, unknown> | null> {
+  try {
+    const templatesResult = await fetchListChecklistTemplates();
+    const templates =
+      (templatesResult?.data as ListChecklistTemplatesQuery | undefined)
+        ?.checklistQueries.listTemplates ?? [];
+
+    const templateItems: Record<string, unknown> = {};
+    for (const template of templates) {
+      const result = await fetchListChecklistTemplateItems(template.id, {
+        page: 0,
+        size: 100,
+      });
+      const items =
+        (result?.data as ListChecklistTemplateItemsQuery | undefined)
+          ?.checklistQueries.templateItems?.items ?? [];
+      templateItems[template.id] = items;
+    }
+
+    return { composeData: { templates, templateItems } };
+  } catch (error) {
+    console.error("Failed to fetch compose data:", error);
+    return { composeData: { templates: [], templateItems: {} } };
+  }
+}
+
+/**
  * Handler for creating a blank entry; redirects into the new entry and
  * invalidates the entries list.
  */
 async function handleCreateEntry(
   body: Record<string, unknown>,
 ): Promise<MutationResult> {
-  const result = await mutateCreateChecklistEntry(
-    body.name as string | undefined,
-  );
-  const data = result.data?.checklistMutations
-    .createChecklist as MutationResult;
+  const result = await mutateCreateChecklistEntry(body.name as string | undefined);
+  const data = result.data?.checklistMutations.createChecklist as MutationResult;
 
   if (data?.__typename === "QuerySuccess" && data.id) {
     throw new ServerRedirectError(
       `/entry/${data.id}`,
-      makeCacheKey("entry:entries", {}),
+      makeCacheKey("entry:entry", {}),
     );
   }
 
@@ -81,8 +122,8 @@ async function handleCreateEntry(
 }
 
 /**
- * Handler for creating an entry from a template; redirects into the new
- * (pre-populated) entry and invalidates the entries list.
+ * Handler for creating an entry from a single template; redirects into the new
+ * entry and invalidates the entries list.
  */
 async function handleCreateEntryFromTemplate(
   body: Record<string, unknown>,
@@ -95,7 +136,7 @@ async function handleCreateEntryFromTemplate(
   if (data?.__typename === "QuerySuccess" && data.id) {
     throw new ServerRedirectError(
       `/entry/${data.id}`,
-      makeCacheKey("entry:entries", {}),
+      makeCacheKey("entry:entry", {}),
     );
   }
 
@@ -106,13 +147,43 @@ async function handleCreateEntryFromTemplate(
 }
 
 /**
- * Register the entry-creation mutation handlers.
+ * Handler for composing an entry from multiple templates; redirects into the new
+ * entry and invalidates the entries list.
+ */
+async function handleCreateEntryFromTemplates(
+  body: Record<string, unknown>,
+): Promise<MutationResult> {
+  const templateIds = (body.templateIds as string[]) ?? [];
+  const result = await mutateCreateChecklistFromTemplates(templateIds);
+  const data = result.data?.checklistMutations
+    .createChecklistFromTemplates as MutationResult;
+
+  if (data?.__typename === "QuerySuccess" && data.id) {
+    throw new ServerRedirectError(
+      `/entry/${data.id}`,
+      makeCacheKey("entry:entry", {}),
+    );
+  }
+
+  return {
+    __typename: "StandardError",
+    message: result.error || "Failed to create entry from templates.",
+  };
+}
+
+/**
+ * Register the compose data loader and entry-creation mutation handlers.
  */
 export function registerCreateEntryMutationHandlers(): void {
+  pageDataRegistry.registerPageDataLoader(PAGE, getComposeData);
   mutationRegistry.registerMutationHandler("entry/create", handleCreateEntry);
   mutationRegistry.registerMutationHandler(
     "entry/createFromTemplate",
     handleCreateEntryFromTemplate,
+  );
+  mutationRegistry.registerMutationHandler(
+    "entry/createFromTemplates",
+    handleCreateEntryFromTemplates,
   );
 }
 

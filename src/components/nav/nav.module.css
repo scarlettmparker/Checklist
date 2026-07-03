@@ -1,0 +1,15 @@
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--lg);
+  padding: var(--lg) var(--xl);
+  flex-wrap: wrap;
+}
+
+.link {
+  text-decoration: none;
+}
+
+.button {
+  padding: var(--sm) var(--lg);
+}

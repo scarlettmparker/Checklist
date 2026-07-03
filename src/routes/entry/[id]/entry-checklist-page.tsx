@@ -6,6 +6,7 @@ import {
   MutationResult,
   mutationRegistry,
   pageDataRegistry,
+  ServerRedirectError,
 } from "@sun/ssr";
 import { Breadcrumb, Skeleton } from "@sun/components";
 import {
@@ -19,6 +20,8 @@ import {
   fetchListChecklistItems,
   fetchLocateChecklistEntry,
   mutateAddChecklistItem,
+  mutateArchiveChecklist,
+  mutateCompleteChecklist,
   mutateRemoveChecklistItem,
   mutateSetChecklistItemStatus,
 } from "~/utils/api";
@@ -111,6 +114,22 @@ async function getEntryItemsData(
 }
 
 /**
+ * Default used when no items are returned (non-null sentinel so the prefetched
+ * picker key never throws "No data returned").
+ */
+const EMPTY_CHECKLIST_ITEMS = {
+  items: [],
+  pageInfo: {
+    page: 0,
+    size: 0,
+    totalPages: 0,
+    totalCount: 0,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  },
+};
+
+/**
  * Loads all checklist items for the add-items picker.
  */
 async function getChecklistItemsForPicker(): Promise<Record<
@@ -122,14 +141,12 @@ async function getChecklistItemsForPicker(): Promise<Record<
     if (result?.success && result.data) {
       const items = (result.data as ListChecklistItemsQuery).checklistQueries
         .items;
-      if (items) {
-        return { checklistItems: items };
-      }
+      return { checklistItems: items ?? EMPTY_CHECKLIST_ITEMS };
     }
-    return null;
+    return { checklistItems: EMPTY_CHECKLIST_ITEMS };
   } catch (error) {
     console.error("Failed to fetch checklist items for picker:", error);
-    return null;
+    return { checklistItems: EMPTY_CHECKLIST_ITEMS };
   }
 }
 
@@ -204,6 +221,46 @@ export function registerEntryDataAndMutations(): void {
           message: result.error || "Failed to set item status.",
         }),
         invalidated: [makeCacheKey("entry/:id:entryItems", { id: entryId })],
+      };
+    },
+  );
+
+  mutationRegistry.registerMutationHandler(
+    "entry/completeChecklist",
+    async (body) => {
+      const entryId = body?.entryId as string;
+      const result = await mutateCompleteChecklist(entryId);
+      invalidatePageData([makeCacheKey("entry/:id:entry", { id: entryId })]);
+      return {
+        ...((result.data?.checklistMutations
+          .completeChecklist as MutationResult) ?? {
+          __typename: "StandardError",
+          message: result.error || "Failed to complete checklist.",
+        }),
+        invalidated: [makeCacheKey("entry/:id:entry", { id: entryId })],
+      };
+    },
+  );
+
+  mutationRegistry.registerMutationHandler(
+    "entry/archiveChecklist",
+    async (body) => {
+      const entryId = body?.entryId as string;
+      const result = await mutateArchiveChecklist(entryId);
+      const data = result.data?.checklistMutations
+        .archiveChecklist as MutationResult;
+
+      if (data?.__typename === "QuerySuccess") {
+        throw new ServerRedirectError("/", [
+          makeCacheKey("entry:entry", {}),
+          makeCacheKey("entry/:id:entry", { id: entryId }),
+          makeCacheKey("entry/:id:entryItems", { id: entryId }),
+        ]);
+      }
+
+      return {
+        __typename: "StandardError",
+        message: result.error || "Failed to archive checklist.",
       };
     },
   );

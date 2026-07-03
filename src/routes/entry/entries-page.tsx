@@ -20,6 +20,10 @@ const EntriesPage = () => {
 
 /**
  * Server-side data fetching function for checklist entries.
+ *
+ * Always returns a non-null entry list so the page never throws
+ * "No data returned for key: entry" when the backend returns null or the
+ * request transiently fails (which crashed the first preview load).
  */
 async function getEntriesData(): Promise<Record<string, unknown> | null> {
   try {
@@ -27,14 +31,12 @@ async function getEntriesData(): Promise<Record<string, unknown> | null> {
     if (result?.data && result.success) {
       const entries = (result.data as ListChecklistEntriesQuery)
         .checklistQueries.listEntries;
-      if (entries) {
-        return { entry: entries };
-      }
+      return { entry: entries ?? [] };
     }
-    return null;
+    return { entry: [] };
   } catch (error) {
     console.error("Failed to fetch checklist entries:", error);
-    return null;
+    return { entry: [] };
   }
 }
 

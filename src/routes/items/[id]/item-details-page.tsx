@@ -1,6 +1,12 @@
 import { Suspense } from "react";
 import { useParams } from "react-router-dom";
-import { pageDataRegistry } from "@sun/ssr";
+import {
+  makeCacheKey,
+  MutationResult,
+  mutationRegistry,
+  pageDataRegistry,
+  ServerRedirectError,
+} from "@sun/ssr";
 import {
   LocateChecklistItemQuery,
   LocateChecklistItemDetailsQuery,
@@ -8,6 +14,7 @@ import {
 import {
   fetchLocateChecklistItem,
   fetchLocateChecklistItemDetails,
+  mutateRetireChecklistItem,
 } from "~/utils/api";
 import ItemCard, { ItemCardSkeleton } from "~/components/items/item-card";
 import ItemDetailsCard, {
@@ -111,6 +118,40 @@ export function registerChecklistItemDetailsDataLoaders(): void {
     if (!id) return null;
     return getChecklistItemDetailsData(id);
   });
+}
+
+/**
+ * Handler for retiring (archiving) a checklist item; redirects to the items
+ * list and invalidates every paginated list entry plus the item's detail.
+ */
+async function handleRetireItem(
+  body: Record<string, unknown>,
+): Promise<MutationResult> {
+  const id = body?.id as string;
+  const result = await mutateRetireChecklistItem(id);
+  const data = result.data?.checklistMutations.retireItem as MutationResult;
+
+  if (data?.__typename === "QuerySuccess" || data?.__typename === "Redirect") {
+    throw new ServerRedirectError("/items", [
+      makeCacheKey("checklist:checklistItems", { page: "*" }),
+      makeCacheKey("checklist/:id:item", { id }),
+    ]);
+  }
+
+  return {
+    __typename: "StandardError",
+    message: result.error || "Failed to archive item.",
+  };
+}
+
+/**
+ * Register the retire-item mutation handler.
+ */
+export function registerRetireChecklistItemMutationHandler(): void {
+  mutationRegistry.registerMutationHandler(
+    "checklist/retireItem",
+    handleRetireItem,
+  );
 }
 
 export default ItemDetailsPage;

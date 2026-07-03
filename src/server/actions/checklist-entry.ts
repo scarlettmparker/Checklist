@@ -52,3 +52,28 @@ export async function setEntryItemStatus(
 ): Promise<MutationResult> {
   return executeMutation("entry/setItemStatus", { entryId, itemId, status });
 }
+
+/** Marks an entry as complete (idempotent; cannot be un-completed). */
+export async function completeChecklistEntry(
+  entryId: string,
+): Promise<MutationResult> {
+  return executeMutation("entry/completeChecklist", { entryId });
+}
+
+/** Archives an entry. */
+export async function archiveEntry(entryId: string): Promise<MutationResult> {
+  return executeMutation("entry/archiveChecklist", { entryId });
+}
+
+/** Creates a checklist entry composed from multiple templates; redirects. */
+export async function createEntryFromTemplates(
+  templateIds: string[],
+): Promise<MutationResult> {
+  const result = await executeMutation("entry/createFromTemplates", {
+    templateIds,
+  });
+  if (result.__typename === "Redirect") {
+    window.location.assign(result.redirectTo);
+  }
+  return result;
+}

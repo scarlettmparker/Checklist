@@ -168,6 +168,7 @@ type ChecklistMutations {
 
   createChecklist(name: String): QueryResult
   createChecklistFromTemplate(templateId: ID!): QueryResult
+  createChecklistFromTemplates(templateIds: [ID!]!): QueryResult
   saveChecklist(input: ChecklistEntryInput!): QueryResult
   completeChecklist(id: ID!): QueryResult
   archiveChecklist(id: ID!): QueryResult

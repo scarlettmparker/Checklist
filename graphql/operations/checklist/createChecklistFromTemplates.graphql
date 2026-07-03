@@ -1,0 +1,15 @@
+mutation createChecklistFromTemplates($templateIds: [ID!]!) {
+  checklistMutations {
+    createChecklistFromTemplates(templateIds: $templateIds) {
+      ... on QuerySuccess {
+      __typename
+      message
+        id
+      }
+      ... on StandardError {
+      __typename
+      message
+      }
+    }
+  }
+}

@@ -7,8 +7,10 @@ import { registerChecklistItemDetailsDataLoaders } from "~/routes/items/[id]/ite
 import { registerEditItemPageHandlers } from "~/routes/items/edit";
 import { registerChecklistTemplatesDataLoader } from "~/routes/templates/templates-page";
 import { registerChecklistTemplateDetailsDataLoaders } from "~/routes/templates/[id]/template-details-page";
+import { registerEditTemplatePageHandlers } from "~/routes/templates/edit";
 import { registerChecklistEntriesDataLoader } from "~/routes/entry/entries-page";
 import { registerEntryDataAndMutations } from "~/routes/entry/[id]/entry-checklist-page";
+import { registerCategoriesDataAndMutation } from "~/routes/categories/categories-page";
 import "~/utils/configure-framework";
 
 registerChecklistItemsDataLoader();
@@ -16,5 +18,7 @@ registerChecklistItemDetailsDataLoaders();
 registerEditItemPageHandlers();
 registerChecklistTemplatesDataLoader();
 registerChecklistTemplateDetailsDataLoaders();
+registerEditTemplatePageHandlers();
 registerChecklistEntriesDataLoader();
 registerEntryDataAndMutations();
+registerCategoriesDataAndMutation();

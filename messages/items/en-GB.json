@@ -32,5 +32,9 @@
   "remote-objects": "Linked objects",
   "no-description": "No description",
   "none": "None",
-  "no-details": "No details attached to this item yet."
+  "no-details": "No details attached to this item yet.",
+  "archive-label": "Archive",
+  "archive-item-title": "Archive item",
+  "archive-item-body": "Archive {{name}}? This item will be retired.",
+  "confirm-label": "Archive"
 }

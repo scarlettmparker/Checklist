@@ -2,6 +2,7 @@ import styles from "./layout.module.css";
 import { getBackgroundHex } from "@sun/utils";
 import { useEffect, useState } from "react";
 import { BreadcrumbProvider } from "@sun/components";
+import Nav from "~/components/nav";
 
 type LayoutProps = React.PropsWithChildren;
 
@@ -20,7 +21,10 @@ const Layout = (props: LayoutProps) => {
 
   return (
     <main style={{ backgroundColor: backgroundColour }} className={styles.main}>
-      <BreadcrumbProvider>{children}</BreadcrumbProvider>
+      <BreadcrumbProvider>
+        <Nav />
+        {children}
+      </BreadcrumbProvider>
     </main>
   );
 };

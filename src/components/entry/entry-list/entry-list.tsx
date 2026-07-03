@@ -49,9 +49,12 @@ const EntryList = () => {
           <EntryCard key={entry.id} entry={entry} />
         ))}
       </Carousel>
-      <Button className={styles.create_button} onClick={() => createEntry()}>
-        {t("create-entry-label")}
-      </Button>
+      <div className={styles.create_buttons}>
+        <Button onClick={() => createEntry()}>{t("create-entry-label")}</Button>
+        <Link to="/entry/create">
+          <Button variant="secondary">{t("create-from-template")}</Button>
+        </Link>
+      </div>
     </div>
   );
 };

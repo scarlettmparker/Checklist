@@ -5,6 +5,20 @@
   gap: var(--md);
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lg);
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.actions {
+  display: flex;
+  gap: var(--md);
+}
+
 .title {
   margin-bottom: 0;
 }

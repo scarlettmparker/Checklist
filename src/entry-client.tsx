@@ -74,7 +74,7 @@ function AppWithI18n() {
 // Initialize i18n on the client with translations injected from the server.
 const locale = window.__locale__ || "en";
 const initialPage = getPageName(window.location.pathname);
-const NAMESPACES = ["home", "items", "templates", "entry"];
+const NAMESPACES = ["home", "items", "templates", "entry", "categories"];
 
 i18n
   .use(initReactI18next)

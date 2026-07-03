@@ -1,5 +1,5 @@
 import { Suspense, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import {
   makeCacheKey,
   MutationResult,
@@ -24,15 +24,25 @@ const PAGE = "items/:id/edit";
  */
 const EditItemPage = () => {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
   const { setBreadcrumbs, setCurrent } = useBreadcrumbContext();
 
   useEffect(() => {
-    setBreadcrumbs([
-      { label: "Items", href: "/items" },
-      { label: "Edit", href: `/items/${id}/edit` },
-    ]);
+    const from = searchParams.get("from") || "";
+    const breadcrumbs =
+      from.startsWith("/entry/") && id
+        ? [
+            { label: "Items", href: "/items" },
+            { label: "Checklist", href: from },
+            { label: "Edit", href: `/items/${id}/edit` },
+          ]
+        : [
+            { label: "Items", href: "/items" },
+            { label: "Edit", href: `/items/${id}/edit` },
+          ];
+    setBreadcrumbs(breadcrumbs);
     setCurrent(`/items/${id}/edit`);
-  }, [id, setBreadcrumbs, setCurrent]);
+  }, [id, searchParams, setBreadcrumbs, setCurrent]);
 
   if (!id) {
     return null;

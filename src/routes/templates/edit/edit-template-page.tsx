@@ -1,0 +1,215 @@
+import { Suspense, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import {
+  makeCacheKey,
+  MutationResult,
+  mutationRegistry,
+  pageDataRegistry,
+} from "@sun/ssr";
+import { Breadcrumb, Card, CardBody, Skeleton, useBreadcrumbContext } from "@sun/components";
+import {
+  ListChecklistItemsQuery,
+  ListChecklistTemplateItemsQuery,
+  LocateChecklistTemplateQuery,
+} from "~/generated/graphql";
+import {
+  fetchListChecklistItems,
+  fetchListChecklistTemplateItems,
+  fetchLocateChecklistTemplate,
+  mutateAddChecklistTemplateItem,
+  mutateRemoveChecklistTemplateItem,
+  mutateSaveChecklistTemplate,
+} from "~/utils/api";
+import EditTemplateForm from "~/components/templates/edit-template-form";
+import styles from "./edit-template-page.module.css";
+
+const PAGE = "templates/:id/edit";
+
+/**
+ * Page for editing a template's name/description and managing its items.
+ */
+const EditTemplatePage = () => {
+  const { id } = useParams<{ id: string }>();
+  const { setBreadcrumbs, setCurrent } = useBreadcrumbContext();
+
+  useEffect(() => {
+    setBreadcrumbs([
+      { label: "Templates", href: "/templates" },
+      { label: "Edit", href: `/templates/${id}/edit` },
+    ]);
+    setCurrent(`/templates/${id}/edit`);
+  }, [id, setBreadcrumbs, setCurrent]);
+
+  if (!id) {
+    return null;
+  }
+
+  return (
+    <div className={styles.layout}>
+      <Breadcrumb />
+      <Card>
+        <CardBody>
+          <Suspense
+            fallback={<Skeleton style={{ width: "100%", height: "12rem" }} />}
+          >
+            <EditTemplateForm templateId={id} pattern={PAGE} />
+          </Suspense>
+        </CardBody>
+      </Card>
+    </div>
+  );
+};
+
+const EMPTY_TEMPLATE_ITEMS = {
+  items: [],
+  pageInfo: {
+    page: 0,
+    size: 0,
+    totalPages: 0,
+    totalCount: 0,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  },
+};
+
+async function getTemplateData(
+  id: string,
+): Promise<Record<string, unknown> | null> {
+  try {
+    const result = await fetchLocateChecklistTemplate(id);
+    if (result?.success && result.data) {
+      const template = (result.data as LocateChecklistTemplateQuery)
+        .checklistQueries.template;
+      if (template) {
+        return { template };
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error("Failed to fetch checklist template:", error);
+    return null;
+  }
+}
+
+async function getTemplateItemsData(
+  id: string,
+): Promise<Record<string, unknown> | null> {
+  try {
+    const result = await fetchListChecklistTemplateItems(id, {
+      page: 0,
+      size: 100,
+    });
+    if (result?.success && result.data) {
+      const templateItems = (result.data as ListChecklistTemplateItemsQuery)
+        .checklistQueries.templateItems;
+      return { templateItems: templateItems ?? EMPTY_TEMPLATE_ITEMS };
+    }
+    return { templateItems: EMPTY_TEMPLATE_ITEMS };
+  } catch (error) {
+    console.error("Failed to fetch checklist template items:", error);
+    return { templateItems: EMPTY_TEMPLATE_ITEMS };
+  }
+}
+
+async function getChecklistItemsForPicker(): Promise<Record<
+  string,
+  unknown
+> | null> {
+  try {
+    const result = await fetchListChecklistItems();
+    if (result?.success && result.data) {
+      const items = (result.data as ListChecklistItemsQuery).checklistQueries
+        .items;
+      if (items) {
+        return { checklistItems: items };
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error("Failed to fetch checklist items for picker:", error);
+    return null;
+  }
+}
+
+/**
+ * Register the edit-template loaders and item mutation handlers.
+ */
+export function registerEditTemplatePageHandlers(): void {
+  pageDataRegistry.registerPageDataLoader(PAGE, async (params) => {
+    const id = params?.id as string;
+    if (!id) return null;
+    return getTemplateData(id);
+  });
+  pageDataRegistry.registerPageDataLoader(PAGE, async (params) => {
+    const id = params?.id as string;
+    if (!id) return null;
+    return getTemplateItemsData(id);
+  });
+  pageDataRegistry.registerPageDataLoader(PAGE, async (params) => {
+    const id = params?.id as string;
+    if (!id) return null;
+    return getChecklistItemsForPicker();
+  });
+
+  mutationRegistry.registerMutationHandler("templates/save", async (body) => {
+    const id = body?.id as string;
+    const result = await mutateSaveChecklistTemplate(
+      id,
+      body?.name as string,
+      body?.description as string | undefined,
+    );
+    const data = result.data?.checklistMutations.saveTemplate as MutationResult;
+    return {
+      ...(data ?? {
+        __typename: "StandardError",
+        message: result.error || "Failed to save template.",
+      }),
+      invalidated: [
+        makeCacheKey("templates/:id:template", { id }),
+        makeCacheKey("templates/:id:templateItems", { id }),
+      ],
+    };
+  });
+
+  mutationRegistry.registerMutationHandler(
+    "templates/addItem",
+    async (body) => {
+      const templateId = body?.templateId as string;
+      const itemId = body?.itemId as string;
+      const result = await mutateAddChecklistTemplateItem(templateId, itemId);
+      const data = result.data?.checklistMutations
+        .addTemplateItem as MutationResult;
+      return {
+        ...(data ?? {
+          __typename: "StandardError",
+          message: result.error || "Failed to add item.",
+        }),
+        invalidated: [
+          makeCacheKey("templates/:id:templateItems", { id: templateId }),
+        ],
+      };
+    },
+  );
+
+  mutationRegistry.registerMutationHandler(
+    "templates/removeItem",
+    async (body) => {
+      const templateId = body?.templateId as string;
+      const itemId = body?.itemId as string;
+      const result = await mutateRemoveChecklistTemplateItem(templateId, itemId);
+      const data = result.data?.checklistMutations
+        .removeTemplateItem as MutationResult;
+      return {
+        ...(data ?? {
+          __typename: "StandardError",
+          message: result.error || "Failed to remove item.",
+        }),
+        invalidated: [
+          makeCacheKey("templates/:id:templateItems", { id: templateId }),
+        ],
+      };
+    },
+  );
+}
+
+export default EditTemplatePage;

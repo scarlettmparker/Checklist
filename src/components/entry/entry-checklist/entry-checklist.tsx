@@ -8,6 +8,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  Pagination,
   Skeleton,
 } from "@sun/components";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -18,10 +19,13 @@ import EntryAddItemsPicker, {
 } from "~/components/entry/entry-add-items-picker";
 import {
   addEntryItem,
+  completeChecklistEntry,
   removeEntryItem,
   setEntryItemStatus,
 } from "~/server/actions/checklist-entry";
 import styles from "./entry-checklist.module.css";
+
+const PAGE_SIZE = 10;
 
 type EntryChecklistProps = {
   /**
@@ -32,30 +36,44 @@ type EntryChecklistProps = {
    * Items fetched for the entry.
    */
   items: ChecklistEntryItem[];
+  /**
+   * Whether the entry has been completed (checkboxes lock).
+   */
+  completed: boolean;
 };
 
 /**
  * Interactive checklist for an entry. Holds items in local state for optimistic
- * updates. The picker selects items and commits them via its own "Add selected"
- * button.
+ * updates, auto-completes the entry when every item is checked, and locks once
+ * completed.
  */
 const EntryChecklist = ({
   entryId,
   items: fetchedItems,
+  completed: fetchedCompleted,
 }: EntryChecklistProps) => {
   const { t } = useTranslation("entry");
   const [items, setItems] = useState<ChecklistEntryItem[]>(fetchedItems);
+  const [completed, setCompleted] = useState(fetchedCompleted);
   const [showPicker, setShowPicker] = useState(false);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     setItems(fetchedItems);
   }, [fetchedItems]);
+
+  useEffect(() => {
+    setCompleted(fetchedCompleted);
+  }, [fetchedCompleted]);
 
   const memberIds = new Set(items.map((i) => i.itemId));
   const invalidate = () =>
     invalidatePageData([makeCacheKey("entry/:id:entryItems", { id: entryId })]);
 
   const toggleStatus = (itemId: string) => {
+    if (completed) {
+      return;
+    }
     const current = items.find((i) => i.itemId === itemId);
     if (!current) {
       return;
@@ -64,10 +82,20 @@ const EntryChecklist = ({
       current.status === ItemStatus.Complete
         ? ItemStatus.NotStarted
         : ItemStatus.Complete;
-    setItems((prev) =>
-      prev.map((i) => (i.itemId === itemId ? { ...i, status: next } : i)),
+    const updated = items.map((i) =>
+      i.itemId === itemId ? { ...i, status: next } : i,
     );
+    setItems(updated);
     setEntryItemStatus(entryId, itemId, next);
+
+    if (
+      next === ItemStatus.Complete &&
+      updated.length > 0 &&
+      updated.every((i) => i.status === ItemStatus.Complete)
+    ) {
+      setCompleted(true);
+      completeChecklistEntry(entryId);
+    }
   };
 
   const handleAddItems = async (newItems: PickerItem[]) => {
@@ -75,9 +103,7 @@ const EntryChecklist = ({
       newItems.map(async (item) => {
         const result = await addEntryItem(entryId, item.id);
         const id =
-          result.__typename === "QuerySuccess"
-            ? (result.id ?? item.id)
-            : item.id;
+          result.__typename === "QuerySuccess" ? (result.id ?? item.id) : item.id;
         return {
           id,
           entryId,
@@ -97,25 +123,38 @@ const EntryChecklist = ({
   };
 
   const handleRemove = async (itemId: string) => {
+    if (completed) {
+      return;
+    }
     await removeEntryItem(entryId, itemId);
     setItems((prev) => prev.filter((i) => i.itemId !== itemId));
     invalidate();
   };
 
+  const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+  const current = Math.min(page, totalPages);
+  const start = (current - 1) * PAGE_SIZE;
+  const visible = items.slice(start, start + PAGE_SIZE);
+
   return (
     <div className={styles.container}>
       <Card>
-        <CardHeader>
-          <CardTitle>{t("checklist")}</CardTitle>
+        <CardHeader className={styles.header}>
+          <CardTitle className={styles.title}>
+            {t("checklist")}
+            {completed && <span className={styles.badge}>{t("completed")}</span>}
+          </CardTitle>
         </CardHeader>
         <CardBody className={styles.body}>
           {items.length === 0 ? (
             <p className={styles.empty}>{t("no-items")}</p>
           ) : (
-            items.map((item) => (
+            visible.map((item) => (
               <EntryItemRow
                 key={item.itemId}
                 item={item}
+                entryId={entryId}
+                disabled={completed}
                 onToggleStatus={toggleStatus}
                 onRemove={handleRemove}
               />
@@ -123,15 +162,25 @@ const EntryChecklist = ({
           )}
         </CardBody>
         <CardFooter className={styles.footer}>
-          <Button
-            variant="secondary"
-            className={styles.add_toggle}
-            onClick={() => setShowPicker((s) => !s)}
-          >
-            {t("add-items")}
-          </Button>
+          {!completed && (
+            <Button
+              variant="secondary"
+              className={styles.add_toggle}
+              onClick={() => setShowPicker((s) => !s)}
+            >
+              {t("add-items")}
+            </Button>
+          )}
         </CardFooter>
       </Card>
+      {items.length > PAGE_SIZE && (
+        <Pagination
+          className={styles.pagination}
+          page={current}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      )}
       {showPicker && (
         <Card>
           <CardHeader className={styles.picker_header}>

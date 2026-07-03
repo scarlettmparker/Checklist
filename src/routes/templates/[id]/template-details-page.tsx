@@ -1,6 +1,12 @@
 import { Suspense } from "react";
 import { useParams } from "react-router-dom";
-import { pageDataRegistry } from "@sun/ssr";
+import {
+  makeCacheKey,
+  MutationResult,
+  mutationRegistry,
+  pageDataRegistry,
+  ServerRedirectError,
+} from "@sun/ssr";
 import {
   ListChecklistTemplateItemsQuery,
   LocateChecklistTemplateDetailsQuery,
@@ -10,6 +16,7 @@ import {
   fetchListChecklistTemplateItems,
   fetchLocateChecklistTemplate,
   fetchLocateChecklistTemplateDetails,
+  mutateArchiveChecklistTemplate,
 } from "~/utils/api";
 import { Card, CardBody, Skeleton } from "@sun/components";
 import TemplateInfo from "~/components/templates/template-info";
@@ -159,6 +166,41 @@ export function registerChecklistTemplateDetailsDataLoaders(): void {
     if (!id) return null;
     return getTemplateDetailsData(id);
   });
+}
+
+/**
+ * Handler for archiving a template; redirects to the templates list and
+ * invalidates the list plus this template's detail keys.
+ */
+async function handleArchiveTemplate(
+  body: Record<string, unknown>,
+): Promise<MutationResult> {
+  const id = body?.id as string;
+  const result = await mutateArchiveChecklistTemplate(id);
+  const data = result.data?.checklistMutations
+    .archiveTemplate as MutationResult;
+
+  if (data?.__typename === "QuerySuccess" || data?.__typename === "Redirect") {
+    throw new ServerRedirectError("/templates", [
+      makeCacheKey("templates:templates", {}),
+      makeCacheKey("templates/:id:template", { id }),
+    ]);
+  }
+
+  return {
+    __typename: "StandardError",
+    message: result.error || "Failed to archive template.",
+  };
+}
+
+/**
+ * Register the archive-template mutation handler.
+ */
+export function registerArchiveTemplateMutationHandler(): void {
+  mutationRegistry.registerMutationHandler(
+    "templates/archive",
+    handleArchiveTemplate,
+  );
 }
 
 export default TemplateDetailsPage;

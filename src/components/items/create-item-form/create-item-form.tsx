@@ -13,6 +13,9 @@ import { useState } from "react";
 import { createChecklistItem } from "~/server/actions/checklist-item";
 import { Link, useSearchParams } from "react-router-dom";
 import Icon, { ICON_NAMES, FALLBACK_ICON } from "~/components/shared/icon";
+import CategorySelect, {
+  CATEGORY_NONE,
+} from "~/components/categories/category-select";
 import styles from "./create-item-form.module.css";
 
 const CreateItemForm = () => {
@@ -34,10 +37,13 @@ const CreateItemForm = () => {
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
     const icon = formData.get("icon") as string;
+    const categoryIdRaw = formData.get("categoryId") as string;
+    const categoryId =
+      categoryIdRaw && categoryIdRaw !== CATEGORY_NONE ? categoryIdRaw : undefined;
     const result = await createChecklistItem(
       name,
       description,
-      undefined,
+      categoryId,
       icon,
     );
 
@@ -82,6 +88,10 @@ const CreateItemForm = () => {
           </FormItem>
         </FormField>
       </div>
+      <FormField name="categoryId">
+        <FormLabel>{t("category-id")}</FormLabel>
+        <CategorySelect name="categoryId" />
+      </FormField>
       <FormField name="description">
         <FormLabel>{t("description")}</FormLabel>
         <FormItem>

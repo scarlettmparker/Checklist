@@ -65,8 +65,13 @@ export function setupRoutes(app, vite) {
     const langHeader = request.headers["accept-language"] || "en";
     const locale = langHeader.split(",")[0] || "en";
 
-    // Compute pageName the same way as client getPageName()
-    const pageName = url.split("/")[1] || "home";
+    // Compute pageName the same way as client getPageName(). The home route "/"
+    // renders the entries list, whose components use the "entry" namespace, so
+    // it must resolve to "entry" (not "home") or SSR won't load that namespace
+    // and the entries page-data key never hydrates.
+    const pathOnly = url.split("?")[0];
+    const pageName =
+      pathOnly === "/" ? "entry" : pathOnly.split("/")[1] || "home";
     const frontendMode = "checklist";
 
     try {
