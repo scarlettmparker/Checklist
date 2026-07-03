@@ -15,7 +15,7 @@ import { MarkdownViewer } from "@sun/components";
 import { Link } from "react-router-dom";
 import { formatDate } from "@sun/utils";
 import { ArchiveBoxIcon } from "@heroicons/react/24/outline";
-import ConfirmDialog from "~/components/confirm-dialog";
+import ConfirmArchiveItemDialog from "~/components/items/confirm-archive-item-dialog";
 import { retireChecklistItem } from "~/server/actions/checklist-item";
 
 type ItemCardProps = {
@@ -80,17 +80,15 @@ const ItemCard = ({ id, pattern }: ItemCardProps) => {
         <label>{t("updated-at")}</label>
         <p className={styles.detail_value}>{formatDate(item.updatedAt)}</p>
       </CardBody>
-      <ConfirmDialog
+      <ConfirmArchiveItemDialog
         open={confirmArchive}
         onClose={() => setConfirmArchive(false)}
         onConfirm={() => {
           setConfirmArchive(false);
           retireChecklistItem(id);
         }}
-        title={t("archive-item-title")}
-        body={t("archive-item-body", { name: item.name })}
-        confirmLabel={t("confirm-label")}
-        cancelLabel={t("cancel-label")}
+        itemName={item.name}
+        t={t}
       />
     </Card>
   );

@@ -1,7 +1,13 @@
 import { useTranslation } from "react-i18next";
-import { getPageData } from "@sun/ssr";
+import { usePageData } from "@sun/ssr/react";
 import { ListChecklistCategoriesQuery } from "~/generated/graphql";
-import { Card, CardBody, CardHeader, CardTitle, Skeleton } from "@sun/components";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  CardTitle,
+  Skeleton,
+} from "@sun/components";
 import styles from "./category-list.module.css";
 
 type CategoryListProps = {
@@ -16,7 +22,7 @@ type CategoryListProps = {
  */
 const CategoryList = ({ pattern }: CategoryListProps) => {
   const { t } = useTranslation("categories");
-  const { data } = getPageData<
+  const { data } = usePageData<
     ListChecklistCategoriesQuery["checklistQueries"]["listCategories"]
   >("categories", pattern);
   const categories = data ?? [];
@@ -34,7 +40,7 @@ const CategoryList = ({ pattern }: CategoryListProps) => {
   return (
     <>
       {categories.map((category) => (
-        <Card key={category.id}>
+        <Card key={category.id} className={styles.card}>
           <CardHeader>
             <CardTitle>{category.name}</CardTitle>
           </CardHeader>

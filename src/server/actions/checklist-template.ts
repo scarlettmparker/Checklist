@@ -58,6 +58,10 @@ export async function saveChecklistTemplate(
     description: description || "",
   });
 
+  if (result.__typename === "Redirect") {
+    window.location.assign(result.redirectTo);
+  }
+
   return result;
 }
 

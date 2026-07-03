@@ -2,16 +2,14 @@ import { Suspense } from "react";
 import { pageDataRegistry } from "@sun/ssr";
 import { ListChecklistEntriesQuery } from "~/generated/graphql";
 import { fetchListChecklistEntries } from "~/utils/api";
-import { Skeleton } from "@sun/components";
 import EntryList from "~/components/entry/entry-list";
+import { EntriesPageSkeleton } from "~/components/entry/skeletons";
 import styles from "./entries-page.module.css";
 
 const EntriesPage = () => {
   return (
     <div className={styles.entries_layout}>
-      <Suspense
-        fallback={<Skeleton style={{ width: "100%", height: "10rem" }} />}
-      >
+      <Suspense fallback={<EntriesPageSkeleton />}>
         <EntryList />
       </Suspense>
     </div>

@@ -6,10 +6,9 @@ import { ListChecklistTemplatesQuery } from "~/generated/graphql";
 import { fetchListChecklistTemplates } from "~/utils/api";
 import { Button } from "@sun/components";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import TemplateList, {
-  TemplateListSkeleton,
-} from "~/components/templates/template-list";
+import TemplateList from "~/components/templates/template-list";
 import TemplateDetailPlaceholder from "~/components/templates/template-detail-placeholder";
+import { TemplatesPageSkeleton } from "~/components/templates/skeletons";
 import styles from "./templates-page.module.css";
 
 const TemplatesPage = () => {
@@ -19,29 +18,29 @@ const TemplatesPage = () => {
   const ICON_SIZE = 16;
 
   return (
-    <div className={styles.templates_layout}>
-      <div className={styles.templates_list_panel}>
-        <Suspense fallback={<TemplateListSkeleton />}>
+    <Suspense fallback={<TemplatesPageSkeleton />}>
+      <div className={styles.templates_layout}>
+        <div className={styles.templates_list_panel}>
           <TemplateList pattern="templates" />
-        </Suspense>
+        </div>
+        <div className={styles.templates_detail_panel}>
+          {outlet ?? <TemplateDetailPlaceholder />}
+          <Link
+            to={`/templates/create?from=${encodeURIComponent(location.pathname)}`}
+            className={styles.create_template_button}
+          >
+            <Button title={t("create-new-template-label")}>
+              <PlusIcon
+                className={styles.create_template_icon}
+                width={ICON_SIZE}
+                height={ICON_SIZE}
+              />
+              <p>{t("create-new-template-label")}</p>
+            </Button>
+          </Link>
+        </div>
       </div>
-      <div className={styles.templates_detail_panel}>
-        {outlet ?? <TemplateDetailPlaceholder />}
-        <Link
-          to={`/templates/create?from=${encodeURIComponent(location.pathname)}`}
-          className={styles.create_template_button}
-        >
-          <Button title={t("create-new-template-label")}>
-            <PlusIcon
-              className={styles.create_template_icon}
-              width={ICON_SIZE}
-              height={ICON_SIZE}
-            />
-            <p>{t("create-new-template-label")}</p>
-          </Button>
-        </Link>
-      </div>
-    </div>
+    </Suspense>
   );
 };
 

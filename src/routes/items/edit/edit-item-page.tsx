@@ -12,8 +12,9 @@ import {
   LocateChecklistItemQuery,
 } from "~/generated/graphql";
 import { fetchLocateChecklistItem, mutateSaveChecklistItem } from "~/utils/api";
-import { Breadcrumb, Skeleton, useBreadcrumbContext } from "@sun/components";
+import { Breadcrumb, useBreadcrumbContext } from "@sun/components";
 import EditItemForm from "~/components/items/edit-item-form";
+import { EditItemPageSkeleton } from "~/components/items/skeletons";
 import styles from "./edit-item-page.module.css";
 import { Card, CardBody } from "@sun/components";
 
@@ -53,9 +54,7 @@ const EditItemPage = () => {
       <Breadcrumb />
       <Card>
         <CardBody>
-          <Suspense
-            fallback={<Skeleton style={{ width: "100%", height: "10rem" }} />}
-          >
+          <Suspense fallback={<EditItemPageSkeleton />}>
             <EditItemForm itemId={id} pattern={PAGE} />
           </Suspense>
         </CardBody>

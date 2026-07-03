@@ -16,10 +16,9 @@ import {
   fetchLocateChecklistItemDetails,
   mutateRetireChecklistItem,
 } from "~/utils/api";
-import ItemCard, { ItemCardSkeleton } from "~/components/items/item-card";
-import ItemDetailsCard, {
-  ItemDetailsCardSkeleton,
-} from "~/components/items/item-details-card";
+import ItemCard from "~/components/items/item-card";
+import ItemDetailsCard from "~/components/items/item-details-card";
+import { ItemDetailsPageSkeleton } from "~/components/items/skeletons";
 import styles from "./item-details-page.module.css";
 
 const PAGE = "checklist/:id";
@@ -39,10 +38,8 @@ const ItemDetailsPage = () => {
 
   return (
     <div className={styles.detail_layout}>
-      <Suspense fallback={<ItemCardSkeleton />}>
+      <Suspense fallback={<ItemDetailsPageSkeleton />}>
         <ItemCard id={id} pattern={PAGE} />
-      </Suspense>
-      <Suspense fallback={<ItemDetailsCardSkeleton />}>
         <ItemDetailsCard id={id} pattern={PAGE} />
       </Suspense>
     </div>

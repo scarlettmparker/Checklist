@@ -8,7 +8,7 @@ import {
   pageDataRegistry,
   ServerRedirectError,
 } from "@sun/ssr";
-import { Breadcrumb, Skeleton } from "@sun/components";
+import { Breadcrumb } from "@sun/components";
 import {
   ItemStatus,
   ListChecklistEntryItemsQuery,
@@ -28,6 +28,7 @@ import {
 import EntryHeader from "~/components/entry/entry-header";
 import EntryItems from "~/components/entry/entry-items";
 import ChecklistItemsPrefetch from "~/components/entry/checklist-items-prefetch";
+import { EntryChecklistPageSkeleton } from "~/components/entry/skeletons";
 import styles from "./entry-checklist-page.module.css";
 
 const PAGE = "entry/:id";
@@ -42,10 +43,8 @@ const EntryChecklistPage = () => {
   return (
     <div className={styles.layout}>
       <Breadcrumb />
-      <Suspense fallback={<Skeleton className={styles.sk} />}>
+      <Suspense fallback={<EntryChecklistPageSkeleton />}>
         <EntryHeader id={id} />
-      </Suspense>
-      <Suspense fallback={<Skeleton className={styles.sk} />}>
         <EntryItems id={id} />
       </Suspense>
       <Suspense fallback={null}>
@@ -130,14 +129,14 @@ const EMPTY_CHECKLIST_ITEMS = {
 };
 
 /**
- * Loads all checklist items for the add-items picker.
+ * Loads checklist items for the add-items picker, paginated by `params.page`.
  */
-async function getChecklistItemsForPicker(): Promise<Record<
-  string,
-  unknown
-> | null> {
+async function getChecklistItemsForPicker(
+  params?: Record<string, unknown>,
+): Promise<Record<string, unknown> | null> {
   try {
-    const result = await fetchListChecklistItems();
+    const pagination = { page: Number(params?.page ?? 1) - 1 };
+    const result = await fetchListChecklistItems(pagination);
     if (result?.success && result.data) {
       const items = (result.data as ListChecklistItemsQuery).checklistQueries
         .items;
@@ -169,7 +168,7 @@ export function registerEntryDataAndMutations(): void {
   pageDataRegistry.registerPageDataLoader(PAGE, async (params) => {
     const id = params?.id as string;
     if (!id) return null;
-    return getChecklistItemsForPicker();
+    return getChecklistItemsForPicker(params);
   });
 
   mutationRegistry.registerMutationHandler("entry/addItem", async (body) => {

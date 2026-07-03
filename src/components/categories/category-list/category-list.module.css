@@ -5,3 +5,8 @@
 .description {
   margin: 0;
 }
+
+.card {
+  max-width: 400px;
+  width: 100%;
+}

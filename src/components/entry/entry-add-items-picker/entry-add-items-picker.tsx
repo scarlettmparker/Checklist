@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getPageData } from "@sun/ssr";
 import { ListChecklistItemsQuery } from "~/generated/graphql";
-import { Button, Checkbox } from "@sun/components";
+import { Button, Checkbox, Pagination } from "@sun/components";
 import Icon from "~/components/shared/icon";
 import styles from "./entry-add-items-picker.module.css";
 
@@ -22,7 +22,8 @@ type EntryAddItemsPickerProps = {
 };
 
 /**
- * Lists items not yet in the entry with checkboxes to select them.
+ * Lists items not yet in the entry with checkboxes to select them, paginated
+ * below the list.
  */
 const EntryAddItemsPicker = ({
   entryId,
@@ -30,10 +31,12 @@ const EntryAddItemsPicker = ({
   onSubmit,
 }: EntryAddItemsPickerProps) => {
   const { t } = useTranslation("entry");
+  const [page, setPage] = useState(1);
   const { data } = getPageData<
     ListChecklistItemsQuery["checklistQueries"]["items"]
-  >("checklistItems", "entry/:id", { id: entryId });
+  >("checklistItems", "entry/:id", { id: entryId, page: String(page) });
   const items = (data?.items ?? []).filter((i) => !memberIds.has(i.id));
+  const pageInfo = data?.pageInfo;
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const toggle = (id: string) => {
@@ -80,6 +83,13 @@ const EntryAddItemsPicker = ({
           </div>
         ))}
       </div>
+      {pageInfo && pageInfo.totalPages > 1 && (
+        <Pagination
+          page={pageInfo.page + 1}
+          totalPages={pageInfo.totalPages}
+          onPageChange={setPage}
+        />
+      )}
       <Button
         className={styles.submit}
         onClick={() => onSubmit(selectedItems)}

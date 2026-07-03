@@ -1,1 +1,1 @@
-export { default } from "./category-select";
+export { default, CATEGORY_NONE } from "./category-select";

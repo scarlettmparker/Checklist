@@ -6,8 +6,9 @@ import { ListChecklistItemsQuery, PaginationInput } from "~/generated/graphql";
 import { fetchListChecklistItems } from "~/utils/api";
 import { Button } from "@sun/components";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import ItemList, { ItemListSkeleton } from "~/components/items/item-list";
+import ItemList from "~/components/items/item-list";
 import ItemDetailPlaceholder from "~/components/items/item-detail-placeholder";
+import { ItemsPageSkeleton } from "~/components/items/skeletons";
 import styles from "./items-page.module.css";
 
 const ItemsPage = () => {
@@ -17,9 +18,9 @@ const ItemsPage = () => {
   const ICON_SIZE = 16;
 
   return (
-    <div className={styles.items_layout}>
-      <div className={styles.items_list_panel}>
-        <Suspense fallback={<ItemListSkeleton />}>
+    <Suspense fallback={<ItemsPageSkeleton />}>
+      <div className={styles.items_layout}>
+        <div className={styles.items_list_panel}>
           <ItemList pattern="checklist">
             <Link
               to={`/items/create?from=${encodeURIComponent(location.pathname)}`}
@@ -35,12 +36,12 @@ const ItemsPage = () => {
               </Button>
             </Link>
           </ItemList>
-        </Suspense>
+        </div>
+        <div className={styles.items_detail_panel}>
+          {outlet ?? <ItemDetailPlaceholder />}
+        </div>
       </div>
-      <div className={styles.items_detail_panel}>
-        {outlet ?? <ItemDetailPlaceholder />}
-      </div>
-    </div>
+    </Suspense>
   );
 };
 

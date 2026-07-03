@@ -13,7 +13,6 @@ import {
   CardBody,
   CardHeader,
   CardTitle,
-  Skeleton,
   useBreadcrumbContext,
 } from "@sun/components";
 import {
@@ -28,6 +27,7 @@ import {
   mutateCreateChecklistFromTemplates,
 } from "~/utils/api";
 import ComposeFromTemplates from "~/components/entry/compose-from-templates";
+import { CreateEntryFromTemplatePageSkeleton } from "~/components/entry/skeletons";
 import styles from "./create-entry-from-template-page.module.css";
 
 const PAGE = "entry/create";
@@ -57,9 +57,7 @@ const CreateEntryFromTemplatePage = () => {
         </CardHeader>
         <CardBody>
           <p className={styles.description}>{t("compose-description")}</p>
-          <Suspense
-            fallback={<Skeleton style={{ width: "100%", height: "10rem" }} />}
-          >
+          <Suspense fallback={<CreateEntryFromTemplatePageSkeleton />}>
             <ComposeFromTemplates pattern={PAGE} />
           </Suspense>
         </CardBody>

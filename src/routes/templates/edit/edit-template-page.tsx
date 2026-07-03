@@ -5,8 +5,9 @@ import {
   MutationResult,
   mutationRegistry,
   pageDataRegistry,
+  ServerRedirectError,
 } from "@sun/ssr";
-import { Breadcrumb, Card, CardBody, Skeleton, useBreadcrumbContext } from "@sun/components";
+import { Breadcrumb, Card, CardBody, useBreadcrumbContext } from "@sun/components";
 import {
   ListChecklistItemsQuery,
   ListChecklistTemplateItemsQuery,
@@ -21,6 +22,7 @@ import {
   mutateSaveChecklistTemplate,
 } from "~/utils/api";
 import EditTemplateForm from "~/components/templates/edit-template-form";
+import { CreateTemplatePageSkeleton } from "~/components/templates/skeletons";
 import styles from "./edit-template-page.module.css";
 
 const PAGE = "templates/:id/edit";
@@ -49,9 +51,7 @@ const EditTemplatePage = () => {
       <Breadcrumb />
       <Card>
         <CardBody>
-          <Suspense
-            fallback={<Skeleton style={{ width: "100%", height: "12rem" }} />}
-          >
+          <Suspense fallback={<CreateTemplatePageSkeleton />}>
             <EditTemplateForm templateId={id} pattern={PAGE} />
           </Suspense>
         </CardBody>
@@ -153,21 +153,24 @@ export function registerEditTemplatePageHandlers(): void {
 
   mutationRegistry.registerMutationHandler("templates/save", async (body) => {
     const id = body?.id as string;
-    const result = await mutateSaveChecklistTemplate(
+    const result = await mutateSaveChecklistTemplate({
       id,
-      body?.name as string,
-      body?.description as string | undefined,
-    );
+      name: body?.name as string,
+      description: body?.description as string | undefined,
+    });
     const data = result.data?.checklistMutations.saveTemplate as MutationResult;
-    return {
-      ...(data ?? {
-        __typename: "StandardError",
-        message: result.error || "Failed to save template.",
-      }),
-      invalidated: [
+
+    if (data?.__typename === "QuerySuccess" || data?.__typename === "Redirect") {
+      throw new ServerRedirectError(`/templates/${id}`, [
+        makeCacheKey("templates:templates", {}),
         makeCacheKey("templates/:id:template", { id }),
         makeCacheKey("templates/:id:templateItems", { id }),
-      ],
+      ]);
+    }
+
+    return {
+      __typename: "StandardError",
+      message: result.error || "Failed to save template.",
     };
   });
 

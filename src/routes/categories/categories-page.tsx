@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   makeCacheKey,
@@ -6,11 +6,16 @@ import {
   mutationRegistry,
   pageDataRegistry,
 } from "@sun/ssr";
-import { Breadcrumb, Button, useBreadcrumbContext } from "@sun/components";
+import { Button } from "@sun/components";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { ListChecklistCategoriesQuery } from "~/generated/graphql";
-import { fetchListChecklistCategories, mutateCreateChecklistCategory } from "~/utils/api";
-import CategoryList, { CategoryListSkeleton } from "~/components/categories/category-list";
+import {
+  fetchListChecklistCategories,
+  mutateCreateChecklistCategory,
+} from "~/utils/api";
+import CategoryList, {
+  CategoryListSkeleton,
+} from "~/components/categories/category-list";
 import CreateCategoryDialog from "~/components/categories/create-category-dialog";
 import { Suspense } from "react";
 import styles from "./categories-page.module.css";
@@ -22,18 +27,14 @@ const PAGE = "categories";
  */
 const CategoriesPage = () => {
   const { t } = useTranslation("categories");
-  const { setBreadcrumbs, setCurrent } = useBreadcrumbContext();
   const [showCreate, setShowCreate] = useState(false);
   const ICON_SIZE = 16;
 
-  useEffect(() => {
-    setBreadcrumbs([{ label: t("categories-title"), href: "/categories" }]);
-    setCurrent("/categories");
-  }, [setBreadcrumbs, setCurrent, t]);
-
   return (
     <div className={styles.layout}>
-      <Breadcrumb />
+      <Suspense fallback={<CategoryListSkeleton />}>
+        <CategoryList pattern={PAGE} />
+      </Suspense>
       <div className={styles.header}>
         <Button
           title={t("create-category-label")}
@@ -43,10 +44,10 @@ const CategoriesPage = () => {
           {t("create-category-label")}
         </Button>
       </div>
-      <Suspense fallback={<CategoryListSkeleton />}>
-        <CategoryList pattern={PAGE} />
-      </Suspense>
-      <CreateCategoryDialog open={showCreate} onClose={() => setShowCreate(false)} />
+      <CreateCategoryDialog
+        open={showCreate}
+        onClose={() => setShowCreate(false)}
+      />
     </div>
   );
 };

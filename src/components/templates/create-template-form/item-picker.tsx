@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getPageData } from "@sun/ssr";
 import { ListChecklistItemsQuery } from "~/generated/graphql";
-import { Checkbox } from "@sun/components";
+import { Card, CardBody, Checkbox, Pagination } from "@sun/components";
 import Icon from "~/components/shared/icon";
 import styles from "./create-template-form.module.css";
-import { CardBody } from "@sun/components";
-import { Card } from "@sun/components";
 
 const ICON_SIZE = 16;
 
@@ -16,14 +14,16 @@ type ItemPickerProps = {
 };
 
 /**
- * Lists every checklist item with a checkbox + icon.
+ * Lists checklist items with a checkbox + icon, paginated below the card.
  */
 const ItemPicker = ({ selected, setItem }: ItemPickerProps) => {
   const { t } = useTranslation("templates");
+  const [page, setPage] = useState(1);
   const { data } = getPageData<
     ListChecklistItemsQuery["checklistQueries"]["items"]
-  >("checklistItems", "checklist");
+  >("checklistItems", "checklist", { page: String(page) });
   const items = data?.items ?? [];
+  const pageInfo = data?.pageInfo;
   const [drag, setDrag] = useState<{ active: boolean; target: boolean } | null>(
     null,
   );
@@ -52,27 +52,36 @@ const ItemPicker = ({ selected, setItem }: ItemPickerProps) => {
   }
 
   return (
-    <Card className={styles.picker}>
-      <CardBody>
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className={styles.picker_row}
-            onMouseDown={onRowMouseDown(item.id)}
-            onMouseEnter={onRowMouseEnter(item.id)}
-          >
-            <Checkbox checked={selected.has(item.id)} readOnly />
-            <Icon
-              name={item.icon}
-              className={styles.picker_icon}
-              width={ICON_SIZE}
-              height={ICON_SIZE}
-            />
-            <span className={styles.picker_name}>{item.name}</span>
-          </div>
-        ))}
-      </CardBody>
-    </Card>
+    <>
+      <Card className={styles.picker}>
+        <CardBody>
+          {items.map((item) => (
+            <div
+              key={item.id}
+              className={styles.picker_row}
+              onMouseDown={onRowMouseDown(item.id)}
+              onMouseEnter={onRowMouseEnter(item.id)}
+            >
+              <Checkbox checked={selected.has(item.id)} readOnly />
+              <Icon
+                name={item.icon}
+                className={styles.picker_icon}
+                width={ICON_SIZE}
+                height={ICON_SIZE}
+              />
+              <span className={styles.picker_name}>{item.name}</span>
+            </div>
+          ))}
+        </CardBody>
+      </Card>
+      {pageInfo && pageInfo.totalPages > 1 && (
+        <Pagination
+          page={pageInfo.page + 1}
+          totalPages={pageInfo.totalPages}
+          onPageChange={setPage}
+        />
+      )}
+    </>
   );
 };
 

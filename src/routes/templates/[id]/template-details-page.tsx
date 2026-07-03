@@ -18,12 +18,11 @@ import {
   fetchLocateChecklistTemplateDetails,
   mutateArchiveChecklistTemplate,
 } from "~/utils/api";
-import { Card, CardBody, Skeleton } from "@sun/components";
+import { Card, CardBody } from "@sun/components";
 import TemplateInfo from "~/components/templates/template-info";
 import TemplateItems from "~/components/templates/template-items";
-import TemplateDetailsCard, {
-  TemplateDetailsCardSkeleton,
-} from "~/components/templates/template-details-card";
+import TemplateDetailsCard from "~/components/templates/template-details-card";
+import { TemplateDetailsPageSkeleton } from "~/components/templates/skeletons";
 import styles from "./template-details-page.module.css";
 
 const PAGE = "templates/:id";
@@ -40,17 +39,13 @@ const TemplateDetailsPage = () => {
 
   return (
     <div className={styles.detail_layout}>
-      <Card>
-        <CardBody className={styles.overview_body}>
-          <Suspense fallback={<Skeleton className={styles.sk_block} />}>
+      <Suspense fallback={<TemplateDetailsPageSkeleton />}>
+        <Card>
+          <CardBody className={styles.overview_body}>
             <TemplateInfo id={id} pattern={PAGE} />
-          </Suspense>
-          <Suspense fallback={<Skeleton className={styles.sk_block} />}>
             <TemplateItems id={id} pattern={PAGE} />
-          </Suspense>
-        </CardBody>
-      </Card>
-      <Suspense fallback={<TemplateDetailsCardSkeleton />}>
+          </CardBody>
+        </Card>
         <TemplateDetailsCard id={id} pattern={PAGE} />
       </Suspense>
     </div>

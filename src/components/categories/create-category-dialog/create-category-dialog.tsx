@@ -53,7 +53,7 @@ const CreateCategoryDialog = ({ open, onClose }: CreateCategoryDialogProps) => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+    <Dialog open={open} onOpenChange={(o: boolean) => !o && onClose()}>
       <DialogHeader>
         <DialogTitle>{t("create-category-label")}</DialogTitle>
       </DialogHeader>

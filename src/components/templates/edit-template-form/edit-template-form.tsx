@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { invalidatePageData, makeCacheKey } from "@sun/ssr";
+import { getPageData, invalidatePageData, makeCacheKey } from "@sun/ssr";
 import {
   Button,
   Card,

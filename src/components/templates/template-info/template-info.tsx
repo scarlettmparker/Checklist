@@ -8,7 +8,7 @@ import {
   ArchiveBoxIcon,
   PencilSquareIcon,
 } from "@heroicons/react/24/outline";
-import ConfirmDialog from "~/components/confirm-dialog";
+import ConfirmArchiveTemplateDialog from "~/components/templates/confirm-archive-template-dialog";
 import { archiveChecklistTemplate } from "~/server/actions/checklist-template";
 import styles from "./template-info.module.css";
 
@@ -64,17 +64,15 @@ const TemplateInfo = ({ id, pattern }: TemplateInfoProps) => {
       <span className={styles.status}>
         {t("status")}: {template.status}
       </span>
-      <ConfirmDialog
+      <ConfirmArchiveTemplateDialog
         open={confirmArchive}
         onClose={() => setConfirmArchive(false)}
         onConfirm={() => {
           setConfirmArchive(false);
           archiveChecklistTemplate(id);
         }}
-        title={t("archive-template-title")}
-        body={t("archive-template-body", { name: template.name })}
-        confirmLabel={t("archive-label")}
-        cancelLabel={t("cancel-label")}
+        templateName={template.name}
+        t={t}
       />
     </div>
   );
