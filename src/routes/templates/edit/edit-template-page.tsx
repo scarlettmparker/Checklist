@@ -72,6 +72,18 @@ const EMPTY_TEMPLATE_ITEMS = {
   },
 };
 
+const EMPTY_CHECKLIST_ITEMS = {
+  items: [],
+  pageInfo: {
+    page: 0,
+    size: 0,
+    totalPages: 0,
+    totalCount: 0,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  },
+};
+
 async function getTemplateData(
   id: string,
 ): Promise<Record<string, unknown> | null> {
@@ -111,23 +123,21 @@ async function getTemplateItemsData(
   }
 }
 
-async function getChecklistItemsForPicker(): Promise<Record<
-  string,
-  unknown
-> | null> {
+async function getChecklistItemsForPicker(
+  params?: Record<string, unknown>,
+): Promise<Record<string, unknown> | null> {
   try {
-    const result = await fetchListChecklistItems();
+    const pagination = { page: Number(params?.page ?? 1) - 1, size: 10 };
+    const result = await fetchListChecklistItems(pagination);
     if (result?.success && result.data) {
       const items = (result.data as ListChecklistItemsQuery).checklistQueries
         .items;
-      if (items) {
-        return { checklistItems: items };
-      }
+      return { checklistItems: items ?? EMPTY_CHECKLIST_ITEMS };
     }
-    return null;
+    return { checklistItems: EMPTY_CHECKLIST_ITEMS };
   } catch (error) {
     console.error("Failed to fetch checklist items for picker:", error);
-    return null;
+    return { checklistItems: EMPTY_CHECKLIST_ITEMS };
   }
 }
 
@@ -148,7 +158,7 @@ export function registerEditTemplatePageHandlers(): void {
   pageDataRegistry.registerPageDataLoader(PAGE, async (params) => {
     const id = params?.id as string;
     if (!id) return null;
-    return getChecklistItemsForPicker();
+    return getChecklistItemsForPicker(params);
   });
 
   mutationRegistry.registerMutationHandler("templates/save", async (body) => {

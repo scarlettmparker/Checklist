@@ -27,3 +27,7 @@
   margin: 0;
   color: var(--text);
 }
+
+.button_icon {
+  margin-right: var(--md);
+}

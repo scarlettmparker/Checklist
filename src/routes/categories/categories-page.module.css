@@ -10,3 +10,7 @@
 .header {
   display: flex;
 }
+
+.button_icon {
+  margin-right: var(--md);
+}

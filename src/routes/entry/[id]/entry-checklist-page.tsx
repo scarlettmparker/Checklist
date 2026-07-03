@@ -135,7 +135,7 @@ async function getChecklistItemsForPicker(
   params?: Record<string, unknown>,
 ): Promise<Record<string, unknown> | null> {
   try {
-    const pagination = { page: Number(params?.page ?? 1) - 1 };
+    const pagination = { page: Number(params?.page ?? 1) - 1, size: 10 };
     const result = await fetchListChecklistItems(pagination);
     if (result?.success && result.data) {
       const items = (result.data as ListChecklistItemsQuery).checklistQueries

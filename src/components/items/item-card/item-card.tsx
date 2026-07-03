@@ -58,7 +58,7 @@ const ItemCard = ({ id, pattern }: ItemCardProps) => {
           aria-label={t("archive-label")}
           onClick={() => setConfirmArchive(true)}
         >
-          <ArchiveBoxIcon width={16} height={16} />
+          <ArchiveBoxIcon className={styles.button_icon} width={16} height={16} />
           {t("archive-label")}
         </Button>
       </CardHeader>

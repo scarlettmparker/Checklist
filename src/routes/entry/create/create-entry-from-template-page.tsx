@@ -29,6 +29,7 @@ import {
 import ComposeFromTemplates from "~/components/entry/compose-from-templates";
 import { CreateEntryFromTemplatePageSkeleton } from "~/components/entry/skeletons";
 import styles from "./create-entry-from-template-page.module.css";
+import { CardDescription } from "@sun/components";
 
 const PAGE = "entry/create";
 
@@ -54,9 +55,11 @@ const CreateEntryFromTemplatePage = () => {
       <Card>
         <CardHeader>
           <CardTitle>{t("compose-title")}</CardTitle>
+          <CardDescription className={styles.description}>
+            {t("compose-description")}
+          </CardDescription>
         </CardHeader>
         <CardBody>
-          <p className={styles.description}>{t("compose-description")}</p>
           <Suspense fallback={<CreateEntryFromTemplatePageSkeleton />}>
             <ComposeFromTemplates pattern={PAGE} />
           </Suspense>
@@ -103,8 +106,11 @@ async function getComposeData(): Promise<Record<string, unknown> | null> {
 async function handleCreateEntry(
   body: Record<string, unknown>,
 ): Promise<MutationResult> {
-  const result = await mutateCreateChecklistEntry(body.name as string | undefined);
-  const data = result.data?.checklistMutations.createChecklist as MutationResult;
+  const result = await mutateCreateChecklistEntry(
+    body.name as string | undefined,
+  );
+  const data = result.data?.checklistMutations
+    .createChecklist as MutationResult;
 
   if (data?.__typename === "QuerySuccess" && data.id) {
     throw new ServerRedirectError(

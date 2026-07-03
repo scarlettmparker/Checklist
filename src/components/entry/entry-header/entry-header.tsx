@@ -48,7 +48,11 @@ const EntryHeader = ({ id }: EntryHeaderProps) => {
             variant="secondary"
             title={t("create-template-from-entry")}
           >
-            <DocumentDuplicateIcon width={ICON_SIZE} height={ICON_SIZE} />
+            <DocumentDuplicateIcon
+              className={styles.button_icon}
+              width={ICON_SIZE}
+              height={ICON_SIZE}
+            />
             {t("create-template-from-entry")}
           </Button>
         </Link>

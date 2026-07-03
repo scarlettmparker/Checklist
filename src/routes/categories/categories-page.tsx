@@ -40,7 +40,11 @@ const CategoriesPage = () => {
           title={t("create-category-label")}
           onClick={() => setShowCreate(true)}
         >
-          <PlusIcon width={ICON_SIZE} height={ICON_SIZE} />
+          <PlusIcon
+            className={styles.button_icon}
+            width={ICON_SIZE}
+            height={ICON_SIZE}
+          />
           {t("create-category-label")}
         </Button>
       </div>

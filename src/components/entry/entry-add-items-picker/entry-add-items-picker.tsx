@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getPageData } from "@sun/ssr";
-import { ListChecklistItemsQuery } from "~/generated/graphql";
-import { Button, Checkbox, Pagination } from "@sun/components";
+import { ListChecklistItemsQuery, PageInfo } from "~/generated/graphql";
+import { Button, Checkbox } from "@sun/components";
 import Icon from "~/components/shared/icon";
 import styles from "./entry-add-items-picker.module.css";
 
@@ -16,28 +16,40 @@ type EntryAddItemsPickerProps = {
   entryId: string;
   memberIds: Set<string>;
   /**
+   * Current picker page (1-based).
+   */
+  page: number;
+  /**
+   * Called with the fetched page info so the parent can render pagination.
+   */
+  onPageInfoChange: (pageInfo: PageInfo | null) => void;
+  /**
    * Called with the selected items when "Add selected" is pressed.
    */
   onSubmit: (items: PickerItem[]) => void;
 };
 
 /**
- * Lists items not yet in the entry with checkboxes to select them, paginated
- * below the list.
+ * Lists items not yet in the entry with checkboxes to select them.
  */
 const EntryAddItemsPicker = ({
   entryId,
   memberIds,
+  page,
+  onPageInfoChange,
   onSubmit,
 }: EntryAddItemsPickerProps) => {
   const { t } = useTranslation("entry");
-  const [page, setPage] = useState(1);
   const { data } = getPageData<
     ListChecklistItemsQuery["checklistQueries"]["items"]
   >("checklistItems", "entry/:id", { id: entryId, page: String(page) });
   const items = (data?.items ?? []).filter((i) => !memberIds.has(i.id));
-  const pageInfo = data?.pageInfo;
+  const pageInfo = (data?.pageInfo ?? null) as PageInfo | null;
   const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    onPageInfoChange(pageInfo);
+  }, [pageInfo, onPageInfoChange]);
 
   const toggle = (id: string) => {
     setSelected((prev) => {
@@ -83,13 +95,6 @@ const EntryAddItemsPicker = ({
           </div>
         ))}
       </div>
-      {pageInfo && pageInfo.totalPages > 1 && (
-        <Pagination
-          page={pageInfo.page + 1}
-          totalPages={pageInfo.totalPages}
-          onPageChange={setPage}
-        />
-      )}
       <Button
         className={styles.submit}
         onClick={() => onSubmit(selectedItems)}

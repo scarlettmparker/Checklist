@@ -57,6 +57,7 @@ async function getChecklistItemsData(
     // URL page is 1-based; the backend (Spring PageRequest) is 0-based.
     const pagination: PaginationInput = {
       page: Number(params?.page ?? 1) - 1,
+      size: 10,
     };
     const result = await fetchListChecklistItems(pagination);
     if (result?.data && result.success) {

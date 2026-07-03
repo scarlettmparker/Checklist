@@ -12,7 +12,7 @@ import {
   Skeleton,
 } from "@sun/components";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { ChecklistEntryItem, ItemStatus } from "~/generated/graphql";
+import { ChecklistEntryItem, ItemStatus, PageInfo } from "~/generated/graphql";
 import EntryItemRow from "~/components/entry/entry-item-row";
 import EntryAddItemsPicker, {
   type PickerItem,
@@ -43,9 +43,7 @@ type EntryChecklistProps = {
 };
 
 /**
- * Interactive checklist for an entry. Holds items in local state for optimistic
- * updates, auto-completes the entry when every item is checked, and locks once
- * completed.
+ * Interactive checklist for an entry.
  */
 const EntryChecklist = ({
   entryId,
@@ -57,6 +55,8 @@ const EntryChecklist = ({
   const [completed, setCompleted] = useState(fetchedCompleted);
   const [showPicker, setShowPicker] = useState(false);
   const [page, setPage] = useState(1);
+  const [pickerPage, setPickerPage] = useState(1);
+  const [pickerPageInfo, setPickerPageInfo] = useState<PageInfo | null>(null);
 
   useEffect(() => {
     setItems(fetchedItems);
@@ -182,31 +182,43 @@ const EntryChecklist = ({
         />
       )}
       {showPicker && (
-        <Card>
-          <CardHeader className={styles.picker_header}>
-            <CardTitle>{t("add-items")}</CardTitle>
-            <Button
-              variant="secondary"
-              className={styles.close}
-              title={t("cancel")}
-              aria-label={t("cancel")}
-              onClick={() => setShowPicker(false)}
-            >
-              <XMarkIcon width={16} height={16} />
-            </Button>
-          </CardHeader>
-          <CardBody>
-            <Suspense
-              fallback={<Skeleton style={{ width: "100%", height: "6rem" }} />}
-            >
-              <EntryAddItemsPicker
-                entryId={entryId}
-                memberIds={memberIds}
-                onSubmit={handleAddItems}
-              />
-            </Suspense>
-          </CardBody>
-        </Card>
+        <>
+          <Card>
+            <CardHeader className={styles.picker_header}>
+              <CardTitle>{t("add-items")}</CardTitle>
+              <Button
+                variant="secondary"
+                className={styles.close}
+                title={t("cancel")}
+                aria-label={t("cancel")}
+                onClick={() => setShowPicker(false)}
+              >
+                <XMarkIcon width={16} height={16} />
+              </Button>
+            </CardHeader>
+            <CardBody>
+              <Suspense
+                fallback={<Skeleton style={{ width: "100%", height: "6rem" }} />}
+              >
+                <EntryAddItemsPicker
+                  entryId={entryId}
+                  memberIds={memberIds}
+                  page={pickerPage}
+                  onPageInfoChange={setPickerPageInfo}
+                  onSubmit={handleAddItems}
+                />
+              </Suspense>
+            </CardBody>
+          </Card>
+          {pickerPageInfo && pickerPageInfo.totalPages > 1 && (
+            <Pagination
+              className={styles.pagination}
+              page={pickerPageInfo.page + 1}
+              totalPages={pickerPageInfo.totalPages}
+              onPageChange={setPickerPage}
+            />
+          )}
+        </>
       )}
     </div>
   );

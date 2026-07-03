@@ -29,3 +29,7 @@
 .no_items {
   margin: 0;
 }
+
+.pagination {
+  margin: 0 auto;
+}

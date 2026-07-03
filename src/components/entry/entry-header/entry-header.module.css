@@ -14,3 +14,7 @@
 .create_template_link {
   text-decoration: none;
 }
+
+.button_icon {
+  margin-right: var(--md);
+}

@@ -13,6 +13,7 @@ import { RectangleStackIcon } from "@heroicons/react/24/outline";
 import Icon from "~/components/shared/icon";
 import { createEntryFromTemplates } from "~/server/actions/checklist-entry";
 import styles from "./compose-from-templates.module.css";
+import { CardDescription } from "@sun/components";
 
 type ComposeTemplateItem = {
   itemId: string;
@@ -103,11 +104,10 @@ const ComposeFromTemplates = ({ pattern }: ComposeFromTemplatesProps) => {
       <Card>
         <CardHeader>
           <CardTitle>{t("compose-preview")}</CardTitle>
+          <CardDescription>{t("compose-no-items")}</CardDescription>
         </CardHeader>
         <CardBody className={styles.preview_body}>
-          {preview.length === 0 ? (
-            <p className={styles.empty}>{t("compose-no-items")}</p>
-          ) : (
+          {preview.length > 0 && (
             <>
               <p>{t("compose-items-count", { count: preview.length })}</p>
               {preview.map((item) => (

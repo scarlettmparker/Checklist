@@ -18,7 +18,7 @@ import {
   fetchLocateChecklistTemplateDetails,
   mutateArchiveChecklistTemplate,
 } from "~/utils/api";
-import { Card, CardBody } from "@sun/components";
+import { Card, CardBody, Skeleton } from "@sun/components";
 import TemplateInfo from "~/components/templates/template-info";
 import TemplateItems from "~/components/templates/template-items";
 import TemplateDetailsCard from "~/components/templates/template-details-card";
@@ -43,7 +43,11 @@ const TemplateDetailsPage = () => {
         <Card>
           <CardBody className={styles.overview_body}>
             <TemplateInfo id={id} pattern={PAGE} />
-            <TemplateItems id={id} pattern={PAGE} />
+            <Suspense
+              fallback={<Skeleton style={{ width: "100%", height: "6rem" }} />}
+            >
+              <TemplateItems id={id} pattern={PAGE} />
+            </Suspense>
           </CardBody>
         </Card>
         <TemplateDetailsCard id={id} pattern={PAGE} />
@@ -95,11 +99,12 @@ const EMPTY_TEMPLATE_ITEMS = {
  */
 async function getTemplateItemsData(
   id: string,
+  params?: Record<string, unknown>,
 ): Promise<Record<string, unknown> | null> {
   try {
     const result = await fetchListChecklistTemplateItems(id, {
-      page: 0,
-      size: 100,
+      page: Number(params?.page ?? 1) - 1,
+      size: 10,
     });
     if (result?.success && result.data) {
       const templateItems = (result.data as ListChecklistTemplateItemsQuery)
@@ -154,7 +159,7 @@ export function registerChecklistTemplateDetailsDataLoaders(): void {
   pageDataRegistry.registerPageDataLoader(PAGE, async (params) => {
     const id = params?.id as string;
     if (!id) return null;
-    return getTemplateItemsData(id);
+    return getTemplateItemsData(id, params);
   });
   pageDataRegistry.registerPageDataLoader(PAGE, async (params) => {
     const id = params?.id as string;

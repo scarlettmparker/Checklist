@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getPageData, invalidatePageData, makeCacheKey } from "@sun/ssr";
 import {
@@ -13,10 +13,11 @@ import {
   FormLabel,
   Input,
   MarkdownEditor,
+  Skeleton,
 } from "@sun/components";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
-  ListChecklistItemsQuery,
+  ChecklistTemplateItem,
   ListChecklistTemplateItemsQuery,
   LocateChecklistTemplateQuery,
 } from "~/generated/graphql";
@@ -26,6 +27,7 @@ import {
   removeTemplateItem,
   saveChecklistTemplate,
 } from "~/server/actions/checklist-template";
+import EditTemplateAddItemPicker from "./edit-template-add-item-picker";
 import styles from "./edit-template-form.module.css";
 
 const DEFAULT_ROWS = 3;
@@ -42,14 +44,6 @@ type EditTemplateFormProps = {
   pattern: string;
 };
 
-type TemplateItem = {
-  id: string;
-  itemId: string;
-  name?: string | null;
-  icon?: string | null;
-  position: number;
-};
-
 /**
  * Form for editing a template's name/description and managing its items
  * (add via picker, remove via per-row button) with optimistic updates.
@@ -62,12 +56,9 @@ const EditTemplateForm = ({ templateId, pattern }: EditTemplateFormProps) => {
   const { data: templateItemsData } = getPageData<
     ListChecklistTemplateItemsQuery["checklistQueries"]["templateItems"]
   >("templateItems", pattern, { id: templateId });
-  const { data: checklistItemsData } = getPageData<
-    ListChecklistItemsQuery["checklistQueries"]["items"]
-  >("checklistItems", pattern, { id: templateId });
 
-  const fetchedItems = (templateItemsData?.items ?? []) as TemplateItem[];
-  const [items, setItems] = useState<TemplateItem[]>(fetchedItems);
+  const fetchedItems = templateItemsData?.items ?? [];
+  const [items, setItems] = useState<ChecklistTemplateItem[]>(fetchedItems);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -96,12 +87,13 @@ const EditTemplateForm = ({ templateId, pattern }: EditTemplateFormProps) => {
   };
 
   const handleAdd = async (itemId: string, name?: string | null, icon?: string | null) => {
-    const candidate = checklistItemsData?.items.find((i) => i.id === itemId);
-    const entry: TemplateItem = {
+    const entry: ChecklistTemplateItem = {
+      __typename: "ChecklistTemplateItem",
       id: itemId,
       itemId,
-      name: name ?? candidate?.name ?? null,
-      icon: icon ?? candidate?.icon ?? null,
+      templateId,
+      name: name ?? null,
+      icon: icon ?? null,
       position: items.length,
     };
     setItems((prev) => [...prev, entry]);
@@ -114,10 +106,6 @@ const EditTemplateForm = ({ templateId, pattern }: EditTemplateFormProps) => {
     await removeTemplateItem(templateId, itemId);
     invalidate();
   };
-
-  const available = (checklistItemsData?.items ?? []).filter(
-    (i) => !memberIds.has(i.id),
-  );
 
   return (
     <div className={styles.container}>
@@ -189,31 +177,16 @@ const EditTemplateForm = ({ templateId, pattern }: EditTemplateFormProps) => {
 
       <div className={styles.items_section}>
         <CardTitle className={styles.subtitle}>{t("add-item")}</CardTitle>
-        <Card>
-          <CardBody className={styles.items_body}>
-            {available.length === 0 ? (
-              <p className={styles.empty}>{t("no-picker-items")}</p>
-            ) : (
-              available.map((item) => (
-                <div key={item.id} className={styles.item_row}>
-                  <Icon
-                    name={item.icon}
-                    className={styles.item_icon}
-                    width={ICON_SIZE}
-                    height={ICON_SIZE}
-                  />
-                  <span className={styles.item_name}>{item.name}</span>
-                  <Button
-                    variant="secondary"
-                    onClick={() => handleAdd(item.id, item.name, item.icon)}
-                  >
-                    {t("add-item")}
-                  </Button>
-                </div>
-              ))
-            )}
-          </CardBody>
-        </Card>
+        <Suspense
+          fallback={<Skeleton style={{ width: "100%", height: "8rem" }} />}
+        >
+          <EditTemplateAddItemPicker
+            templateId={templateId}
+            pattern={pattern}
+            memberIds={memberIds}
+            onAdd={handleAdd}
+          />
+        </Suspense>
       </div>
     </div>
   );
