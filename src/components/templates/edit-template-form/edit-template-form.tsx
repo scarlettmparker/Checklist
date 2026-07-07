@@ -86,7 +86,11 @@ const EditTemplateForm = ({ templateId, pattern }: EditTemplateFormProps) => {
     setSaving(false);
   };
 
-  const handleAdd = async (itemId: string, name?: string | null, icon?: string | null) => {
+  const handleAdd = async (
+    itemId: string,
+    name?: string | null,
+    icon?: string | null,
+  ) => {
     const entry: ChecklistTemplateItem = {
       __typename: "ChecklistTemplateItem",
       id: itemId,

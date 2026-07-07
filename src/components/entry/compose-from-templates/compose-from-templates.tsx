@@ -8,6 +8,11 @@ import {
   CardHeader,
   CardTitle,
   Checkbox,
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  Input,
 } from "@sun/components";
 import { RectangleStackIcon } from "@heroicons/react/24/outline";
 import Icon from "~/components/shared/icon";
@@ -76,8 +81,25 @@ const ComposeFromTemplates = ({ pattern }: ComposeFromTemplatesProps) => {
     return merged;
   })();
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (selected.size === 0) {
+      return;
+    }
+    const formData = new FormData(e.currentTarget);
+    const name = (formData.get("name") as string).trim();
+    setCreating(true);
+    createEntryFromTemplates([...selected], name || undefined);
+  };
+
   return (
-    <div className={styles.container}>
+    <Form onSubmit={handleSubmit} className={styles.container}>
+      <FormField name="name">
+        <FormLabel>{t("name")}</FormLabel>
+        <FormItem>
+          <Input type="text" placeholder={t("name-placeholder")} />
+        </FormItem>
+      </FormField>
       <div className={styles.selector}>
         {templates.map((template) => (
           <div key={template.id} className={styles.row}>
@@ -127,17 +149,14 @@ const ComposeFromTemplates = ({ pattern }: ComposeFromTemplatesProps) => {
       </Card>
 
       <Button
+        type="submit"
         className={styles.submit}
         disabled={selected.size === 0 || creating}
         title={creating ? t("compose-composing") : t("compose-submit")}
-        onClick={() => {
-          setCreating(true);
-          createEntryFromTemplates([...selected]);
-        }}
       >
         {creating ? t("compose-composing") : t("compose-submit")}
       </Button>
-    </div>
+    </Form>
   );
 };
 

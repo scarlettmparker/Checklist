@@ -42,6 +42,8 @@ import {
   CompleteChecklistMutation,
   ArchiveChecklistDocument,
   ArchiveChecklistMutation,
+  DeleteChecklistDocument,
+  DeleteChecklistMutation,
   CreateChecklistTemplateDocument,
   CreateChecklistTemplateMutation,
   SaveChecklistTemplateDocument,
@@ -103,6 +105,7 @@ type OperationRegistry = {
     saveChecklist: DocumentNode;
     completeChecklist: DocumentNode;
     archiveChecklist: DocumentNode;
+    deleteChecklist: DocumentNode;
     createTemplate: DocumentNode;
     saveTemplate: DocumentNode;
     archiveTemplate: DocumentNode;
@@ -146,6 +149,7 @@ const operationRegistry: OperationRegistry = {
     saveChecklist: SaveChecklistEntryDocument,
     completeChecklist: CompleteChecklistDocument,
     archiveChecklist: ArchiveChecklistDocument,
+    deleteChecklist: DeleteChecklistDocument,
     createTemplate: CreateChecklistTemplateDocument,
     saveTemplate: SaveChecklistTemplateDocument,
     archiveTemplate: ArchiveChecklistTemplateDocument,
@@ -450,18 +454,24 @@ export async function mutateCreateChecklistEntry(name?: string) {
 }
 
 /** Creates a checklist entry seeded from a template. */
-export async function mutateCreateChecklistFromTemplate(templateId: string) {
+export async function mutateCreateChecklistFromTemplate(
+  templateId: string,
+  name?: string,
+) {
   return fetchGraphQLData<CreateChecklistFromTemplateMutation>(
     "checklistMutations.createChecklistFromTemplate",
-    { templateId },
+    { templateId, name: name ?? null },
   );
 }
 
 /** Creates a checklist entry composed from multiple templates. */
-export async function mutateCreateChecklistFromTemplates(templateIds: string[]) {
+export async function mutateCreateChecklistFromTemplates(
+  templateIds: string[],
+  name?: string,
+) {
   return fetchGraphQLData<CreateChecklistFromTemplatesMutation>(
     "checklistMutations.createChecklistFromTemplates",
-    { templateIds },
+    { templateIds, name: name ?? null },
   );
 }
 
@@ -489,6 +499,16 @@ export async function mutateCompleteChecklist(id: string) {
 export async function mutateArchiveChecklist(id: string) {
   return fetchGraphQLData<ArchiveChecklistMutation>(
     "checklistMutations.archiveChecklist",
+    {
+      id,
+    },
+  );
+}
+
+/** Permanently deletes a checklist entry and its items. */
+export async function mutateDeleteChecklist(id: string) {
+  return fetchGraphQLData<DeleteChecklistMutation>(
+    "checklistMutations.deleteChecklist",
     {
       id,
     },

@@ -11,10 +11,6 @@
   color: var(--primary);
 }
 
-.create_template_link {
-  text-decoration: none;
-}
-
-.button_icon {
+.menu_icon {
   margin-right: var(--md);
 }

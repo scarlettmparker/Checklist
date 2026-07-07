@@ -1,6 +1,6 @@
-mutation createChecklistFromTemplates($templateIds: [ID!]!) {
+mutation createChecklistFromTemplates($templateIds: [ID!]!, $name: String) {
   checklistMutations {
-    createChecklistFromTemplates(templateIds: $templateIds) {
+    createChecklistFromTemplates(templateIds: $templateIds, name: $name) {
       ... on QuerySuccess {
       __typename
       message

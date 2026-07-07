@@ -22,7 +22,9 @@ import {
   mutateAddChecklistItem,
   mutateArchiveChecklist,
   mutateCompleteChecklist,
+  mutateDeleteChecklist,
   mutateRemoveChecklistItem,
+  mutateSaveChecklistEntry,
   mutateSetChecklistItemStatus,
 } from "~/utils/api";
 import EntryHeader from "~/components/entry/entry-header";
@@ -264,6 +266,41 @@ export function registerEntryDataAndMutations(): void {
       };
     },
   );
+
+  mutationRegistry.registerMutationHandler("entry/delete", async (body) => {
+    const entryId = body?.entryId as string;
+    const result = await mutateDeleteChecklist(entryId);
+    const data = result.data?.checklistMutations
+      .deleteChecklist as MutationResult;
+
+    if (data?.__typename === "QuerySuccess") {
+      throw new ServerRedirectError("/", [makeCacheKey("entry:entry", {})]);
+    }
+
+    return {
+      __typename: "StandardError",
+      message: result.error || "Failed to delete checklist.",
+    };
+  });
+
+  mutationRegistry.registerMutationHandler("entry/save", async (body) => {
+    const entryId = body?.id as string;
+    const name = body?.name as string;
+    const result = await mutateSaveChecklistEntry({ id: entryId, name });
+    const data = result.data?.checklistMutations
+      .saveChecklist as MutationResult;
+
+    return {
+      ...((data ?? {
+        __typename: "StandardError",
+        message: result.error || "Failed to save checklist.",
+      }) as MutationResult),
+      invalidated: [
+        makeCacheKey("entry:entry", {}),
+        makeCacheKey("entry/:id:entry", { id: entryId }),
+      ],
+    };
+  });
 }
 
 export default EntryChecklistPage;

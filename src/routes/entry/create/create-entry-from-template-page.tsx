@@ -133,7 +133,8 @@ async function handleCreateEntryFromTemplate(
   body: Record<string, unknown>,
 ): Promise<MutationResult> {
   const templateId = body.templateId as string;
-  const result = await mutateCreateChecklistFromTemplate(templateId);
+  const name = body.name as string | undefined;
+  const result = await mutateCreateChecklistFromTemplate(templateId, name);
   const data = result.data?.checklistMutations
     .createChecklistFromTemplate as MutationResult;
 
@@ -158,7 +159,8 @@ async function handleCreateEntryFromTemplates(
   body: Record<string, unknown>,
 ): Promise<MutationResult> {
   const templateIds = (body.templateIds as string[]) ?? [];
-  const result = await mutateCreateChecklistFromTemplates(templateIds);
+  const name = body.name as string | undefined;
+  const result = await mutateCreateChecklistFromTemplates(templateIds, name);
   const data = result.data?.checklistMutations
     .createChecklistFromTemplates as MutationResult;
 
