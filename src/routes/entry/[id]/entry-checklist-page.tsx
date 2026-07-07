@@ -8,19 +8,25 @@ import {
   pageDataRegistry,
   ServerRedirectError,
 } from "@sun/ssr";
-import { Breadcrumb } from "@sun/components";
+import { Breadcrumb, Skeleton } from "@sun/components";
 import {
   ItemStatus,
   ListChecklistEntryItemsQuery,
   ListChecklistItemsQuery,
+  LocateChecklistEntryDetailsQuery,
   LocateChecklistEntryQuery,
 } from "~/generated/graphql";
 import {
+  fetchCreateGalleryItem,
   fetchListChecklistEntryItems,
   fetchListChecklistItems,
   fetchLocateChecklistEntry,
+  fetchLocateChecklistEntryDetails,
+  fetchLocateGalleryItems,
+  fetchPresignedUploadUrl,
   mutateAddChecklistItem,
   mutateArchiveChecklist,
+  mutateAttachChecklistObject,
   mutateCompleteChecklist,
   mutateDeleteChecklist,
   mutateRemoveChecklistItem,
@@ -30,6 +36,7 @@ import {
 import EntryHeader from "~/components/entry/entry-header";
 import EntryItems from "~/components/entry/entry-items";
 import ChecklistItemsPrefetch from "~/components/entry/checklist-items-prefetch";
+import EntryGallery from "~/components/entry/entry-gallery";
 import { EntryChecklistPageSkeleton } from "~/components/entry/skeletons";
 import styles from "./entry-checklist-page.module.css";
 
@@ -44,14 +51,25 @@ const EntryChecklistPage = () => {
 
   return (
     <div className={styles.layout}>
-      <Breadcrumb />
-      <Suspense fallback={<EntryChecklistPageSkeleton />}>
-        <EntryHeader id={id} />
-        <EntryItems id={id} />
-      </Suspense>
-      <Suspense fallback={null}>
-        <ChecklistItemsPrefetch id={id} pattern={PAGE} />
-      </Suspense>
+      <div className={styles.columns}>
+        <div className={styles.left_column}>
+          <Breadcrumb />
+          <Suspense fallback={<EntryChecklistPageSkeleton />}>
+            <EntryHeader id={id} />
+            <EntryItems id={id} />
+          </Suspense>
+          <Suspense fallback={null}>
+            <ChecklistItemsPrefetch id={id} pattern={PAGE} />
+          </Suspense>
+        </div>
+        <div className={styles.right_column}>
+          <Suspense
+            fallback={<Skeleton style={{ width: "100%", height: "12rem" }} />}
+          >
+            <EntryGallery entryId={id} />
+          </Suspense>
+        </div>
+      </div>
     </div>
   );
 };
@@ -101,7 +119,10 @@ async function getEntryItemsData(
   id: string,
 ): Promise<Record<string, unknown> | null> {
   try {
-    const result = await fetchListChecklistEntryItems(id, { page: 0, size: 100 });
+    const result = await fetchListChecklistEntryItems(id, {
+      page: 0,
+      size: 100,
+    });
     if (result?.success && result.data) {
       const entryItems = (result.data as ListChecklistEntryItemsQuery)
         .checklistQueries.entryItems;
@@ -153,6 +174,36 @@ async function getChecklistItemsForPicker(): Promise<Record<
 }
 
 /**
+ * Loads the gallery items attached to an entry: fetches the entry detail
+ * (remoteObject ids), then batch-resolves them to Cerberus GalleryItems.
+ */
+async function getEntryGalleryData(
+  id: string,
+): Promise<Record<string, unknown> | null> {
+  try {
+    const detailsResult = await fetchLocateChecklistEntryDetails(id);
+    const detail = detailsResult?.success
+      ? (detailsResult.data as LocateChecklistEntryDetailsQuery | undefined)
+          ?.checklistQueries.entryDetails
+      : undefined;
+    const ids = detail?.remoteObject ?? [];
+    if (ids.length === 0) {
+      return { galleryItems: [] };
+    }
+    const result = await fetchLocateGalleryItems(ids);
+    const galleryItems = result?.success
+      ? ((
+          result.data as { galleryQueries?: { locateGalleryItems?: unknown[] } }
+        )?.galleryQueries?.locateGalleryItems ?? [])
+      : [];
+    return { galleryItems };
+  } catch (error) {
+    console.error("Failed to fetch entry gallery items:", error);
+    return { galleryItems: [] };
+  }
+}
+
+/**
  * Register the data loaders and item mutation handlers for this page.
  */
 export function registerEntryDataAndMutations(): void {
@@ -172,6 +223,12 @@ export function registerEntryDataAndMutations(): void {
     const id = params?.id as string;
     if (!id) return null;
     return getChecklistItemsForPicker();
+  });
+
+  pageDataRegistry.registerPageDataLoader(PAGE, async (params) => {
+    const id = params?.id as string;
+    if (!id) return null;
+    return getEntryGalleryData(id);
   });
 
   mutationRegistry.registerMutationHandler("entry/addItem", async (body) => {
@@ -301,6 +358,77 @@ export function registerEntryDataAndMutations(): void {
       ],
     };
   });
+
+  mutationRegistry.registerMutationHandler(
+    "filestore/get-presigned-upload-url",
+    async (body) => {
+      const result = await fetchPresignedUploadUrl(
+        body?.bucket as string,
+        body?.key as string,
+        body?.contentType as string | undefined,
+      );
+      const url = result?.success
+        ? (
+            result.data as {
+              filestoreMutations?: { getPresignedUploadUrl?: string };
+            }
+          )?.filestoreMutations?.getPresignedUploadUrl
+        : undefined;
+      if (url) {
+        return {
+          __typename: "QuerySuccess" as const,
+          id: url,
+          message: "Presigned upload URL",
+        };
+      }
+      return {
+        __typename: "StandardError" as const,
+        message: result?.error || "Failed to get presigned upload URL.",
+      };
+    },
+  );
+
+  mutationRegistry.registerMutationHandler("gallery/create", async (body) => {
+    const result = await fetchCreateGalleryItem({
+      title: body?.title as string,
+      imagePath: body?.imagePath as string,
+      description: (body?.description as string | undefined) ?? null,
+    });
+    const data = result.data?.galleryMutations?.create as MutationResult;
+    return (
+      data ?? {
+        __typename: "StandardError",
+        message: result.error || "Failed to create gallery item.",
+      }
+    );
+  });
+
+  mutationRegistry.registerMutationHandler(
+    "checklist/attachObject",
+    async (body) => {
+      const source = body?.source as string;
+      const target = body?.target as string;
+      const ownerType = body?.ownerType as
+        "ENTRY" | "TEMPLATE" | "ITEM" | undefined;
+      const result = await mutateAttachChecklistObject(
+        source,
+        target,
+        ownerType,
+      );
+      const data = result.data?.checklistMutations
+        ?.attachObject as MutationResult;
+      return {
+        ...((data ?? {
+          __typename: "StandardError",
+          message: result.error || "Failed to attach object.",
+        }) as MutationResult),
+        invalidated: [
+          makeCacheKey("entry/:id:galleryItems", { id: source }),
+          makeCacheKey("entry/:id:entryDetails", { id: source }),
+        ],
+      };
+    },
+  );
 }
 
 export default EntryChecklistPage;

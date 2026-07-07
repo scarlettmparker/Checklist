@@ -110,8 +110,12 @@ export async function render({
     let resolved = false;
     let postludeData = "";
 
+    // NOTE: do NOT pass bootstrapModules here. React emits bootstrap modules at
+    // the end of its stream (inside #app), which lands BEFORE the postlude
+    // script that populates window.__serverCacheData__. Because they're async,
+    // the client could boot and read window.__serverCacheData__ while it's still
+    // {}, skipping hydratePageData and crashing on first load.
     const stream = renderToPipeableStream(didMatch ? App : <NotFound />, {
-      bootstrapModules: [clientJs],
       onShellReady() {
         const cssTag = generateCssTag(isProduction, cssContent, clientCss);
         const headers: Record<string, string> = { "Content-Type": "text/html" };
@@ -137,6 +141,7 @@ export async function render({
               <meta charset="UTF-8" />
               <meta name="viewport" content="width=device-width, initial-scale=1.0" />
               ${cssTag}
+              <link rel="modulepreload" href="${clientJs}" />
               <title>Checklist | Scarlet Sun</title>
             </head>
             ${refreshPreamble}

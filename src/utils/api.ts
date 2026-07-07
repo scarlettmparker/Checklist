@@ -64,6 +64,13 @@ import {
   RemoveChecklistTemplateItemMutation,
   AttachChecklistObjectDocument,
   AttachChecklistObjectMutation,
+  CreateGalleryItemDocument,
+  CreateGalleryItemMutation,
+  GalleryItemInput,
+  LocateGalleryItemsDocument,
+  LocateGalleryItemsQuery,
+  GetPresignedUploadUrlDocument,
+  GetPresignedUploadUrlMutation,
   PaginationInput,
 } from "~/generated/graphql";
 
@@ -116,6 +123,15 @@ type OperationRegistry = {
     removeTemplateItem: DocumentNode;
     attachObject: DocumentNode;
   };
+  galleryQueries: {
+    locateGalleryItems: DocumentNode;
+  };
+  galleryMutations: {
+    create: DocumentNode;
+  };
+  filestoreMutations: {
+    getPresignedUploadUrl: DocumentNode;
+  };
 };
 
 /**
@@ -159,6 +175,15 @@ const operationRegistry: OperationRegistry = {
     addTemplateItem: AddChecklistTemplateItemDocument,
     removeTemplateItem: RemoveChecklistTemplateItemDocument,
     attachObject: AttachChecklistObjectDocument,
+  },
+  galleryQueries: {
+    locateGalleryItems: LocateGalleryItemsDocument,
+  },
+  galleryMutations: {
+    create: CreateGalleryItemDocument,
+  },
+  filestoreMutations: {
+    getPresignedUploadUrl: GetPresignedUploadUrlDocument,
   },
 };
 
@@ -637,6 +662,46 @@ export async function mutateAttachChecklistObject(
       source,
       target,
       ownerType: ownerType ?? null,
+    },
+  );
+}
+
+/** Creates a gallery item (image wrapper). */
+export async function fetchCreateGalleryItem(
+  input: GalleryItemInput,
+) {
+  return fetchGraphQLData<CreateGalleryItemMutation>(
+    "galleryMutations.create",
+    { input },
+  );
+}
+
+/** Batch-fetches gallery items by their IDs. */
+export async function fetchLocateGalleryItems(ids: string[]) {
+  if (ids.length === 0) {
+    return {
+      success: true,
+      data: { galleryQueries: { locateGalleryItems: [] } },
+    };
+  }
+  return fetchGraphQLData<LocateGalleryItemsQuery>(
+    "galleryQueries.locateGalleryItems",
+    { ids },
+  );
+}
+
+/** Returns a presigned PUT URL for direct browser-to-storage upload. */
+export async function fetchPresignedUploadUrl(
+  bucket: string,
+  key: string,
+  contentType?: string,
+) {
+  return fetchGraphQLData<GetPresignedUploadUrlMutation>(
+    "filestoreMutations.getPresignedUploadUrl",
+    {
+      bucket,
+      key,
+      contentType: contentType ?? null,
     },
   );
 }

@@ -7,7 +7,12 @@
       "Bash(mv items.crud.cy.ts items-crud.cy.ts)",
       "Bash(mv items.pagination.cy.ts items-pagination.cy.ts)",
       "Bash(find cypress-results/screenshots -name \"*.png\" -newer cypress-results/screenshots/../ 2>/dev/null | sort; echo \"---\"; find cypress-results/screenshots -name \"*.png\" | sort)",
-      "Read(//home/scarlettp/Desktop/GitHub/Checklist/cypress-results/**)"
+      "Read(//home/scarlettp/Desktop/GitHub/Checklist/cypress-results/**)",
+      "Bash(find ~/intranet/npm-data -type f \\\\\\( -name \"*.conf\" -o -name \"*.json\" \\\\\\) 2>/dev/null | grep -iE \"proxy_host|checklist|common\" | head -30; echo \"=== proxy_host dir listing ===\"; ls ~/intranet/npm-data/nginx/proxy_host/ 2>/dev/null | head -40)",
+      "Read(//home/scarlettp/intranet/npm-data/**)",
+      "Read(//home/scarlettp/intranet/npm-data/nginx/proxy_host/**)",
+      "Bash(echo \"=== error log around 23:52 ===\"; grep \"23:52\" ~/intranet/npm-data/logs/proxy-host-11_error.log 2>/dev/null | tail -10; echo \"\\(none above = no upstream errors at that time\\)\"; echo; echo \"=== reproduce browser POST exactly \\(with cookie/origin/referer\\) ===\"; curl -s -D - -o /tmp/body.txt -X POST https://checklist.int.scarlettparker.co.uk/__page-data -H 'Content-Type: application/json' -H 'Origin: https://checklist.int.scarlettparker.co.uk' -H 'Referer: https://checklist.int.scarlettparker.co.uk/items' -H 'Accept: */*' -d '{\"pattern\": \"checklist\"}' --max-time 15 2>&1 | head -12; echo \"body bytes:\"; wc -c /tmp/body.txt)",
+      "Read(//tmp/**)"
     ]
   }
 }

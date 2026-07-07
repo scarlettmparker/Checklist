@@ -1,0 +1,10 @@
+query locateGalleryItems($ids: [ID!]!) {
+  galleryQueries {
+    locateGalleryItems(ids: $ids) {
+      id
+      title
+      description
+      imagePath
+    }
+  }
+}

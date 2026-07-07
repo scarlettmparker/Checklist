@@ -42,5 +42,9 @@
   "compose-no-items": "Select templates to preview their items",
   "templates-count_zero": "No templates",
   "templates-count_one": "{{count}} template",
-  "templates-count_other": "{{count}} templates"
+  "templates-count_other": "{{count}} templates",
+  "gallery": "Gallery",
+  "no-images": "No images attached",
+  "upload-image": "Upload image",
+  "uploading-image": "Uploading..."
 }

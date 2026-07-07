@@ -1,0 +1,44 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lg);
+}
+
+.empty {
+  margin: 0;
+}
+
+.figure {
+  max-width: 100%;
+}
+
+.figure img {
+  width: 100%;
+  max-height: 24rem;
+  object-fit: cover;
+}
+
+.list {
+  margin: 0;
+  padding-left: var(--lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sm);
+}
+
+.error {
+  margin: 0;
+  color: var(--destructive);
+}
+
+.upload_button {
+  align-self: flex-start;
+}
+
+.body div > button {
+  align-self: center;
+}
+
+.file_input {
+  display: none;
+}
