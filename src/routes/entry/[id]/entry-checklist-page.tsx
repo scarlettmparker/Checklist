@@ -129,14 +129,15 @@ const EMPTY_CHECKLIST_ITEMS = {
 };
 
 /**
- * Loads checklist items for the add-items picker, paginated by `params.page`.
+ * Loads every checklist item for the add-items picker. The picker paginates
+ * client-side so page switches never trigger a client RPC.
  */
-async function getChecklistItemsForPicker(
-  params?: Record<string, unknown>,
-): Promise<Record<string, unknown> | null> {
+async function getChecklistItemsForPicker(): Promise<Record<
+  string,
+  unknown
+> | null> {
   try {
-    const pagination = { page: Number(params?.page ?? 1) - 1, size: 10 };
-    const result = await fetchListChecklistItems(pagination);
+    const result = await fetchListChecklistItems();
     if (result?.success && result.data) {
       const items = (result.data as ListChecklistItemsQuery).checklistQueries
         .items;
@@ -168,7 +169,7 @@ export function registerEntryDataAndMutations(): void {
   pageDataRegistry.registerPageDataLoader(PAGE, async (params) => {
     const id = params?.id as string;
     if (!id) return null;
-    return getChecklistItemsForPicker(params);
+    return getChecklistItemsForPicker();
   });
 
   mutationRegistry.registerMutationHandler("entry/addItem", async (body) => {

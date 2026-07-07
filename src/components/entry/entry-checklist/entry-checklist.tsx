@@ -12,7 +12,7 @@ import {
   Skeleton,
 } from "@sun/components";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { ChecklistEntryItem, ItemStatus, PageInfo } from "~/generated/graphql";
+import { ChecklistEntryItem, ItemStatus } from "~/generated/graphql";
 import EntryItemRow from "~/components/entry/entry-item-row";
 import EntryAddItemsPicker, {
   type PickerItem,
@@ -56,7 +56,8 @@ const EntryChecklist = ({
   const [showPicker, setShowPicker] = useState(false);
   const [page, setPage] = useState(1);
   const [pickerPage, setPickerPage] = useState(1);
-  const [pickerPageInfo, setPickerPageInfo] = useState<PageInfo | null>(null);
+  const [pickerCount, setPickerCount] = useState(0);
+  const PICKER_PAGE_SIZE = 10;
 
   useEffect(() => {
     setItems(fetchedItems);
@@ -204,17 +205,17 @@ const EntryChecklist = ({
                   entryId={entryId}
                   memberIds={memberIds}
                   page={pickerPage}
-                  onPageInfoChange={setPickerPageInfo}
+                  onCountChange={setPickerCount}
                   onSubmit={handleAddItems}
                 />
               </Suspense>
             </CardBody>
           </Card>
-          {pickerPageInfo && pickerPageInfo.totalPages > 1 && (
+          {pickerCount > PICKER_PAGE_SIZE && (
             <Pagination
               className={styles.pagination}
-              page={pickerPageInfo.page + 1}
-              totalPages={pickerPageInfo.totalPages}
+              page={pickerPage}
+              totalPages={Math.ceil(pickerCount / PICKER_PAGE_SIZE)}
               onPageChange={setPickerPage}
             />
           )}

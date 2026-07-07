@@ -109,42 +109,48 @@ const EditTemplateForm = ({ templateId, pattern }: EditTemplateFormProps) => {
 
   return (
     <div className={styles.container}>
-      <Form onSubmit={handleSave}>
-        <FormField name="name">
-          <FormLabel>{t("name")}</FormLabel>
-          <FormItem>
-            <Input
-              type="text"
-              defaultValue={template.name}
-              placeholder={t("name-placeholder")}
-              required
-            />
-          </FormItem>
-        </FormField>
-        <FormField name="description">
-          <FormLabel>{t("description")}</FormLabel>
-          <FormItem>
-            <MarkdownEditor
-              value={template.description || ""}
-              placeholder={t("description-placeholder")}
-              rows={DEFAULT_ROWS}
-              aria-label={t("description")}
-            />
-          </FormItem>
-        </FormField>
-        <FormFooter>
-          <Button
-            type="submit"
-            title={saving ? t("saving-title") : t("save-title")}
-            disabled={saving}
-          >
-            {saving ? t("saving-label") : t("save-label")}
-          </Button>
-        </FormFooter>
-      </Form>
+      <Card>
+        <CardBody>
+          <Form onSubmit={handleSave}>
+            <FormField name="name">
+              <FormLabel>{t("name")}</FormLabel>
+              <FormItem>
+                <Input
+                  type="text"
+                  defaultValue={template.name}
+                  placeholder={t("name-placeholder")}
+                  required
+                />
+              </FormItem>
+            </FormField>
+            <FormField name="description">
+              <FormLabel>{t("description")}</FormLabel>
+              <FormItem>
+                <MarkdownEditor
+                  value={template.description || ""}
+                  placeholder={t("description-placeholder")}
+                  rows={DEFAULT_ROWS}
+                  aria-label={t("description")}
+                />
+              </FormItem>
+            </FormField>
+            <FormFooter>
+              <Button
+                type="submit"
+                title={saving ? t("saving-title") : t("save-title")}
+                disabled={saving}
+              >
+                {saving ? t("saving-label") : t("save-label")}
+              </Button>
+            </FormFooter>
+          </Form>
+        </CardBody>
+      </Card>
 
-      <div className={styles.items_section}>
-        <CardTitle className={styles.subtitle}>{t("items-in-template")}</CardTitle>
+      <section className={styles.items_section}>
+        <CardTitle className={styles.subtitle}>
+          {t("items-in-template")}
+        </CardTitle>
         <Card>
           <CardBody className={styles.items_body}>
             {items.length === 0 ? (
@@ -173,10 +179,10 @@ const EditTemplateForm = ({ templateId, pattern }: EditTemplateFormProps) => {
             )}
           </CardBody>
         </Card>
-      </div>
+      </section>
 
-      <div className={styles.items_section}>
-        <CardTitle className={styles.subtitle}>{t("add-item")}</CardTitle>
+      <section className={styles.items_section}>
+        <CardTitle className={styles.subtitle}>{t("add-items")}</CardTitle>
         <Suspense
           fallback={<Skeleton style={{ width: "100%", height: "8rem" }} />}
         >
@@ -187,7 +193,7 @@ const EditTemplateForm = ({ templateId, pattern }: EditTemplateFormProps) => {
             onAdd={handleAdd}
           />
         </Suspense>
-      </div>
+      </section>
     </div>
   );
 };

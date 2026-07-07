@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getPageData } from "@sun/ssr";
-import { ListChecklistItemsQuery, PageInfo } from "~/generated/graphql";
+import { ListChecklistItemsQuery } from "~/generated/graphql";
 import { Button, Checkbox } from "@sun/components";
 import Icon from "~/components/shared/icon";
 import styles from "./entry-add-items-picker.module.css";
+
+const PAGE_SIZE = 10;
 
 export type PickerItem = {
   id: string;
@@ -16,13 +18,15 @@ type EntryAddItemsPickerProps = {
   entryId: string;
   memberIds: Set<string>;
   /**
-   * Current picker page (1-based).
+   * Current picker page (1-based), owned by the parent so pagination can render
+   * below the card.
    */
   page: number;
   /**
-   * Called with the fetched page info so the parent can render pagination.
+   * Called with the number of selectable items so the parent can render
+   * pagination controls.
    */
-  onPageInfoChange: (pageInfo: PageInfo | null) => void;
+  onCountChange: (count: number) => void;
   /**
    * Called with the selected items when "Add selected" is pressed.
    */
@@ -30,26 +34,31 @@ type EntryAddItemsPickerProps = {
 };
 
 /**
- * Lists items not yet in the entry with checkboxes to select them.
+ * Lists items not yet in the entry with checkboxes to select them. The full
+ * list is fetched during SSR and paginated client-side. Pagination is rendered
+ * by the parent (below the card) using the count reported here.
  */
 const EntryAddItemsPicker = ({
   entryId,
   memberIds,
   page,
-  onPageInfoChange,
+  onCountChange,
   onSubmit,
 }: EntryAddItemsPickerProps) => {
   const { t } = useTranslation("entry");
   const { data } = getPageData<
     ListChecklistItemsQuery["checklistQueries"]["items"]
-  >("checklistItems", "entry/:id", { id: entryId, page: String(page) });
-  const items = (data?.items ?? []).filter((i) => !memberIds.has(i.id));
-  const pageInfo = (data?.pageInfo ?? null) as PageInfo | null;
+  >("checklistItems", "entry/:id", { id: entryId });
+  const available = (data?.items ?? []).filter((i) => !memberIds.has(i.id));
+  const totalPages = Math.max(1, Math.ceil(available.length / PAGE_SIZE));
+  const current = Math.min(page, totalPages);
+  const start = (current - 1) * PAGE_SIZE;
+  const visible = available.slice(start, start + PAGE_SIZE);
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    onPageInfoChange(pageInfo);
-  }, [pageInfo, onPageInfoChange]);
+    onCountChange(available.length);
+  }, [available.length, onCountChange]);
 
   const toggle = (id: string) => {
     setSelected((prev) => {
@@ -63,18 +72,18 @@ const EntryAddItemsPicker = ({
     });
   };
 
-  if (items.length === 0) {
+  if (available.length === 0) {
     return <p className={styles.empty}>{t("no-items-to-add")}</p>;
   }
 
-  const selectedItems = items
+  const selectedItems = available
     .filter((i) => selected.has(i.id))
     .map((i) => ({ id: i.id, name: i.name, icon: i.icon ?? "" }));
 
   return (
     <div className={styles.container}>
       <div className={styles.picker}>
-        {items.map((item) => (
+        {visible.map((item) => (
           <div key={item.id} className={styles.row}>
             <Checkbox
               checked={selected.has(item.id)}

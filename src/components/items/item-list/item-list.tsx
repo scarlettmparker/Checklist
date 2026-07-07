@@ -22,6 +22,8 @@ import {
 import Icon from "~/components/shared/icon";
 import styles from "./item-list.module.css";
 
+const PAGE_SIZE = 10;
+
 type ItemListProps = {
   /**
    * Route pattern used by getPageData.
@@ -31,6 +33,8 @@ type ItemListProps = {
 
 /**
  * Displays checklist items in a card list with edit dropdown and double-click.
+ * The full list is fetched during SSR and paginated client-side via the URL
+ * `page` param so page switches never trigger a client RPC.
  */
 const ItemList = ({ pattern, children }: ItemListProps) => {
   const { t } = useTranslation("items");
@@ -39,9 +43,12 @@ const ItemList = ({ pattern, children }: ItemListProps) => {
   const page = searchParams.get("page") ? Number(searchParams.get("page")) : 1;
   const { data } = getPageData<
     ListChecklistItemsQuery["checklistQueries"]["items"]
-  >("checklistItems", pattern, { page: String(page) });
-  const items = data?.items ?? [];
-  const pageInfo = data?.pageInfo;
+  >("checklistItems", pattern);
+  const allItems = data?.items ?? [];
+  const totalPages = Math.max(1, Math.ceil(allItems.length / PAGE_SIZE));
+  const current = Math.min(page, totalPages);
+  const start = (current - 1) * PAGE_SIZE;
+  const items = allItems.slice(start, start + PAGE_SIZE);
 
   const handleDoubleClick = (id: string) => {
     navigate(`/items/${id}/edit`);
@@ -57,7 +64,7 @@ const ItemList = ({ pattern, children }: ItemListProps) => {
           </CardTitle>
         </CardHeader>
         <CardBody className={styles.list_body}>
-          {items.length === 0 ? (
+          {allItems.length === 0 ? (
             <p className={styles.no_items}>{t("no-items-found")}</p>
           ) : (
             items.map((item) => (
@@ -110,15 +117,15 @@ const ItemList = ({ pattern, children }: ItemListProps) => {
         </CardBody>
         <CardFooter className={styles.footer}>
           <span>
-            {t("items-count", { count: pageInfo?.totalCount ?? items.length })}
+            {t("items-count", { count: allItems.length })}
           </span>
         </CardFooter>
       </Card>
-      {pageInfo && (
+      {totalPages > 1 && (
         <Pagination
           className={styles.pagination}
-          page={pageInfo.page + 1}
-          totalPages={pageInfo.totalPages}
+          page={current}
+          totalPages={totalPages}
           onPageChange={(next: number) => {
             const params = new URLSearchParams(searchParams);
             params.set("page", String(next));

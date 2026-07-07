@@ -7,8 +7,8 @@ type ChecklistItemsPrefetchProps = {
 };
 
 /**
- * Forces SSR to load the picker's first page of checklist items so the picker
- * reads hydrated data. The page param must match the picker's default page.
+ * Forces SSR to load the picker's checklist items so the picker reads hydrated
+ * data instead of triggering a client RPC.
  */
 const ChecklistItemsPrefetch = ({
   id,
@@ -17,7 +17,7 @@ const ChecklistItemsPrefetch = ({
   getPageData<ListChecklistItemsQuery["checklistQueries"]["items"]>(
     "checklistItems",
     pattern,
-    { id, page: "1" },
+    { id },
   );
   return null;
 };

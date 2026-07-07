@@ -7,6 +7,7 @@ import Icon from "~/components/shared/icon";
 import styles from "./create-template-form.module.css";
 
 const ICON_SIZE = 16;
+const PAGE_SIZE = 10;
 
 type ItemPickerProps = {
   selected: Set<string>;
@@ -14,16 +15,20 @@ type ItemPickerProps = {
 };
 
 /**
- * Lists checklist items with a checkbox + icon, paginated below the card.
+ * Lists checklist items with a checkbox + icon. The full list is fetched
+ * during SSR and paginated client-side below the card.
  */
 const ItemPicker = ({ selected, setItem }: ItemPickerProps) => {
   const { t } = useTranslation("templates");
   const [page, setPage] = useState(1);
   const { data } = getPageData<
     ListChecklistItemsQuery["checklistQueries"]["items"]
-  >("checklistItems", "checklist", { page: String(page) });
-  const items = data?.items ?? [];
-  const pageInfo = data?.pageInfo;
+  >("checklistItems", "checklist");
+  const allItems = data?.items ?? [];
+  const totalPages = Math.max(1, Math.ceil(allItems.length / PAGE_SIZE));
+  const current = Math.min(page, totalPages);
+  const start = (current - 1) * PAGE_SIZE;
+  const items = allItems.slice(start, start + PAGE_SIZE);
   const [drag, setDrag] = useState<{ active: boolean; target: boolean } | null>(
     null,
   );
@@ -47,7 +52,7 @@ const ItemPicker = ({ selected, setItem }: ItemPickerProps) => {
     }
   };
 
-  if (items.length === 0) {
+  if (allItems.length === 0) {
     return <p className={styles.no_picker_items}>{t("no-picker-items")}</p>;
   }
 
@@ -74,10 +79,10 @@ const ItemPicker = ({ selected, setItem }: ItemPickerProps) => {
           ))}
         </CardBody>
       </Card>
-      {pageInfo && pageInfo.totalPages > 1 && (
+      {totalPages > 1 && (
         <Pagination
-          page={pageInfo.page + 1}
-          totalPages={pageInfo.totalPages}
+          page={current}
+          totalPages={totalPages}
           onPageChange={setPage}
         />
       )}

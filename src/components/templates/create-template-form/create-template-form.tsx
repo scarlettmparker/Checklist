@@ -2,6 +2,9 @@ import { useState, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 import {
+  Card,
+  CardBody,
+  CardTitle,
   Form,
   FormField,
   FormItem,
@@ -74,47 +77,54 @@ const CreateTemplateForm = () => {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <FormField name="name">
-        <FormLabel>{t("name")}</FormLabel>
-        <FormItem>
-          <Input type="text" placeholder={t("name-placeholder")} required />
-        </FormItem>
-      </FormField>
-      <FormField name="description">
-        <FormLabel>{t("description")}</FormLabel>
-        <FormItem>
-          <MarkdownEditor
-            placeholder={t("description-placeholder")}
-            rows={DEFAULT_ROWS}
-            aria-label={t("description")}
-          />
-        </FormItem>
-      </FormField>
-      <FormField name="items">
-        <FormLabel>{t("items-in-template")}</FormLabel>
+    <div className={styles.container}>
+      <Card>
+        <CardBody>
+          <Form onSubmit={handleSubmit}>
+            <FormField name="name">
+              <FormLabel>{t("name")}</FormLabel>
+              <FormItem>
+                <Input type="text" placeholder={t("name-placeholder")} required />
+              </FormItem>
+            </FormField>
+            <FormField name="description">
+              <FormLabel>{t("description")}</FormLabel>
+              <FormItem>
+                <MarkdownEditor
+                  placeholder={t("description-placeholder")}
+                  rows={DEFAULT_ROWS}
+                  aria-label={t("description")}
+                />
+              </FormItem>
+            </FormField>
+            {error && <p className={styles.error}>{error}</p>}
+            <FormFooter>
+              <Link to={cancelTo}>
+                <Button type="button" variant="secondary" title={t("cancel-title")}>
+                  {t("cancel-label")}
+                </Button>
+              </Link>
+              <Button
+                type="submit"
+                title={loading ? t("creating-title") : t("create-title")}
+                disabled={loading}
+              >
+                {loading ? t("creating-label") : t("create-label")}
+              </Button>
+            </FormFooter>
+          </Form>
+        </CardBody>
+      </Card>
+
+      <section className={styles.items_section}>
+        <CardTitle className={styles.subtitle}>{t("add-items")}</CardTitle>
         <Suspense
           fallback={<Skeleton style={{ width: "100%", height: "8rem" }} />}
         >
           <ItemPicker selected={selected} setItem={setItem} />
         </Suspense>
-      </FormField>
-      {error && <p className={styles.error}>{error}</p>}
-      <FormFooter>
-        <Link to={cancelTo}>
-          <Button type="button" variant="secondary" title={t("cancel-title")}>
-            {t("cancel-label")}
-          </Button>
-        </Link>
-        <Button
-          type="submit"
-          title={loading ? t("creating-title") : t("create-title")}
-          disabled={loading}
-        >
-          {loading ? t("creating-label") : t("create-label")}
-        </Button>
-      </FormFooter>
-    </Form>
+      </section>
+    </div>
   );
 };
 

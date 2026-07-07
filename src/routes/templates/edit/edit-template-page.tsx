@@ -7,7 +7,7 @@ import {
   pageDataRegistry,
   ServerRedirectError,
 } from "@sun/ssr";
-import { Breadcrumb, Card, CardBody, useBreadcrumbContext } from "@sun/components";
+import { Breadcrumb, useBreadcrumbContext } from "@sun/components";
 import {
   ListChecklistItemsQuery,
   ListChecklistTemplateItemsQuery,
@@ -49,13 +49,9 @@ const EditTemplatePage = () => {
   return (
     <div className={styles.layout}>
       <Breadcrumb />
-      <Card>
-        <CardBody>
-          <Suspense fallback={<CreateTemplatePageSkeleton />}>
-            <EditTemplateForm templateId={id} pattern={PAGE} />
-          </Suspense>
-        </CardBody>
-      </Card>
+      <Suspense fallback={<CreateTemplatePageSkeleton />}>
+        <EditTemplateForm templateId={id} pattern={PAGE} />
+      </Suspense>
     </div>
   );
 };
@@ -123,12 +119,12 @@ async function getTemplateItemsData(
   }
 }
 
-async function getChecklistItemsForPicker(
-  params?: Record<string, unknown>,
-): Promise<Record<string, unknown> | null> {
+async function getChecklistItemsForPicker(): Promise<Record<
+  string,
+  unknown
+> | null> {
   try {
-    const pagination = { page: Number(params?.page ?? 1) - 1, size: 10 };
-    const result = await fetchListChecklistItems(pagination);
+    const result = await fetchListChecklistItems();
     if (result?.success && result.data) {
       const items = (result.data as ListChecklistItemsQuery).checklistQueries
         .items;
@@ -158,7 +154,7 @@ export function registerEditTemplatePageHandlers(): void {
   pageDataRegistry.registerPageDataLoader(PAGE, async (params) => {
     const id = params?.id as string;
     if (!id) return null;
-    return getChecklistItemsForPicker(params);
+    return getChecklistItemsForPicker();
   });
 
   mutationRegistry.registerMutationHandler("templates/save", async (body) => {

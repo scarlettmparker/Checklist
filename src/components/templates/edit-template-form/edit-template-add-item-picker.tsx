@@ -7,6 +7,7 @@ import Icon from "~/components/shared/icon";
 import styles from "./edit-template-form.module.css";
 
 const ICON_SIZE = 16;
+const PAGE_SIZE = 10;
 
 type EditTemplateAddItemPickerProps = {
   /**
@@ -28,8 +29,9 @@ type EditTemplateAddItemPickerProps = {
 };
 
 /**
- * Add-item picker for the edit-template form: lists checklist items not yet on
- * the template, paginated below the card.
+ * Add-items picker for the edit-template form: lists checklist items not yet
+ * on the template. The full list is fetched during SSR and paginated
+ * client-side below the card.
  */
 const EditTemplateAddItemPicker = ({
   templateId,
@@ -41,15 +43,18 @@ const EditTemplateAddItemPicker = ({
   const [page, setPage] = useState(1);
   const { data } = getPageData<
     ListChecklistItemsQuery["checklistQueries"]["items"]
-  >("checklistItems", pattern, { id: templateId, page: String(page) });
-  const items = (data?.items ?? []).filter((i) => !memberIds.has(i.id));
-  const pageInfo = data?.pageInfo;
+  >("checklistItems", pattern, { id: templateId });
+  const available = (data?.items ?? []).filter((i) => !memberIds.has(i.id));
+  const totalPages = Math.max(1, Math.ceil(available.length / PAGE_SIZE));
+  const current = Math.min(page, totalPages);
+  const start = (current - 1) * PAGE_SIZE;
+  const items = available.slice(start, start + PAGE_SIZE);
 
   return (
     <>
       <Card>
         <CardBody className={styles.items_body}>
-          {items.length === 0 ? (
+          {available.length === 0 ? (
             <p className={styles.empty}>{t("no-picker-items")}</p>
           ) : (
             items.map((item) => (
@@ -72,12 +77,8 @@ const EditTemplateAddItemPicker = ({
           )}
         </CardBody>
       </Card>
-      {pageInfo && pageInfo.totalPages > 1 && (
-        <Pagination
-          page={pageInfo.page + 1}
-          totalPages={pageInfo.totalPages}
-          onPageChange={setPage}
-        />
+      {totalPages > 1 && (
+        <Pagination page={current} totalPages={totalPages} onPageChange={setPage} />
       )}
     </>
   );

@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Link, useLocation, useOutlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { pageDataRegistry } from "@sun/ssr";
-import { ListChecklistItemsQuery, PaginationInput } from "~/generated/graphql";
+import { ListChecklistItemsQuery } from "~/generated/graphql";
 import { fetchListChecklistItems } from "~/utils/api";
 import { Button } from "@sun/components";
 import { PlusIcon } from "@heroicons/react/24/outline";
@@ -46,20 +46,13 @@ const ItemsPage = () => {
 };
 
 /**
- * Server-side data fetching function for checklist items.
- *
- * @param params page data params, carrying the 1-based `page` from the URL
+ * Server-side data fetching function for checklist items. Fetches every item
+ * (the service defaults to an unlimited page size); the list paginates
+ * client-side so page switches never trigger a client RPC.
  */
-async function getChecklistItemsData(
-  params?: Record<string, unknown>,
-): Promise<Record<string, unknown> | null> {
+async function getChecklistItemsData(): Promise<Record<string, unknown> | null> {
   try {
-    // URL page is 1-based; the backend (Spring PageRequest) is 0-based.
-    const pagination: PaginationInput = {
-      page: Number(params?.page ?? 1) - 1,
-      size: 10,
-    };
-    const result = await fetchListChecklistItems(pagination);
+    const result = await fetchListChecklistItems();
     if (result?.data && result.success) {
       const checklistItems = (result.data as ListChecklistItemsQuery)
         .checklistQueries.items;
