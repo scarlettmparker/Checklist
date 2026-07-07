@@ -64,10 +64,8 @@ async function handleCreateItem(
   const data = result.data?.checklistMutations.createItem as MutationResult;
 
   if (data?.__typename === "QuerySuccess" || data?.__typename === "Redirect") {
-    // Wildcard page so every paginated list entry is invalidated.
-    const keyToInvalidate = makeCacheKey("checklist:checklistItems", {
-      page: "*",
-    });
+    // The list reads checklistItems with no page param.
+    const keyToInvalidate = makeCacheKey("checklist:checklistItems", {});
     throw new ServerRedirectError("/items", keyToInvalidate);
   }
 

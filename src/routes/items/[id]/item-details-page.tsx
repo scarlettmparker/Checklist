@@ -130,7 +130,7 @@ async function handleRetireItem(
 
   if (data?.__typename === "QuerySuccess" || data?.__typename === "Redirect") {
     throw new ServerRedirectError("/items", [
-      makeCacheKey("checklist:checklistItems", { page: "*" }),
+      makeCacheKey("checklist:checklistItems", {}),
       makeCacheKey("checklist/:id:item", { id }),
     ]);
   }

@@ -4,7 +4,21 @@
  */
 import { renderApp } from "../utils/ssr.js";
 import { base, isProduction } from "../config.js";
+import { suspenseCache, pageDataRegistry } from "@sun/ssr";
 import { Buffer } from "buffer";
+
+/**
+ * Clears the in-memory page-data caches so the next SSR render fetches fresh.
+ * Used by the e2e stack between tests (dbReset clears the DB; this clears what
+ * the server is holding onto). Only meaningful when @sun/ssr is externalized so
+ * server.js and the SSR render share one instance.
+ */
+function clearAppCache() {
+  suspenseCache.clear();
+  for (const key of Object.keys(pageDataRegistry.pageDataCache)) {
+    delete pageDataRegistry.pageDataCache[key];
+  }
+}
 
 /**
  * Reads a named cookie value from a raw Cookie header.
@@ -32,6 +46,11 @@ function getCookieValue(cookieHeader, name) {
  * @param {object} vite - The Vite dev server instance (optional, only in development).
  */
 export function setupRoutes(app, vite) {
+  app.post("/__reset-cache", async (_request, reply) => {
+    clearAppCache();
+    reply.send({ ok: true });
+  });
+
   app.setNotFoundHandler({ method: ["GET"] }, async (request, reply) => {
     const mutationPayloadCookie = getCookieValue(
       request.headers.cookie,

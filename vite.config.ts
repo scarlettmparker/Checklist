@@ -48,8 +48,12 @@ export default defineConfig(() => {
         "posthog-js",
         "@posthog/react",
         "@sun/components",
-        "@sun/ssr",
       ],
+      // @sun/ssr is externalized so server.js and the built entry-server share
+      // one module instance (one suspense/page-data cache) — required for the
+      // e2e cache-reset endpoint to reach the SSR cache, and for /__page-data
+      // RPC reliability in production.
+      external: ["@sun/ssr"],
     },
   };
 });

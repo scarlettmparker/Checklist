@@ -119,6 +119,18 @@ export async function render({
           headers["Set-Cookie"] =
             "invalidate_cache=; Path=/; Max-Age=0; SameSite=Lax;";
         }
+        // React Refresh is dev-only (HMR). In production VITE_SERVER_BASE is
+        // unset, so emitting this preamble throws an uncaught module-resolution
+        // error in the browser.
+        const refreshPreamble = isProduction
+          ? ""
+          : `<script type="module">
+              import RefreshRuntime from '${process.env.VITE_SERVER_BASE}/@react-refresh'
+              RefreshRuntime.injectIntoGlobalHook(window)
+              window.$RefreshReg$ = () => {}
+              window.$RefreshSig$ = () => (type) => type
+              window.__vite_plugin_react_preamble_installed__ = true
+            </script>`;
         const prelude = `<!DOCTYPE html>
           <html lang="en">
             <head>
@@ -127,13 +139,7 @@ export async function render({
               ${cssTag}
               <title>Checklist | Scarlet Sun</title>
             </head>
-            <script type="module">
-              import RefreshRuntime from '${process.env.VITE_SERVER_BASE}/@react-refresh'
-              RefreshRuntime.injectIntoGlobalHook(window)
-              window.$RefreshReg$ = () => {}
-              window.$RefreshSig$ = () => (type) => type
-              window.__vite_plugin_react_preamble_installed__ = true
-            </script>
+            ${refreshPreamble}
             <script>
               window.__translations__ = ${JSON.stringify(translations)};
               window.__posthog_key__ = '${posthogKey}';

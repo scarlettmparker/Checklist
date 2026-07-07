@@ -50,6 +50,11 @@ services:
       AWS_ACCESS_KEY_ID: test
       AWS_SECRET_ACCESS_KEY: test
       S3_ENDPOINT: http://example.com
+      SPRING_JPA_SHOW_SQL: "false"
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "false"
+      LOGGING_LEVEL_ROOT: WARN
+      LOGGING_LEVEL_ORG_HIBERNATE: WARN
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: WARN
     depends_on:
       db:
         condition: service_healthy
@@ -70,7 +75,6 @@ services:
       NODE_ENV: production
       SERVER_PORT: 3000
       GRAPHQL_ENDPOINT: http://backend:8083/graphql
-      PAGE_DATA_TTL_MS: "0"
     depends_on:
       backend:
         condition: service_healthy

@@ -114,7 +114,7 @@ async function handleSaveItem(
   if (data?.__typename === "QuerySuccess" || data?.__typename === "Redirect") {
     const itemId = id as string;
     throw new ServerRedirectError(`/items/${itemId}`, [
-      makeCacheKey("checklist:checklistItems", { page: "*" }),
+      makeCacheKey("checklist:checklistItems", {}),
       makeCacheKey("checklist/:id:item", { id: itemId }),
     ]);
   }
