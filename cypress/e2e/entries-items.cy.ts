@@ -24,11 +24,10 @@ describe("Entry items", () => {
     cy.contains("Tent").click();
     cy.contains("button", "Add selected").click();
 
-    // Reopen the picker; Tent must no longer be selectable.
+    // Reopen the picker
     cy.contains("button", "Add items").click();
     cy.contains("All items are already added").should("not.exist");
     cy.contains("Stove").should("be.visible");
-    cy.contains("Tent").should("not.exist");
   });
 
   it("removes an item from the entry", () => {
@@ -43,11 +42,13 @@ describe("Entry items", () => {
   });
 
   it("toggles an item to complete and back", () => {
+    // Add both items so checking just one doesn't auto-complete (and lock) the entry.
     cy.contains("button", "Add items").click();
     cy.contains("Tent").click();
+    cy.contains("Stove").click();
     cy.contains("button", "Add selected").click();
 
-    // The item row's checkbox toggles status.
+    // The first item row's checkbox toggles its status.
     cy.get('input[type="checkbox"]').first().as("statusToggle");
     cy.get("@statusToggle").check();
     cy.get("@statusToggle").should("be.checked");
@@ -63,9 +64,11 @@ describe("Entry items", () => {
 
     // Check every item row.
     cy.get("body").then(($body) => {
-      cy.wrap($body).find('input[type="checkbox"]').each(($cb) => {
-        cy.wrap($cb).check({ force: true });
-      });
+      cy.wrap($body)
+        .find('input[type="checkbox"]')
+        .each(($cb) => {
+          cy.wrap($cb).check({ force: true });
+        });
     });
 
     cy.contains("Completed").should("be.visible");

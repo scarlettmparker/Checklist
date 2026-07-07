@@ -19,8 +19,8 @@ describe("Items CRUD", () => {
     cy.createItemViaUi("Old lamp");
     cy.visit("/items");
     cy.contains("Old lamp").click(); // open the detail panel
-    // The detail card's title links to edit; it follows the list-row link in DOM.
-    cy.contains("a", "Old lamp").last().click();
+    // The detail card's title is the only link to /edit.
+    cy.get('a[href*="/edit"]').first().click();
     cy.url().should("include", "/edit");
     cy.get('input[name="name"]').clear().type("New lamp{enter}");
     cy.url().should("match", /\/items\//);

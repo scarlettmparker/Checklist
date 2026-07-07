@@ -5,7 +5,9 @@
       "Bash(mv entries.items.cy.ts entries-items.cy.ts)",
       "Bash(mv entries.createFromTemplates.cy.ts entries-create-from-templates.cy.ts)",
       "Bash(mv items.crud.cy.ts items-crud.cy.ts)",
-      "Bash(mv items.pagination.cy.ts items-pagination.cy.ts)"
+      "Bash(mv items.pagination.cy.ts items-pagination.cy.ts)",
+      "Bash(find cypress-results/screenshots -name \"*.png\" -newer cypress-results/screenshots/../ 2>/dev/null | sort; echo \"---\"; find cypress-results/screenshots -name \"*.png\" | sort)",
+      "Read(//home/scarlettp/Desktop/GitHub/Checklist/cypress-results/**)"
     ]
   }
 }

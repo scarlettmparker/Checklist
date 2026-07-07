@@ -50,11 +50,18 @@ services:
       AWS_ACCESS_KEY_ID: test
       AWS_SECRET_ACCESS_KEY: test
       S3_ENDPOINT: http://example.com
-      SPRING_JPA_SHOW_SQL: "false"
-      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "false"
-      LOGGING_LEVEL_ROOT: WARN
-      LOGGING_LEVEL_ORG_HIBERNATE: WARN
-      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: WARN
+    entrypoint: ["sh", "-c"]
+    command:
+      - >-
+        java -jar app.jar
+        --spring.jpa.show-sql=false
+        --logging.level.root=WARN
+        --logging.level.org.hibernate=WARN
+        --logging.level.org.hibernate.SQL=WARN
+        --logging.level.com.zaxxer.hikari=WARN
+        > /logs/backend.log 2>&1
+    volumes:
+      - ./cypress-results/logs:/logs
     depends_on:
       db:
         condition: service_healthy
