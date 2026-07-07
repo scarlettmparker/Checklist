@@ -15,9 +15,8 @@ export default defineConfig({
     fixturesFolder: "cypress/fixtures",
     screenshotsFolder: "cypress-results/screenshots",
     videosFolder: "cypress-results/videos",
-    video: false,
+    video: true,
     screenshotOnRunFailure: true,
-    retries: { runMode: 2, openMode: 0 },
     setupNodeEvents(on) {
       let client: pg.Client | null = null;
 
