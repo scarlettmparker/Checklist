@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getPageData } from "@sun/ssr";
+import { usePageData } from "@sun/ssr/react";
 import { Link } from "react-router-dom";
 import { ListChecklistEntriesQuery } from "~/generated/graphql";
 import { Button, Card, CardBody } from "@sun/components";
@@ -16,7 +16,7 @@ import styles from "./entry-list.module.css";
  */
 const EntryList = () => {
   const { t } = useTranslation("entry");
-  const { data } = getPageData<
+  const { data } = usePageData<
     ListChecklistEntriesQuery["checklistQueries"]["listEntries"]
   >("entry", "entry");
   const entries = data ?? [];

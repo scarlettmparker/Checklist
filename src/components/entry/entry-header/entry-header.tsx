@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { getPageData } from "@sun/ssr";
+import { usePageData } from "@sun/ssr/react";
 import { LocateChecklistEntryQuery } from "~/generated/graphql";
 import {
   Button,
@@ -39,7 +39,7 @@ const EntryHeader = ({ id }: EntryHeaderProps) => {
   const { t } = useTranslation("entry");
   const navigate = useNavigate();
   const { setBreadcrumbs, setCurrent } = useBreadcrumbContext();
-  const { data: entry } = getPageData<
+  const { data: entry } = usePageData<
     LocateChecklistEntryQuery["checklistQueries"]["entry"]
   >("entry", "entry/:id", { id });
   const [editOpen, setEditOpen] = useState(false);
