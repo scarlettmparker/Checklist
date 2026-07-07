@@ -120,6 +120,7 @@ export async function renderApp(
       vite?.ssrFixStacktrace(e);
     }
     console.error("SSR rendering error:", e.stack);
-    res.status(500).end(e.stack);
+    res.statusCode = 500;
+    res.end(e.stack);
   }
 }

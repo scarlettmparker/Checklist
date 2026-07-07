@@ -10,18 +10,25 @@
     "graphql:generate": "graphql-codegen --config codegen.ts",
     "lint": "npx eslint",
     "pretty": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\"",
-    "preview": "cross-env NODE_ENV=production tsx --loader ./css-loader.mjs server.js"
+    "preview": "cross-env NODE_ENV=production tsx --loader ./css-loader.mjs server.js",
+    "cypress": "cypress",
+    "cypress:run": "cypress run --browser chrome",
+    "e2e:up": "docker compose -f docker-compose.e2e.yml up -d db backend app",
+    "e2e:down": "docker compose -f docker-compose.e2e.yml down -v",
+    "e2e": "docker compose -f docker-compose.e2e.yml up --abort-on-container-exit --exit-code-from cypress"
   },
   "devDependencies": {
     "@eslint/js": "^9.37.0",
     "@graphql-codegen/cli": "6.0.1",
     "@graphql-codegen/client-preset": "5.1.1",
+    "cypress": "^15.18.0",
     "@graphql-codegen/typescript": "^5.0.2",
     "@graphql-codegen/typescript-operations": "^5.0.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.8.0",
+    "@types/pg": "^8.11.10",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react-swc": "^3.11.0",
     "baseline-browser-mapping": "^2.9.11",
@@ -39,6 +46,7 @@
     "tsx": "^4.20.6",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.45.0",
+    "pg": "^8.13.1",
     "vite": "^6.0.0"
   },
   "dependencies": {

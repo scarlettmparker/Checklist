@@ -68,17 +68,22 @@ export async function render({
     interpolation: { escapeValue: false },
   });
 
-  // Load full translations including plurals for the current page namespace
+  // Load full translations including plurals for the current page namespace.
+  // Try the requested locale, then fall back through en-GB / en so an
+  // Accept-Language of "en" or "en-US" still resolves to the bundled en-GB file.
   let translations: Record<string, unknown> = {};
   try {
-    const filePath = path.resolve(
-      process.cwd(),
-      `messages/${pageName}/${locale}.json`,
-    );
-    if (fs.existsSync(filePath)) {
-      const fileContent = fs.readFileSync(filePath, "utf-8");
-      translations = JSON.parse(fileContent);
-      i18n.addResourceBundle(locale, pageName, translations, true, true);
+    for (const candidate of [locale, "en-GB", "en"]) {
+      const filePath = path.resolve(
+        process.cwd(),
+        `messages/${pageName}/${candidate}.json`,
+      );
+      if (fs.existsSync(filePath)) {
+        const fileContent = fs.readFileSync(filePath, "utf-8");
+        translations = JSON.parse(fileContent);
+        i18n.addResourceBundle(locale, pageName, translations, true, true);
+        break;
+      }
     }
   } catch {
     // fallback to empty

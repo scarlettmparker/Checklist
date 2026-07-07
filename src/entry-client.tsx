@@ -34,15 +34,19 @@ function getPageName(pathname: string) {
  * @param locale Locale.
  */
 async function loadTranslations(page: string, locale: string) {
-  try {
-    const res = await fetch(`/messages/${page}/${locale}.json`);
-    if (!res.ok) throw new Error("Not found");
-    return await res.json();
-  } catch {
-    // fallback to en
-    const res = await fetch(`/messages/${page}/en.json`);
-    return await res.json();
+  // Try the requested locale, then fall back through en-GB / en so "en" or
+  // "en-US" still resolve to the bundled en-GB file.
+  for (const candidate of [locale, "en-GB", "en"]) {
+    try {
+      const res = await fetch(`/messages/${page}/${candidate}.json`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // try the next candidate
+    }
   }
+  return {};
 }
 
 /**

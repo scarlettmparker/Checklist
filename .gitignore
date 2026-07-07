@@ -6,6 +6,11 @@ public/
 # Generated
 coverage/
 
+# Cypress
+cypress-results/
+cypress/screenshots/
+cypress/videos/
+
 # Java stuff
 .gradle/
 build/
