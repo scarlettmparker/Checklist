@@ -17,10 +17,18 @@ export default defineConfig({
     videosFolder: "cypress-results/videos",
     video: true,
     screenshotOnRunFailure: true,
+    defaultCommandTimeout: 15000,
+    requestTimeout: 15000,
+    retries: 0,
     setupNodeEvents(on) {
       let client: pg.Client | null = null;
 
       on("task", {
+        log(message) {
+          // eslint-disable-next-line no-console
+          console.log(message);
+          return null;
+        },
         // Delete everything from the DB and reset all sequences. Used to isolate tests.
         async dbReset() {
           const connectionString =

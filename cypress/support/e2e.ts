@@ -1,36 +1,70 @@
 /// <reference types="cypress" />
-
 /**
- * Global Cypress commands for Checklist functional tests.
+ * Shared commands + seed helpers for the functional tests.
  */
 
 type MutationResult =
   | { __typename: "QuerySuccess"; id?: string | null; message: string }
-  | { __typename: "StandardError"; message: string };
+  | { __typename: "StandardError"; message: string }
+  | { __typename: "Redirect"; redirectTo: string };
 
 declare global {
   namespace Cypress {
     interface Chainable {
-      /** Run a server mutation through the app's /<name> endpoint. */
       mutate(
         name: string,
         body: Record<string, unknown>,
       ): Chainable<MutationResult>;
+      createItemViaUi(name: string): Chainable<void>;
+      createEntryViaUi(name?: string): Chainable<string>;
+      openEntryMenu(item: string): Chainable<void>;
+      /** Click a button inside the currently-open dialog (avoids page-behind ambiguity). */
+      confirmInDialog(label: string): Chainable<void>;
     }
   }
 }
 
-Cypress.Commands.add("mutate", (name, body) => {
-  return cy
-    .request("POST", `/${name}`, body)
-    .then((response) => response.body as MutationResult);
+Cypress.Commands.add("mutate", (name, body) =>
+  cy.request("POST", `/${name}`, body).then((r) => r.body as MutationResult),
+);
+
+Cypress.Commands.add("createItemViaUi", (name) => {
+  cy.visit("/items/create");
+  cy.get('input[name="name"]').type(`${name}{enter}`);
+  cy.url().should("eq", Cypress.config("baseUrl") + "/items");
 });
 
-/**
- * Every test starts from a clean database.
- */
+Cypress.Commands.add("createEntryViaUi", (name) => {
+  cy.visit("/");
+  cy.contains("button", "Create new Entry").click();
+  cy.get('input[name="name"]').type(`${name ?? ""}{enter}`);
+  cy.url().should("match", /\/entry\//);
+  return cy.url().then((url) => url.split("/entry/")[1]);
+});
+
+Cypress.Commands.add("openEntryMenu", (item) => {
+  cy.get('button[aria-label="Checklists"]').first().click();
+  cy.contains(item).click();
+});
+
+Cypress.Commands.add("confirmInDialog", (label) => {
+  cy.get('[role="dialog"]').contains("button", label).click();
+});
+
 beforeEach(() => {
   cy.task("dbReset");
+});
+
+/** Log URL + a body snippet after each test so failures self-diagnose. */
+afterEach(() => {
+  cy.url().then((url) =>
+    cy.document().then((doc) => {
+      const text = (doc.body.textContent || "")
+        .replace(/\s+/g, " ")
+        .slice(0, 300);
+      cy.task("log", `[after ${url}] ${text}`);
+    }),
+  );
 });
 
 export {};

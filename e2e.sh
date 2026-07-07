@@ -62,6 +62,9 @@ case "$COMMAND" in
     ;;
   run)
     build_backend_if_needed
-    $COMPOSE up --abort-on-container-exit --exit-code-from cypress
+    code=0
+    $COMPOSE up --abort-on-container-exit --exit-code-from cypress || code=$?
+    $COMPOSE down -v --remove-orphans
+    exit "$code"
     ;;
 esac

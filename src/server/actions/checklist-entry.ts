@@ -64,7 +64,11 @@ export async function completeChecklistEntry(
 
 /** Archives an entry. */
 export async function archiveEntry(entryId: string): Promise<MutationResult> {
-  return executeMutation("entry/archiveChecklist", { entryId });
+  const result = await executeMutation("entry/archiveChecklist", { entryId });
+  if (result.__typename === "Redirect") {
+    window.location.assign(result.redirectTo);
+  }
+  return result;
 }
 
 /** Permanently deletes an entry and its items. */

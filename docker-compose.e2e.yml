@@ -70,6 +70,7 @@ services:
       NODE_ENV: production
       SERVER_PORT: 3000
       GRAPHQL_ENDPOINT: http://backend:8083/graphql
+      PAGE_DATA_TTL_MS: "0"
     depends_on:
       backend:
         condition: service_healthy
