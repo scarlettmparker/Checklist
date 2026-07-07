@@ -99,4 +99,6 @@ services:
       DATABASE_URL: postgres://sun:sun@db:5432/sun_test
     working_dir: /e2e
     volumes:
+      - ./cypress.config.ts:/e2e/cypress.config.ts:ro
+      - ./cypress:/e2e/cypress:ro
       - ./cypress-results:/e2e/cypress-results

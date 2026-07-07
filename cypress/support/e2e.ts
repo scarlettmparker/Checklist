@@ -2,11 +2,6 @@
 
 /**
  * Global Cypress commands for Checklist functional tests.
- *
- * Mutations go through the app's own SSR layer: POSTing to /<mutationName>
- * exercises the same registry the UI uses, so seeding mirrors real usage. The
- * app forwards them to the sun-graphql backend and stamps redirect/invalidate
- * cookies exactly as a user click would.
  */
 
 type MutationResult =
@@ -32,9 +27,7 @@ Cypress.Commands.add("mutate", (name, body) => {
 });
 
 /**
- * Every test starts from a clean database: truncate all tables via the dbReset
- * task (fast, schema-preserving). Seeding then happens against a known-empty
- * slate, so tests stay order-independent and parallelisable.
+ * Every test starts from a clean database.
  */
 beforeEach(() => {
   cy.task("dbReset");
