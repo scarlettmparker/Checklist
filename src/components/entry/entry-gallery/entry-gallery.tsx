@@ -1,8 +1,15 @@
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { usePageData } from "@sun/ssr/react";
-import { Button, Card, CardBody, CardHeader, CardTitle, Figure } from "@sun/components";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  CardTitle,
+  Figure,
+} from "@sun/components";
+import { CameraIcon } from "@heroicons/react/24/outline";
 import Carousel from "~/components/shared/carousel";
 import {
   requestImageUpload,
@@ -56,9 +63,7 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
       }
       await confirmImageUpload(entryId, key, file.name);
     } catch (err) {
-      setUploadError(
-        err instanceof Error ? err.message : "Upload failed",
-      );
+      setUploadError(err instanceof Error ? err.message : "Upload failed");
     }
     setUploading(false);
     e.target.value = "";
@@ -111,7 +116,7 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
           title={t("upload-image")}
           onClick={() => fileInputRef.current?.click()}
         >
-          <PlusIcon width={16} height={16} />
+          <CameraIcon width={16} height={16} className={styles.icon} />
           {uploading ? t("uploading-image") : t("upload-image")}
         </Button>
       </CardBody>
