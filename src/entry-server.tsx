@@ -8,7 +8,11 @@ import NotFound from "./routes/not-found";
 import { matchRoutes } from "react-router-dom";
 import { inlineCss, generateCssTag } from "@sun/utils";
 import "./utils/register-loaders";
-import { suspenseCache, invalidateCache, type MutationResult } from "@sun/ssr";
+import {
+  getRequestCache,
+  invalidateCache,
+  type MutationResult,
+} from "@sun/ssr";
 import fs from "fs";
 import path from "path";
 
@@ -54,9 +58,12 @@ export async function render({
     shouldDeleteCookie = invalidateCache(invalidateCacheCookie);
   }
 
-  for (const [key, record] of suspenseCache.entries()) {
+  // Capture this request's page-data cache.
+  const pageDataCache = getRequestCache();
+
+  for (const [key, record] of pageDataCache.entries()) {
     if (record.status === "rejected") {
-      suspenseCache.delete(key);
+      pageDataCache.delete(key);
     }
   }
 
@@ -169,7 +176,7 @@ export async function render({
       onAllReady() {
         const serverCacheData: Record<string, unknown> = {};
 
-        for (const [key, record] of suspenseCache.entries()) {
+        for (const [key, record] of pageDataCache.entries()) {
           if (record.status === "resolved") {
             serverCacheData[key] = record.result;
           }
