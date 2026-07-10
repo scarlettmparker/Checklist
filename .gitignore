@@ -16,3 +16,5 @@ cypress/videos/
 build/
 .idea
 stats.html
+
+.claude/
