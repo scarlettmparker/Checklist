@@ -1,5 +1,4 @@
 import { executeMutation, MutationResult } from "@sun/ssr";
-import { fetchGraphQLData } from "~/utils/api";
 
 const GALLERY_BUCKET = "gallery";
 
@@ -39,25 +38,29 @@ export async function requestImageUpload(
 }
 
 /**
- * Requests presigned PUT URLs for multiple files.
+ * Requests presigned PUT URLs for multiple files in parallel.
  */
 export async function requestImageUploads(
   entryId: string,
   files: { name: string; type: string }[],
 ): Promise<{ url: string; key: string }[]> {
-  const inputs = files.map((f) => ({
-    bucket: GALLERY_BUCKET,
-    key: `checklist/checklist-entries/${entryId}/${sanitizeFileName(f.name)}`,
-    contentType: f.type,
-  }));
-  const result = await fetchGraphQLData<{
-    filestoreMutations: { getPresignedUploadUrls: string[] };
-  }>("filestoreMutations.getPresignedUploadUrls", { input: inputs });
-  if (!result.success || !result.data) {
-    throw new Error("Failed to get upload URLs");
-  }
-  const urls = result.data.filestoreMutations.getPresignedUploadUrls;
-  return inputs.map((entry, i) => ({ url: urls[i], key: entry.key }));
+  return Promise.all(
+    files.map(async (file) => {
+      const key = `checklist/checklist-entries/${entryId}/${sanitizeFileName(file.name)}`;
+      const result = await executeMutation("filestore/get-presigned-upload-url", {
+        bucket: GALLERY_BUCKET,
+        key,
+        contentType: file.type,
+      });
+      if (result.__typename !== "QuerySuccess" || !result.id) {
+        throw new Error(
+          (result.__typename === "StandardError" && result.message) ||
+            "Failed to get upload URL",
+        );
+      }
+      return { url: result.id, key };
+    }),
+  );
 }
 
 /**
