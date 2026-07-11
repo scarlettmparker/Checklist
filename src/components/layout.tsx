@@ -2,6 +2,7 @@ import styles from "./layout.module.css";
 import { getBackgroundHex } from "@sun/utils";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { BreadcrumbProvider } from "@sun/components";
+import { ThemeSwitcher, THEME_APPLIED_EVENT, type ThemeOption } from "@sun/themes";
 import Nav from "~/components/nav";
 
 const useIsomorphicLayoutEffect =
@@ -18,35 +19,32 @@ const Layout = (props: LayoutProps) => {
   const [backgroundColour, setBackgroundColour] = useState<string | undefined>(
     undefined,
   );
-  // The 5s background transition is disabled until after the initial colour is
-  // applied, otherwise the first (instant) set fades in over 5s.
-  const [transitionEnabled, setTransitionEnabled] = useState(false);
+  const [themes, setThemes] = useState<ThemeOption[]>([]);
 
   useIsomorphicLayoutEffect(() => {
     const update = () => setBackgroundColour(getBackgroundHex());
     update();
-    // Re-enable the transition on the next frame, after the initial colour has
-    // been committed with duration 0.
-    const raf = requestAnimationFrame(() => setTransitionEnabled(true));
     const interval = setInterval(update, 5000);
+    window.addEventListener(THEME_APPLIED_EVENT, update);
     return () => {
-      cancelAnimationFrame(raf);
       clearInterval(interval);
+      window.removeEventListener(THEME_APPLIED_EVENT, update);
     };
   }, []);
 
+  useEffect(() => {
+    setThemes(window.__themes__ ?? []);
+  }, []);
+
   return (
-    <main
-      style={{
-        backgroundColor: backgroundColour,
-        transitionDuration: transitionEnabled ? undefined : "0s",
-      }}
-      className={styles.main}
-    >
+    <main style={{ backgroundColor: backgroundColour }} className={styles.main}>
       <BreadcrumbProvider>
         <Nav />
         {children}
       </BreadcrumbProvider>
+      <div className={styles.switcher}>
+        <ThemeSwitcher themes={themes} />
+      </div>
     </main>
   );
 };

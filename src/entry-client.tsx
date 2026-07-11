@@ -10,11 +10,16 @@ import ErrorBoundary from "~/components/error-boundary";
 import { hydratePageData } from "@sun/ssr";
 import "./utils/configure-framework";
 import { PostHogProvider } from "@sun/utils";
+import { loadPersistedTheme } from "@sun/themes";
 
 import "@sun/components/style.css";
+import "@sun/themes/style.css";
 
 // Define the postlude hydration function on window for SSR
 window.hydratePageDataFromPostlude = hydratePageData;
+
+// Reapply the user's persisted theme before mount to avoid a flash.
+loadPersistedTheme();
 
 /**
  * Get page name from path.

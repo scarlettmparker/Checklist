@@ -22,7 +22,7 @@ import {
   mutateSaveChecklistTemplate,
 } from "~/utils/api";
 import EditTemplateForm from "~/components/templates/edit-template-form";
-import { CreateTemplatePageSkeleton } from "~/components/templates/skeletons";
+import { EditTemplatePageSkeleton } from "~/components/templates/skeletons";
 import styles from "./edit-template-page.module.css";
 
 const PAGE = "templates/:id/edit";
@@ -49,7 +49,7 @@ const EditTemplatePage = () => {
   return (
     <div className={styles.layout}>
       <Breadcrumb />
-      <Suspense fallback={<CreateTemplatePageSkeleton />}>
+      <Suspense fallback={<EditTemplatePageSkeleton />}>
         <EditTemplateForm templateId={id} pattern={PAGE} />
       </Suspense>
     </div>

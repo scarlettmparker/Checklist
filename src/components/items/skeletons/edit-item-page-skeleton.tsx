@@ -1,15 +1,13 @@
 import { Card, CardBody, Skeleton } from "@sun/components";
-import styles from "./form-page-skeleton.module.css";
+import styles from "./edit-item-page-skeleton.module.css";
 
 /**
- * Skeleton for the edit item page.
+ * Skeleton for the edit item page: a single 24rem card with a 16rem block.
  */
 const EditItemPageSkeleton = () => (
-  <Card>
-    <CardBody className={styles.skeleton_body}>
-      <Skeleton className={styles.skeleton_field} />
-      <Skeleton className={styles.skeleton_field} />
-      <Skeleton className={styles.skeleton_block} />
+  <Card className={styles.card}>
+    <CardBody className={styles.body}>
+      <Skeleton className={styles.block} />
     </CardBody>
   </Card>
 );

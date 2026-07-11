@@ -6,7 +6,6 @@ import {
   CardBody,
   CardHeader,
   CardTitle,
-  Skeleton,
 } from "@sun/components";
 import styles from "./category-list.module.css";
 
@@ -54,16 +53,5 @@ const CategoryList = ({ pattern }: CategoryListProps) => {
     </>
   );
 };
-
-/**
- * Loading skeleton for the category list.
- */
-export const CategoryListSkeleton = () => (
-  <Card>
-    <CardBody>
-      <Skeleton style={{ width: "100%", height: "8rem" }} />
-    </CardBody>
-  </Card>
-);
 
 export default CategoryList;

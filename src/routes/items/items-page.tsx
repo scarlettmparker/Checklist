@@ -8,7 +8,7 @@ import { Button } from "@sun/components";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import ItemList from "~/components/items/item-list";
 import ItemDetailPlaceholder from "~/components/items/item-detail-placeholder";
-import { ItemsPageSkeleton } from "~/components/items/skeletons";
+import { ItemsPageSkeleton, ItemDetailsPageSkeleton } from "~/components/items/skeletons";
 import styles from "./items-page.module.css";
 
 const ItemsPage = () => {
@@ -38,7 +38,9 @@ const ItemsPage = () => {
           </ItemList>
         </div>
         <div className={styles.items_detail_panel}>
-          {outlet ?? <ItemDetailPlaceholder />}
+          <Suspense fallback={<ItemDetailsPageSkeleton />}>
+            {outlet ?? <ItemDetailPlaceholder />}
+          </Suspense>
         </div>
       </div>
     </Suspense>

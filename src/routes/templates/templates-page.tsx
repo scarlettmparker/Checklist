@@ -8,7 +8,7 @@ import { Button } from "@sun/components";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import TemplateList from "~/components/templates/template-list";
 import TemplateDetailPlaceholder from "~/components/templates/template-detail-placeholder";
-import { TemplatesPageSkeleton } from "~/components/templates/skeletons";
+import { TemplatesPageSkeleton, TemplateDetailsPageSkeleton } from "~/components/templates/skeletons";
 import styles from "./templates-page.module.css";
 
 const TemplatesPage = () => {
@@ -24,7 +24,9 @@ const TemplatesPage = () => {
           <TemplateList pattern="templates" />
         </div>
         <div className={styles.templates_detail_panel}>
-          {outlet ?? <TemplateDetailPlaceholder />}
+          <Suspense fallback={<TemplateDetailsPageSkeleton />}>
+            {outlet ?? <TemplateDetailPlaceholder />}
+          </Suspense>
           <Link
             to={`/templates/create?from=${encodeURIComponent(location.pathname)}`}
             className={styles.create_template_button}

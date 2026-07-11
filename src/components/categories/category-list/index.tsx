@@ -1,1 +1,1 @@
-export { default, CategoryListSkeleton } from "./category-list";
+export { default } from "./category-list";

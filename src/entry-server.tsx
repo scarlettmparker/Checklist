@@ -96,6 +96,31 @@ export async function render({
     // fallback to empty
   }
 
+  // Fetch all themes; inline the default ("greek") so the first paint is themed.
+  let theme: Record<string, string> | null = null;
+  let themes: { name: string; values: Record<string, string> }[] = [];
+  try {
+    const endpoint = process.env.GRAPHQL_ENDPOINT || "http://localhost:8083/graphql";
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query: '{ gaiaQueries { propertySet(ownerKey:"ReactApp", name:"themes") } }',
+      }),
+    });
+    const json = await res.json();
+    const map = json?.data?.gaiaQueries?.propertySet;
+    if (map && typeof map === "object") {
+      themes = Object.entries(map).map(([name, values]) => ({ name, values }));
+      theme = map["greek"] ?? null;
+    }
+  } catch {
+    // theme is optional; fall back to the persisted or default theme
+  }
+  const themeStyle = theme
+    ? `<style>:root{${Object.entries(theme).map(([k, v]) => `--${k}:${v};`).join("")}}</style>`
+    : "";
+
   const matches = matchRoutes(routes, url);
   const didMatch = Boolean(matches);
 
@@ -148,6 +173,7 @@ export async function render({
               <meta charset="UTF-8" />
               <meta name="viewport" content="width=device-width, initial-scale=1.0" />
               ${cssTag}
+              ${themeStyle}
               <link rel="modulepreload" href="${clientJs}" />
               <title>Checklist | Scarlet Sun</title>
             </head>
@@ -157,6 +183,7 @@ export async function render({
               window.__posthog_key__ = '${posthogKey}';
               window.__posthog_host__ = '${posthogHost}';
               window.__locale__ = '${locale}';
+              window.__themes__ = ${JSON.stringify(themes)};
               window.__serverCacheData__ = {};
               window.__FRONTEND_MODE__ = ${JSON.stringify(frontendMode)};
             </script>

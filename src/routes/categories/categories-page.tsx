@@ -13,9 +13,8 @@ import {
   fetchListChecklistCategories,
   mutateCreateChecklistCategory,
 } from "~/utils/api";
-import CategoryList, {
-  CategoryListSkeleton,
-} from "~/components/categories/category-list";
+import CategoryList from "~/components/categories/category-list";
+import { CategoryListSkeleton } from "~/components/categories/skeletons";
 import CreateCategoryDialog from "~/components/categories/create-category-dialog";
 import { Suspense } from "react";
 import styles from "./categories-page.module.css";

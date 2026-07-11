@@ -14,6 +14,9 @@ const EditItemPage = lazy(() => import("~/routes/items/edit"));
 const TemplateDetailsPage = lazy(() => import("~/routes/templates/[id]"));
 const EditTemplatePage = lazy(() => import("~/routes/templates/edit"));
 const EntryChecklistPage = lazy(() => import("~/routes/entry/[id]"));
+import { EntryChecklistPageSkeleton } from "~/components/entry/skeletons";
+import { EditItemPageSkeleton } from "~/components/items/skeletons";
+import { EditTemplatePageSkeleton } from "~/components/templates/skeletons";
 
 /**
  * List of routes.
@@ -30,7 +33,7 @@ export const routes: RouteObject[] = [
   {
     path: "entry/:id",
     element: (
-      <Suspense fallback={null}>
+      <Suspense fallback={<EntryChecklistPageSkeleton />}>
         <EntryChecklistPage />
       </Suspense>
     ),
@@ -41,11 +44,7 @@ export const routes: RouteObject[] = [
     children: [
       {
         path: ":id",
-        element: (
-          <Suspense fallback={null}>
-            <ItemDetailsPage />
-          </Suspense>
-        ),
+        element: <ItemDetailsPage />,
       },
     ],
   },
@@ -56,7 +55,7 @@ export const routes: RouteObject[] = [
   {
     path: "items/:id/edit",
     element: (
-      <Suspense fallback={null}>
+      <Suspense fallback={<EditItemPageSkeleton />}>
         <EditItemPage />
       </Suspense>
     ),
@@ -67,11 +66,7 @@ export const routes: RouteObject[] = [
     children: [
       {
         path: ":id",
-        element: (
-          <Suspense fallback={null}>
-            <TemplateDetailsPage />
-          </Suspense>
-        ),
+        element: <TemplateDetailsPage />,
       },
     ],
   },
@@ -82,7 +77,7 @@ export const routes: RouteObject[] = [
   {
     path: "templates/:id/edit",
     element: (
-      <Suspense fallback={null}>
+      <Suspense fallback={<EditTemplatePageSkeleton />}>
         <EditTemplatePage />
       </Suspense>
     ),
