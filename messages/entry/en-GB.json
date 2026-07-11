@@ -45,6 +45,11 @@
   "templates-count_other": "{{count}} templates",
   "gallery": "Gallery",
   "no-images": "No images attached",
-  "upload-image": "Upload image",
-  "uploading-image": "Uploading..."
+  "upload-image": "Upload images",
+  "uploading-image": "Uploading...",
+  "delete-image": "Delete image",
+  "delete-image-title": "Delete image?",
+  "delete-image-body": "Choose how to remove this image.",
+  "detach-only": "Detach",
+  "delete-and-detach": "Delete + Detach"
 }

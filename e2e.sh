@@ -52,7 +52,7 @@ case "$COMMAND" in
   up)
     build_backend_if_needed
     $COMPOSE up -d db backend app
-    echo "Stack is up. App at http://localhost:3000 — stop with: ./e2e.sh down"
+    echo "Stack is up. App at http://localhost:3000 - stop with: ./e2e.sh down"
     ;;
   open)
     build_backend_if_needed

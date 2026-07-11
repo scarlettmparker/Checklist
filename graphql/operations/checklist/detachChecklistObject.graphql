@@ -1,0 +1,15 @@
+mutation detachChecklistObject($source: ID!, $target: ID!, $ownerType: RemoteObjectType) {
+  checklistMutations {
+    detachObject(source: $source, target: $target, ownerType: $ownerType) {
+      ... on QuerySuccess {
+        __typename
+        message
+        id
+      }
+      ... on StandardError {
+        __typename
+        message
+      }
+    }
+  }
+}

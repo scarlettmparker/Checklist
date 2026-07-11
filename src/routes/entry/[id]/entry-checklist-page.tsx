@@ -15,6 +15,7 @@ import {
   ListChecklistItemsQuery,
   LocateChecklistEntryDetailsQuery,
   LocateChecklistEntryQuery,
+  RemoteObjectType,
 } from "~/generated/graphql";
 import {
   fetchCreateGalleryItem,
@@ -29,9 +30,11 @@ import {
   mutateAttachChecklistObject,
   mutateCompleteChecklist,
   mutateDeleteChecklist,
+  mutateDetachChecklistObject,
   mutateRemoveChecklistItem,
   mutateSaveChecklistEntry,
   mutateSetChecklistItemStatus,
+  fetchDeleteFile,
 } from "~/utils/api";
 import EntryHeader from "~/components/entry/entry-header";
 import EntryItems from "~/components/entry/entry-items";
@@ -408,8 +411,7 @@ export function registerEntryDataAndMutations(): void {
     async (body) => {
       const source = body?.source as string;
       const target = body?.target as string;
-      const ownerType = body?.ownerType as
-        "ENTRY" | "TEMPLATE" | "ITEM" | undefined;
+      const ownerType = body?.ownerType as RemoteObjectType | undefined;
       const result = await mutateAttachChecklistObject(
         source,
         target,
@@ -427,6 +429,48 @@ export function registerEntryDataAndMutations(): void {
           makeCacheKey("entry/:id:entryDetails", { id: source }),
         ],
       };
+    },
+  );
+
+  mutationRegistry.registerMutationHandler(
+    "checklist/detachObject",
+    async (body) => {
+      const source = body?.source as string;
+      const target = body?.target as string;
+      const ownerType = body?.ownerType as RemoteObjectType | undefined;
+      const result = await mutateDetachChecklistObject(
+        source,
+        target,
+        ownerType,
+      );
+      const data = result.data?.checklistMutations
+        ?.detachObject as MutationResult;
+      return {
+        ...((data ?? {
+          __typename: "StandardError",
+          message: result.error || "Failed to detach object.",
+        }) as MutationResult),
+        invalidated: [
+          makeCacheKey("entry/:id:galleryItems", { id: source }),
+          makeCacheKey("entry/:id:entryDetails", { id: source }),
+        ],
+      };
+    },
+  );
+
+  mutationRegistry.registerMutationHandler(
+    "filestore/deleteFile",
+    async (body) => {
+      const result = await fetchDeleteFile(
+        body?.bucket as string,
+        body?.key as string,
+      );
+      return {
+        __typename: result.success ? "QuerySuccess" : "StandardError",
+        message: result.success
+          ? "File deleted"
+          : (result.error ?? "Failed to delete file."),
+      } as MutationResult;
     },
   );
 }

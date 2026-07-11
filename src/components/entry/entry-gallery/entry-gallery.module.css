@@ -14,8 +14,24 @@
 
 .figure img {
   width: 100%;
-  max-height: 24rem;
+  height: 24rem;
   object-fit: cover;
+}
+
+.image_wrapper {
+  position: relative;
+}
+
+.delete_button {
+  position: absolute;
+  top: var(--sm);
+  right: var(--sm);
+  opacity: 0;
+  transition: opacity var(--fast) ease;
+}
+
+.image_wrapper:hover .delete_button {
+  opacity: 1;
 }
 
 .list {

@@ -18,7 +18,7 @@ describe("Create template from entry", () => {
     cy.url().should("include", "/templates/create");
     cy.url().should("include", "entryId=");
 
-    // Give the template a name and create it — items are pre-selected.
+    // Give the template a name and create it - items are pre-selected.
     cy.get('input[name="name"]').type("Camping template{enter}");
     cy.url().should("eq", Cypress.config("baseUrl") + "/templates");
 

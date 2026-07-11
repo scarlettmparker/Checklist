@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { usePageData } from "@sun/ssr/react";
+import { invalidatePageData } from "@sun/ssr";
 import {
   Button,
   Card,
@@ -9,11 +10,14 @@ import {
   CardTitle,
   Figure,
 } from "@sun/components";
-import { CameraIcon } from "@heroicons/react/24/outline";
+import { CameraIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Carousel from "~/components/shared/carousel";
+import DeleteImageDialog from "~/components/entry/delete-image-dialog";
 import {
   requestImageUploads,
   confirmImageUpload,
+  detachImage,
+  deleteImageFile,
 } from "~/server/actions/gallery";
 import { GalleryItem } from "~/generated/graphql";
 import styles from "./entry-gallery.module.css";
@@ -23,6 +27,7 @@ type EntryGalleryProps = {
 };
 
 const GALLERY_PAGE_SIZE = 2;
+const ICON_SIZE = 16;
 
 /**
  * Gallery for an entry: displays attached images in a carousel and other
@@ -32,6 +37,7 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
   const { t } = useTranslation("entry");
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<GalleryItem | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { data: galleryItems } = usePageData<GalleryItem[]>(
     "galleryItems",
@@ -43,11 +49,15 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
   const images = items.filter((i: GalleryItem) => i.imagePath);
   const others = items.filter((i: GalleryItem) => !i.imagePath);
 
+  /**
+   * Handle uploading an image or images to the filestore and attaching them to the entry.
+   */
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (!files.length) return;
     setUploading(true);
     setUploadError(null);
+
     try {
       const presigned = await requestImageUploads(entryId, files);
       await Promise.all(
@@ -63,11 +73,31 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
           await confirmImageUpload(entryId, key, files[i].name);
         }),
       );
+      invalidatePageData(["entry/:id"]);
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Upload failed");
     }
     setUploading(false);
     e.target.value = "";
+  };
+
+  /**
+   * Handle deleting an image from the filestore and detaching it from the entry.
+   * @param detachOnly Whether to delete the image file or not
+   */
+  const handleDelete = async (detachOnly: boolean) => {
+    if (!deleteTarget) return;
+    setUploadError(null);
+    try {
+      await detachImage(entryId, deleteTarget.id);
+      if (!detachOnly && deleteTarget.imagePath) {
+        await deleteImageFile(deleteTarget.imagePath);
+      }
+      invalidatePageData(["entry/:id"]);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Delete failed");
+    }
+    setDeleteTarget(null);
   };
 
   return (
@@ -79,12 +109,22 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
         {images.length > 0 ? (
           <Carousel pageSize={GALLERY_PAGE_SIZE}>
             {images.map((item) => (
-              <Figure
-                key={item.id}
-                src={`/gallery?key=${encodeURIComponent(item.imagePath!)}`}
-                alt={item.title}
-                className={styles.figure}
-              />
+              <div key={item.id} className={styles.image_wrapper}>
+                <Figure
+                  src={`/gallery?key=${encodeURIComponent(item.imagePath!)}`}
+                  alt={item.title}
+                  className={styles.figure}
+                />
+                <Button
+                  variant="secondary"
+                  className={styles.delete_button}
+                  title={t("delete-image")}
+                  aria-label={t("delete-image")}
+                  onClick={() => setDeleteTarget(item)}
+                >
+                  <XMarkIcon width={ICON_SIZE} height={ICON_SIZE} />
+                </Button>
+              </div>
             ))}
           </Carousel>
         ) : (
@@ -96,7 +136,7 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
             {others.map((item) => (
               <li key={item.id}>
                 <strong>{item.title}</strong>
-                {item.description && <span> — {item.description}</span>}
+                {item.description && <p> - {item.description}</p>}
               </li>
             ))}
           </ul>
@@ -118,10 +158,21 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
           title={t("upload-image")}
           onClick={() => fileInputRef.current?.click()}
         >
-          <CameraIcon width={16} height={16} className={styles.icon} />
+          <CameraIcon
+            width={ICON_SIZE}
+            height={ICON_SIZE}
+            className={styles.icon}
+          />
           {uploading ? t("uploading-image") : t("upload-image")}
         </Button>
       </CardBody>
+
+      <DeleteImageDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        onDetach={() => handleDelete(true)}
+        onDeleteAndDetach={() => handleDelete(false)}
+      />
     </Card>
   );
 };

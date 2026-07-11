@@ -87,3 +87,27 @@ export async function confirmImageUpload(
     ownerType: "ENTRY",
   });
 }
+
+/**
+ * Detaches a gallery item from an entry (breaks the remote-object link).
+ */
+export async function detachImage(
+  entryId: string,
+  galleryItemId: string,
+): Promise<MutationResult> {
+  return executeMutation("checklist/detachObject", {
+    source: entryId,
+    target: galleryItemId,
+    ownerType: "ENTRY",
+  });
+}
+
+/**
+ * Deletes a file from the gallery bucket.
+ */
+export async function deleteImageFile(imagePath: string): Promise<MutationResult> {
+  return executeMutation("filestore/deleteFile", {
+    bucket: GALLERY_BUCKET,
+    key: imagePath,
+  });
+}

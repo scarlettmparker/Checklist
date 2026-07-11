@@ -53,9 +53,13 @@ Cypress.Commands.add("confirmInDialog", (label) => {
 
 beforeEach(() => {
   // Truncate the DB, then clear the app's in-memory page-data cache so the next
-  // SSR render fetches fresh — together these give each test a clean slate.
+  // SSR render fetches fresh - together these give each test a clean slate.
   cy.task("dbReset");
-  cy.request({ method: "POST", url: "/__reset-cache", failOnStatusCode: false });
+  cy.request({
+    method: "POST",
+    url: "/__reset-cache",
+    failOnStatusCode: false,
+  });
 });
 
 /** Log URL + a body snippet after each test so failures self-diagnose. */

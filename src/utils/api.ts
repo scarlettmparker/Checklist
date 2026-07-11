@@ -64,6 +64,8 @@ import {
   RemoveChecklistTemplateItemMutation,
   AttachChecklistObjectDocument,
   AttachChecklistObjectMutation,
+  DetachChecklistObjectDocument,
+  DetachChecklistObjectMutation,
   CreateGalleryItemDocument,
   CreateGalleryItemMutation,
   GalleryItemInput,
@@ -71,6 +73,8 @@ import {
   LocateGalleryItemsQuery,
   GetPresignedUploadUrlDocument,
   GetPresignedUploadUrlsDocument,
+  DeleteFileDocument,
+  DeleteFileMutation,
   GetPresignedUploadUrlMutation,
   PaginationInput,
 } from "~/generated/graphql";
@@ -123,6 +127,7 @@ type OperationRegistry = {
     addTemplateItem: DocumentNode;
     removeTemplateItem: DocumentNode;
     attachObject: DocumentNode;
+    detachObject: DocumentNode;
   };
   galleryQueries: {
     locateGalleryItems: DocumentNode;
@@ -133,6 +138,7 @@ type OperationRegistry = {
   filestoreMutations: {
     getPresignedUploadUrl: DocumentNode;
     getPresignedUploadUrls: DocumentNode;
+    deleteFile: DocumentNode;
   };
 };
 
@@ -177,6 +183,7 @@ const operationRegistry: OperationRegistry = {
     addTemplateItem: AddChecklistTemplateItemDocument,
     removeTemplateItem: RemoveChecklistTemplateItemDocument,
     attachObject: AttachChecklistObjectDocument,
+    detachObject: DetachChecklistObjectDocument,
   },
   galleryQueries: {
     locateGalleryItems: LocateGalleryItemsDocument,
@@ -187,6 +194,7 @@ const operationRegistry: OperationRegistry = {
   filestoreMutations: {
     getPresignedUploadUrl: GetPresignedUploadUrlDocument,
     getPresignedUploadUrls: GetPresignedUploadUrlsDocument,
+    deleteFile: DeleteFileDocument,
   },
 };
 
@@ -666,6 +674,30 @@ export async function mutateAttachChecklistObject(
       target,
       ownerType: ownerType ?? null,
     },
+  );
+}
+
+/** Detaches a remote object from an owner's detail. */
+export async function mutateDetachChecklistObject(
+  source: string,
+  target: string,
+  ownerType?: "ENTRY" | "TEMPLATE" | "ITEM",
+) {
+  return fetchGraphQLData<DetachChecklistObjectMutation>(
+    "checklistMutations.detachObject",
+    {
+      source,
+      target,
+      ownerType: ownerType ?? null,
+    },
+  );
+}
+
+/** Deletes a file from a bucket. */
+export async function fetchDeleteFile(bucket: string, key: string) {
+  return fetchGraphQLData<DeleteFileMutation>(
+    "filestoreMutations.deleteFile",
+    { bucket, key },
   );
 }
 

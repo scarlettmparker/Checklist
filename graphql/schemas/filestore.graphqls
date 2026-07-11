@@ -6,6 +6,7 @@ type FilestoreMutations {
   ): String
   getPresignedUploadUrls(input: [PresignInput!]!): [String!]!
   getPresignedDownloadUrl(bucket: String!, key: String!): String
+  deleteFile(bucket: String!, key: String!): Boolean
 }
 
 input PresignInput {
