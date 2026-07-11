@@ -49,6 +49,7 @@ type Documents = {
     "mutation saveChecklistTemplate($input: ChecklistTemplateInput!) {\n  checklistMutations {\n    saveTemplate(input: $input) {\n      ... on QuerySuccess {\n        __typename\n        message\n        id\n      }\n      ... on StandardError {\n        __typename\n        message\n      }\n    }\n  }\n}": typeof types.SaveChecklistTemplateDocument,
     "mutation setChecklistItemStatus($entryId: ID!, $itemId: ID!, $status: ItemStatus!) {\n  checklistMutations {\n    setItemStatus(entryId: $entryId, itemId: $itemId, status: $status) {\n      ... on QuerySuccess {\n        __typename\n        message\n        id\n      }\n      ... on StandardError {\n        __typename\n        message\n      }\n    }\n  }\n}": typeof types.SetChecklistItemStatusDocument,
     "mutation getPresignedUploadUrl($bucket: String!, $key: String!, $contentType: String) {\n  filestoreMutations {\n    getPresignedUploadUrl(bucket: $bucket, key: $key, contentType: $contentType)\n  }\n}": typeof types.GetPresignedUploadUrlDocument,
+    "mutation getPresignedUploadUrls($input: [PresignInput!]!) {\n  filestoreMutations {\n    getPresignedUploadUrls(input: $input)\n  }\n}": typeof types.GetPresignedUploadUrlsDocument,
     "mutation createGalleryItem($input: GalleryItemInput!) {\n  galleryMutations {\n    create(input: $input) {\n      ... on QuerySuccess {\n        __typename\n        message\n        id\n      }\n      ... on StandardError {\n        __typename\n        message\n      }\n    }\n  }\n}": typeof types.CreateGalleryItemDocument,
     "query locateGalleryItems($ids: [ID!]!) {\n  galleryQueries {\n    locateGalleryItems(ids: $ids) {\n      id\n      title\n      description\n      imagePath\n    }\n  }\n}": typeof types.LocateGalleryItemsDocument,
 };
@@ -88,6 +89,7 @@ const documents: Documents = {
     "mutation saveChecklistTemplate($input: ChecklistTemplateInput!) {\n  checklistMutations {\n    saveTemplate(input: $input) {\n      ... on QuerySuccess {\n        __typename\n        message\n        id\n      }\n      ... on StandardError {\n        __typename\n        message\n      }\n    }\n  }\n}": types.SaveChecklistTemplateDocument,
     "mutation setChecklistItemStatus($entryId: ID!, $itemId: ID!, $status: ItemStatus!) {\n  checklistMutations {\n    setItemStatus(entryId: $entryId, itemId: $itemId, status: $status) {\n      ... on QuerySuccess {\n        __typename\n        message\n        id\n      }\n      ... on StandardError {\n        __typename\n        message\n      }\n    }\n  }\n}": types.SetChecklistItemStatusDocument,
     "mutation getPresignedUploadUrl($bucket: String!, $key: String!, $contentType: String) {\n  filestoreMutations {\n    getPresignedUploadUrl(bucket: $bucket, key: $key, contentType: $contentType)\n  }\n}": types.GetPresignedUploadUrlDocument,
+    "mutation getPresignedUploadUrls($input: [PresignInput!]!) {\n  filestoreMutations {\n    getPresignedUploadUrls(input: $input)\n  }\n}": types.GetPresignedUploadUrlsDocument,
     "mutation createGalleryItem($input: GalleryItemInput!) {\n  galleryMutations {\n    create(input: $input) {\n      ... on QuerySuccess {\n        __typename\n        message\n        id\n      }\n      ... on StandardError {\n        __typename\n        message\n      }\n    }\n  }\n}": types.CreateGalleryItemDocument,
     "query locateGalleryItems($ids: [ID!]!) {\n  galleryQueries {\n    locateGalleryItems(ids: $ids) {\n      id\n      title\n      description\n      imagePath\n    }\n  }\n}": types.LocateGalleryItemsDocument,
 };
@@ -246,6 +248,10 @@ export function graphql(source: "mutation setChecklistItemStatus($entryId: ID!, 
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "mutation getPresignedUploadUrl($bucket: String!, $key: String!, $contentType: String) {\n  filestoreMutations {\n    getPresignedUploadUrl(bucket: $bucket, key: $key, contentType: $contentType)\n  }\n}"): (typeof documents)["mutation getPresignedUploadUrl($bucket: String!, $key: String!, $contentType: String) {\n  filestoreMutations {\n    getPresignedUploadUrl(bucket: $bucket, key: $key, contentType: $contentType)\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "mutation getPresignedUploadUrls($input: [PresignInput!]!) {\n  filestoreMutations {\n    getPresignedUploadUrls(input: $input)\n  }\n}"): (typeof documents)["mutation getPresignedUploadUrls($input: [PresignInput!]!) {\n  filestoreMutations {\n    getPresignedUploadUrls(input: $input)\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

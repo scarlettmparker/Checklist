@@ -12,7 +12,7 @@ import {
 import { CameraIcon } from "@heroicons/react/24/outline";
 import Carousel from "~/components/shared/carousel";
 import {
-  requestImageUpload,
+  requestImageUploads,
   confirmImageUpload,
 } from "~/server/actions/gallery";
 import { GalleryItem } from "~/generated/graphql";
@@ -44,24 +44,25 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
   const others = items.filter((i: GalleryItem) => !i.imagePath);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
     setUploading(true);
     setUploadError(null);
     try {
-      const { url, key } = await requestImageUpload(entryId, {
-        name: file.name,
-        type: file.type,
-      });
-      const res = await fetch(url, {
-        method: "PUT",
-        body: file,
-        headers: { "Content-Type": file.type },
-      });
-      if (!res.ok) {
-        throw new Error(`Upload failed: ${res.status} ${res.statusText}`);
-      }
-      await confirmImageUpload(entryId, key, file.name);
+      const presigned = await requestImageUploads(entryId, files);
+      await Promise.all(
+        presigned.map(async ({ url, key }, i) => {
+          const res = await fetch(url, {
+            method: "PUT",
+            body: files[i],
+            headers: { "Content-Type": files[i].type },
+          });
+          if (!res.ok) {
+            throw new Error(`Upload failed: ${res.status} ${res.statusText}`);
+          }
+          await confirmImageUpload(entryId, key, files[i].name);
+        }),
+      );
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Upload failed");
     }
@@ -106,6 +107,7 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
           ref={fileInputRef}
           type="file"
           accept="image/*"
+          multiple
           onChange={handleUpload}
           className={styles.file_input}
         />

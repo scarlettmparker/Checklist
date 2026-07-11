@@ -70,6 +70,7 @@ import {
   LocateGalleryItemsDocument,
   LocateGalleryItemsQuery,
   GetPresignedUploadUrlDocument,
+  GetPresignedUploadUrlsDocument,
   GetPresignedUploadUrlMutation,
   PaginationInput,
 } from "~/generated/graphql";
@@ -131,6 +132,7 @@ type OperationRegistry = {
   };
   filestoreMutations: {
     getPresignedUploadUrl: DocumentNode;
+    getPresignedUploadUrls: DocumentNode;
   };
 };
 
@@ -184,6 +186,7 @@ const operationRegistry: OperationRegistry = {
   },
   filestoreMutations: {
     getPresignedUploadUrl: GetPresignedUploadUrlDocument,
+    getPresignedUploadUrls: GetPresignedUploadUrlsDocument,
   },
 };
 

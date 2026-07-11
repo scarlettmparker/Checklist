@@ -4,7 +4,14 @@ type FilestoreMutations {
     key: String!
     contentType: String
   ): String
+  getPresignedUploadUrls(input: [PresignInput!]!): [String!]!
   getPresignedDownloadUrl(bucket: String!, key: String!): String
+}
+
+input PresignInput {
+  bucket: String!
+  key: String!
+  contentType: String
 }
 
 extend type Mutation {

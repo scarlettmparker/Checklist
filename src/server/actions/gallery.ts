@@ -1,4 +1,5 @@
 import { executeMutation, MutationResult } from "@sun/ssr";
+import { fetchGraphQLData } from "~/utils/api";
 
 const GALLERY_BUCKET = "gallery";
 
@@ -35,6 +36,28 @@ export async function requestImageUpload(
   }
 
   return { url: result.id, key };
+}
+
+/**
+ * Requests presigned PUT URLs for multiple files.
+ */
+export async function requestImageUploads(
+  entryId: string,
+  files: { name: string; type: string }[],
+): Promise<{ url: string; key: string }[]> {
+  const inputs = files.map((f) => ({
+    bucket: GALLERY_BUCKET,
+    key: `checklist/checklist-entries/${entryId}/${sanitizeFileName(f.name)}`,
+    contentType: f.type,
+  }));
+  const result = await fetchGraphQLData<{
+    filestoreMutations: { getPresignedUploadUrls: string[] };
+  }>("filestoreMutations.getPresignedUploadUrls", { input: inputs });
+  if (!result.success || !result.data) {
+    throw new Error("Failed to get upload URLs");
+  }
+  const urls = result.data.filestoreMutations.getPresignedUploadUrls;
+  return inputs.map((entry, i) => ({ url: urls[i], key: entry.key }));
 }
 
 /**
