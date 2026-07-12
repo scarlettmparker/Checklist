@@ -10,6 +10,7 @@
 #   ./e2e.sh down                # stop the stack and wipe the DB volume
 #   ./e2e.sh --no-cache          # rebuild the app image without docker layer cache
 #   ./e2e.sh --rebuild-backend   # force a rebuild of the sun-graphql image
+#   ./e2e.sh --outputs           # record cypress video
 
 set -euo pipefail
 
@@ -29,6 +30,7 @@ for arg in "$@"; do
   case "$arg" in
     --rebuild-backend) REBUILD_BACKEND=1 ;;
     --no-cache) APP_NO_CACHE=1 ;;
+    --outputs|--outputs=true|--outputs=1) export CYPRESS_CAPTURE_OUTPUTS=true ;;
     up|open|down) COMMAND="$arg" ;;
     *) echo "Unknown arg: $arg" >&2; exit 2 ;;
   esac

@@ -108,6 +108,7 @@ services:
         condition: service_healthy
     environment:
       CYPRESS_baseUrl: http://app:3000
+      CYPRESS_CAPTURE_OUTPUTS: ${CYPRESS_CAPTURE_OUTPUTS:-false}
       # Read by the dbReset task (setupNodeEvents) to truncate between tests.
       DATABASE_URL: postgres://sun:sun@db:5432/sun_test
     working_dir: /e2e

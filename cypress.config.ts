@@ -6,7 +6,13 @@ import pg from "pg";
  *
  * The app + backend + DB are brought up by docker-compose.e2e.yml. In the
  * container, baseUrl is http://app:3000; on the host it's http://localhost:3000.
+ *
+ * Video is off by default (it's the biggest e2e slowdown — one ffmpeg encode per
+ * spec). Pass `--outputs` to e2e.sh (which sets CYPRESS_CAPTURE_OUTPUTS=true) to
+ * record video for debugging. Failure screenshots are always captured.
  */
+const captureOutputs = process.env.CYPRESS_CAPTURE_OUTPUTS === "true";
+
 export default defineConfig({
   e2e: {
     baseUrl: "http://localhost:3000",
@@ -15,7 +21,7 @@ export default defineConfig({
     fixturesFolder: "cypress/fixtures",
     screenshotsFolder: "cypress-results/screenshots",
     videosFolder: "cypress-results/videos",
-    video: false,
+    video: captureOutputs,
     screenshotOnRunFailure: true,
     defaultCommandTimeout: 15000,
     requestTimeout: 15000,
