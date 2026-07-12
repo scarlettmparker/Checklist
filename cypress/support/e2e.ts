@@ -30,7 +30,8 @@ Cypress.Commands.add("mutate", (name, body) =>
 
 Cypress.Commands.add("createItemViaUi", (name) => {
   cy.visit("/items/create");
-  cy.get('input[name="name"]').type(`${name}{enter}`);
+  cy.get('input[name="name"]').type(name);
+  cy.get('button[type="submit"]').click();
   cy.url().should("eq", Cypress.config("baseUrl") + "/items");
 });
 

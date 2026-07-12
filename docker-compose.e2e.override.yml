@@ -1,5 +1,0 @@
-services:
-  backend:
-    ports: !reset []
-  cypress:
-    command: ["cypress", "run", "--spec", "cypress/e2e/diag.cy.ts"]

@@ -18,12 +18,12 @@ describe("Items pagination", () => {
     cy.contains("Item 12").should("not.exist");
 
     // Go to the last page.
-    cy.contains("button", "Next").click();
+    cy.get('button[aria-label="Next page"]').click();
     cy.contains("Item 12").should("be.visible");
     cy.contains("Item 01").should("not.exist");
 
     // Back to the first page.
-    cy.contains("button", "Previous").click();
+    cy.get('button[aria-label="Previous page"]').click();
     cy.contains("Item 01").should("be.visible");
   });
 });

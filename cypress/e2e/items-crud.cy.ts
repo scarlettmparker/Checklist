@@ -22,7 +22,8 @@ describe("Items CRUD", () => {
     // The detail card's title is the only link to /edit.
     cy.get('a[href*="/edit"]').first().click();
     cy.url().should("include", "/edit");
-    cy.get('input[name="name"]').clear().type("New lamp{enter}");
+    cy.get('input[name="name"]').clear().type("New lamp");
+    cy.get('button[type="submit"]').click();
     cy.url().should("match", /\/items\//);
     cy.contains("New lamp").should("be.visible");
   });
