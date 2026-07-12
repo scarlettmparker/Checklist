@@ -15,9 +15,22 @@ const EditItemPage = lazy(() => import("~/routes/items/edit"));
 const TemplateDetailsPage = lazy(() => import("~/routes/templates/[id]"));
 const EditTemplatePage = lazy(() => import("~/routes/templates/edit"));
 const EntryChecklistPage = lazy(() => import("~/routes/entry/[id]"));
-import { EntryChecklistPageSkeleton } from "~/components/entry/skeletons";
-import { EditItemPageSkeleton } from "~/components/items/skeletons";
-import { EditTemplatePageSkeleton } from "~/components/templates/skeletons";
+import {
+  EntriesPageSkeleton,
+  EntryChecklistPageSkeleton,
+  CreateEntryFromTemplatePageSkeleton,
+} from "~/components/entry/skeletons";
+import {
+  ItemsPageSkeleton,
+  EditItemPageSkeleton,
+  CreateItemPageSkeleton,
+} from "~/components/items/skeletons";
+import {
+  TemplatesPageSkeleton,
+  EditTemplatePageSkeleton,
+  CreateTemplatePageSkeleton,
+} from "~/components/templates/skeletons";
+import { CategoryListSkeleton } from "~/components/categories/skeletons";
 
 /**
  * List of routes.
@@ -26,7 +39,7 @@ export const routes: RouteObject[] = [
   {
     path: "/",
     element: (
-      <Suspense fallback={null}>
+      <Suspense fallback={<EntriesPageSkeleton />}>
         <EntriesPage />
       </Suspense>
     ),
@@ -34,7 +47,7 @@ export const routes: RouteObject[] = [
   {
     path: "entry/create",
     element: (
-      <Suspense fallback={null}>
+      <Suspense fallback={<CreateEntryFromTemplatePageSkeleton />}>
         <CreateEntryFromTemplatePage />
       </Suspense>
     ),
@@ -50,7 +63,7 @@ export const routes: RouteObject[] = [
   {
     path: "items",
     element: (
-      <Suspense fallback={null}>
+      <Suspense fallback={<ItemsPageSkeleton />}>
         <ItemsPage />
       </Suspense>
     ),
@@ -64,7 +77,7 @@ export const routes: RouteObject[] = [
   {
     path: "items/create",
     element: (
-      <Suspense fallback={null}>
+      <Suspense fallback={<CreateItemPageSkeleton />}>
         <CreateItemPage />
       </Suspense>
     ),
@@ -80,7 +93,7 @@ export const routes: RouteObject[] = [
   {
     path: "templates",
     element: (
-      <Suspense fallback={null}>
+      <Suspense fallback={<TemplatesPageSkeleton />}>
         <TemplatesPage />
       </Suspense>
     ),
@@ -94,7 +107,7 @@ export const routes: RouteObject[] = [
   {
     path: "templates/create",
     element: (
-      <Suspense fallback={null}>
+      <Suspense fallback={<CreateTemplatePageSkeleton />}>
         <CreateTemplatePage />
       </Suspense>
     ),
@@ -110,7 +123,7 @@ export const routes: RouteObject[] = [
   {
     path: "categories",
     element: (
-      <Suspense fallback={null}>
+      <Suspense fallback={<CategoryListSkeleton />}>
         <CategoriesPage />
       </Suspense>
     ),

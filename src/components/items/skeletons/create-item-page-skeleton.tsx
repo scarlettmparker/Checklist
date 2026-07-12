@@ -5,7 +5,7 @@ import styles from "./form-page-skeleton.module.css";
  * Skeleton for the create item page.
  */
 const CreateItemPageSkeleton = () => (
-  <Card>
+  <Card className={styles.card}>
     <CardBody className={styles.skeleton_body}>
       <Skeleton className={styles.skeleton_field} />
       <Skeleton className={styles.skeleton_field} />

@@ -5,7 +5,7 @@ import styles from "./entries-page-skeleton.module.css";
  * Skeleton for the entries carousel page.
  */
 const EntriesPageSkeleton = () => (
-  <Card>
+  <Card className={styles.card}>
     <CardBody className={styles.skeleton_body}>
       <Skeleton className={styles.skeleton_row} />
       <Skeleton className={styles.skeleton_row} />
