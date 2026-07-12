@@ -42,4 +42,11 @@ export default defineConfig([
       ],
     },
   },
+  {
+    files: ["cypress.config.ts", "cypress/**/*.ts"],
+    rules: {
+      "@typescript-eslint/no-unused-expressions": "off",
+      "@typescript-eslint/no-namespace": "off",
+    },
+  },
 ]);

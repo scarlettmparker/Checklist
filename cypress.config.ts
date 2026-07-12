@@ -25,7 +25,6 @@ export default defineConfig({
 
       on("task", {
         log(message) {
-          // eslint-disable-next-line no-console
           console.log(message);
           return null;
         },

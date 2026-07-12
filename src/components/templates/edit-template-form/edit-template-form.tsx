@@ -63,7 +63,6 @@ const EditTemplateForm = ({ templateId, pattern }: EditTemplateFormProps) => {
 
   useEffect(() => {
     setItems(fetchedItems);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchedItems]);
 
   if (!template) {
