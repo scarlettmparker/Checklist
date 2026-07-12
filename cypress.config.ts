@@ -15,7 +15,7 @@ export default defineConfig({
     fixturesFolder: "cypress/fixtures",
     screenshotsFolder: "cypress-results/screenshots",
     videosFolder: "cypress-results/videos",
-    video: true,
+    video: false,
     screenshotOnRunFailure: true,
     defaultCommandTimeout: 15000,
     requestTimeout: 15000,

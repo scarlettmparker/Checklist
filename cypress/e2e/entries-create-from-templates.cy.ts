@@ -4,7 +4,7 @@
 describe("Create entry from templates", () => {
   beforeEach(() => {
     // Seed an item + a template containing it.
-    cy.createItemViaUi("Tent");
+    cy.mutate("checklist/createItem", { name: "Tent" });
     cy.visit("/templates/create");
     cy.get('input[name="name"]').type("Camping template");
     cy.contains("Tent").click(); // picker row toggles selection

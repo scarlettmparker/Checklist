@@ -3,8 +3,8 @@
  */
 describe("Create template from entry", () => {
   it("pre-fills the template with the entry's items", () => {
-    cy.createItemViaUi("Tent");
-    cy.createItemViaUi("Stove");
+    cy.mutate("checklist/createItem", { name: "Tent" });
+    cy.mutate("checklist/createItem", { name: "Stove" });
 
     // Entry with both items.
     cy.createEntryViaUi("Camping");

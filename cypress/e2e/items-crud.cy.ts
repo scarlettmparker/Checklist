@@ -4,7 +4,7 @@
 describe("Items CRUD", () => {
   it("creates an item and shows it in the list", () => {
     cy.createItemViaUi("Headlamp");
-    cy.visit("/items");
+    // createItemViaUi already lands on /items.
     cy.contains("Headlamp").should("be.visible");
   });
 
@@ -16,7 +16,7 @@ describe("Items CRUD", () => {
   });
 
   it("edits an item's name and reflects the change", () => {
-    cy.createItemViaUi("Old lamp");
+    cy.mutate("checklist/createItem", { name: "Old lamp" });
     cy.visit("/items");
     cy.contains("Old lamp").click(); // open the detail panel
     // The detail card's title is the only link to /edit.
@@ -29,7 +29,7 @@ describe("Items CRUD", () => {
   });
 
   it("retires (archives) an item from its detail card", () => {
-    cy.createItemViaUi("To retire");
+    cy.mutate("checklist/createItem", { name: "To retire" });
     cy.visit("/items");
     cy.contains("To retire").click();
     cy.contains("button", "Archive").click();
@@ -38,7 +38,7 @@ describe("Items CRUD", () => {
   });
 
   it("cancel on the retire dialog keeps the item", () => {
-    cy.createItemViaUi("Keep me");
+    cy.mutate("checklist/createItem", { name: "Keep me" });
     cy.visit("/items");
     cy.contains("Keep me").click();
     cy.contains("button", "Archive").click();

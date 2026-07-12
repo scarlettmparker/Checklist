@@ -3,8 +3,8 @@
  */
 describe("Templates CRUD", () => {
   it("creates a template seeded with items", () => {
-    cy.createItemViaUi("Tent");
-    cy.createItemViaUi("Stove");
+    cy.mutate("checklist/createItem", { name: "Tent" });
+    cy.mutate("checklist/createItem", { name: "Stove" });
 
     cy.visit("/templates/create");
     cy.get('input[name="name"]').type("Camping");

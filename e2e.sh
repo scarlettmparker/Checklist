@@ -48,18 +48,43 @@ build_backend_if_needed() {
   fi
 }
 
-# Always rebuild the app image so the stack runs against current source. The
-# app Dockerfile runs `npm run build` (vite build for client + server), so a
-# stale image here silently tests old code. `docker compose up` alone reuses
-# whatever image is tagged, never rebuilding.
+# Build the app image so the stack runs against current source, but skip the
+# (slow) vite build when nothing that affects the image has changed. The app
+# Dockerfile runs `npm run build` (vite build for client + server), so a stale
+# image silently tests old code; `docker compose up` alone reuses whatever image
+# is tagged. We tag each build with a hash of its build inputs and reuse it on a
+# hit, which kills the stale-image trap without paying the build cost every run.
+APP_IMAGE="checklist-e2e-app:latest"
+
 build_app() {
-  local -a args=(build)
+  # Hash the inputs that change the image: the Dockerfile, deps, build config,
+  # and all app source. Specs (cypress/) are mounted at runtime, not baked in.
+  local hash
+  hash=$(
+    {
+      cat Dockerfile package.json package-lock.json vite.config.ts tsconfig.json 2>/dev/null
+      find src routes server.js css-loader.mjs -type f -not -path "*/node_modules/*" 2>/dev/null \
+        | sort | xargs cat 2>/dev/null
+    } | sha1sum | cut -c1-12
+  )
+  local cache_tag="checklist-e2e-app:${hash}"
+
   if [[ "$APP_NO_CACHE" -eq 1 ]]; then
-    args+=(--no-cache)
+    echo "==> --no-cache: rebuilding app image from scratch…"
+    $COMPOSE build --no-cache app
+    docker tag "$APP_IMAGE" "$cache_tag"
+    return
   fi
-  args+=(app)
-  echo "==> Building app image (vite build runs inside)…"
-  $COMPOSE "${args[@]}"
+
+  if docker image inspect "$cache_tag" >/dev/null 2>&1; then
+    echo "==> Reusing cached app image ($cache_tag) — no source changes detected."
+    docker tag "$cache_tag" "$APP_IMAGE"
+    return
+  fi
+
+  echo "==> Building app image (vite build runs inside)… [new hash $hash]"
+  $COMPOSE build app
+  docker tag "$APP_IMAGE" "$cache_tag"
 }
 
 case "$COMMAND" in
