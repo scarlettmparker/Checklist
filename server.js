@@ -15,9 +15,6 @@ import {
 import { setupRoutes } from "./routes/index.js";
 import { registerGalleryProxyRoute } from "./src/server/routes/gallery-proxy.ts";
 
-import "./src/utils/register-loaders.ts";
-import "./src/utils/register-mutations.ts";
-
 await createServer({
   config: { port, host, base, isProduction, backendHost, backendPort },
   setupRoutes,

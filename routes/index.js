@@ -2,7 +2,7 @@
  * @fileoverview Defines and sets up all application routes.
  * @module routes
  */
-import { renderApp } from "../utils/ssr.js";
+import { renderApp } from "@sun/ssr/server";
 import { base, isProduction, manifestPath } from "../config.js";
 import { suspenseCache, pageDataRegistry } from "@sun/ssr";
 import { Buffer } from "buffer";

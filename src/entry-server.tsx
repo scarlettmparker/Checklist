@@ -4,8 +4,22 @@ import { Router, routes } from "./router";
 import Layout from "./components/layout";
 import NotFound from "./routes/not-found";
 import { matchRoutes } from "react-router-dom";
-import { createRenderer, type ResolvedTheme } from "@sun/ssr/server";
+import {
+  autoDiscoverRegistrations,
+  createRenderer,
+  type ResolvedTheme,
+} from "@sun/ssr/server";
 import { createI18nInstance } from "./utils/i18n";
+import "./utils/configure-framework";
+
+/**
+ * Eager-glob the server-only registration modules so their defineLoader /
+ * defineMutation calls run once at boot. Must live in app code (not @sun/ssr)
+ * since @sun/ssr is externalized.
+ */
+autoDiscoverRegistrations(
+  import.meta.glob("./server/**/*-registrations.ts", { eager: true }),
+);
 
 const renderer = createRenderer({
   title: "Checklist | Scarlet Sun",
@@ -33,7 +47,8 @@ const renderer = createRenderer({
         }),
       });
       const json = await res.json();
-      const map = json?.data?.gaiaQueries?.propertySet;
+      const map = json?.data?.gaiaQueries?.propertySet as
+        Record<string, Record<string, string>> | undefined;
       if (map && typeof map === "object") {
         return {
           current: map["greek"] ?? null,

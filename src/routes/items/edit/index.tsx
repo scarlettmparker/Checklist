@@ -1,1 +1,1 @@
-export { default, registerEditItemPageHandlers } from "./edit-item-page";
+export { default } from "./edit-item-page";
