@@ -1,137 +1,41 @@
-import { BrowserRouter, useLocation, matchRoutes } from "react-router-dom";
-import { Router, routes } from "./router";
+import { BrowserRouter } from "react-router-dom";
+import { Router } from "./router";
 import { initReactI18next } from "react-i18next";
 import ReactDOM from "react-dom/client";
 import i18n from "i18next";
-import { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 
 import Layout from "./components/layout";
 import ErrorBoundary from "~/components/error-boundary";
-import { hydratePageData } from "@sun/ssr";
-import "./utils/configure-framework";
+import { initClientBootstrap } from "@sun/ssr";
 import { PostHogProvider } from "@sun/utils";
 import { loadPersistedTheme } from "@sun/themes";
-
+import "./utils/configure-framework";
 import "@sun/components/style.css";
 import "@sun/themes/style.css";
-
-// Define the postlude hydration function on window for SSR
-window.hydratePageDataFromPostlude = hydratePageData;
 
 // Reapply the user's persisted theme before mount to avoid a flash.
 loadPersistedTheme();
 
-/**
- * Get page name from path.
- *
- * @param pathname Path of page.
- */
-function getPageName(pathname: string) {
-  if (pathname === "/") return "entry";
-  const page = pathname.split("/")[1];
-  return page || "home";
-}
+i18n.use(initReactI18next);
 
-/**
- * Dynamically load translations for a given page/locale.
- *
- * @param page Page to load translations for.
- * @param locale Locale.
- */
-async function loadTranslations(page: string, locale: string) {
-  // Try the requested locale, then fall back through en-GB / en so "en" or
-  // "en-US" still resolve to the bundled en-GB file.
-  for (const candidate of [locale, "en-GB", "en"]) {
-    try {
-      const res = await fetch(`/messages/${page}/${candidate}.json`);
-      if (res.ok) {
-        return await res.json();
-      }
-    } catch {
-      // try the next candidate
-    }
-  }
-  return {};
-}
-
-/**
- * Wrapper to handle translation loading on route change
- */
-function AppWithI18n() {
-  const location = useLocation();
-
-  useEffect(() => {
-    const locale = window.__locale__ || "en";
-    const matches = matchRoutes(routes, location.pathname);
-    const page =
-      matches && matches[0].route.path === "*"
-        ? "not-found"
-        : getPageName(location.pathname);
-    loadTranslations(page, locale).then((translations) => {
-      i18n.addResourceBundle(locale, page, translations, true, true);
-      i18n.changeLanguage(locale);
-    });
-  }, [location.pathname]);
-
-  return (
-    <Suspense fallback={null}>
-      <Router />
-    </Suspense>
-  );
-}
-
-// Initialize i18n on the client with translations injected from the server.
-const locale = window.__locale__ || "en";
-const initialPage = getPageName(window.location.pathname);
-const NAMESPACES = ["home", "items", "templates", "entry", "categories"];
-
-i18n
-  .use(initReactI18next)
-  .init({
-    lng: locale,
-    resources: {
-      [locale]: {
-        [initialPage]: window.__translations__ || {},
-      },
-    },
-    interpolation: { escapeValue: false },
-    react: { useSuspense: true },
-  })
+initClientBootstrap({ i18n })
   .then(() => {
-    const serverCacheData = window.__serverCacheData__ || {};
-    if (Object.keys(serverCacheData).length > 0) {
-      hydratePageData(serverCacheData);
-      window.__serverCacheData__ = {};
-    }
-
     ReactDOM.hydrateRoot(
       document.getElementById("app") as HTMLElement,
-
       <PostHogProvider client>
         <BrowserRouter>
           <Layout>
             <ErrorBoundary>
-              <AppWithI18n />
+              <Suspense fallback={null}>
+                <Router />
+              </Suspense>
             </ErrorBoundary>
           </Layout>
         </BrowserRouter>
       </PostHogProvider>,
     );
-
-    for (const ns of NAMESPACES) {
-      if (ns === initialPage || i18n.hasResourceBundle(locale, ns)) continue;
-      fetch(`/messages/${ns}/${locale}.json`)
-        .then((res) => (res.ok ? res.json() : null))
-        .then((translations) => {
-          if (translations) {
-            i18n.addResourceBundle(locale, ns, translations, true, true);
-          }
-        })
-        .catch(() => {
-          // namespace optional; ignore fetch failures
-        });
-    }
   })
   .catch((error) => {
-    console.error("i18n initialization failed", error);
+    console.error("Client bootstrap failed", error);
   });

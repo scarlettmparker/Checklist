@@ -27,7 +27,8 @@ const CategorySelectInner = ({ name, defaultValue }: CategorySelectProps) => {
     ListChecklistCategoriesQuery["checklistQueries"]["listCategories"]
   >("categories", "categories");
   const categories = data ?? [];
-  const selected = defaultValue && defaultValue.length > 0 ? defaultValue : CATEGORY_NONE;
+  const selected =
+    defaultValue && defaultValue.length > 0 ? defaultValue : CATEGORY_NONE;
 
   return (
     <Select name={name} defaultValue={selected}>

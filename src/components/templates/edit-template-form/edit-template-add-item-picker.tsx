@@ -78,7 +78,11 @@ const EditTemplateAddItemPicker = ({
         </CardBody>
       </Card>
       {totalPages > 1 && (
-        <Pagination page={current} totalPages={totalPages} onPageChange={setPage} />
+        <Pagination
+          page={current}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
       )}
     </>
   );

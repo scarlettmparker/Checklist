@@ -3,7 +3,7 @@
  * @module routes
  */
 import { renderApp } from "../utils/ssr.js";
-import { base, isProduction } from "../config.js";
+import { base, isProduction, manifestPath } from "../config.js";
 import { suspenseCache, pageDataRegistry } from "@sun/ssr";
 import { Buffer } from "buffer";
 
@@ -104,6 +104,7 @@ export function setupRoutes(app, vite) {
           frontendMode,
           mutationPayload,
           invalidateCacheCookie,
+          manifestPath,
         },
         reply.raw,
       );

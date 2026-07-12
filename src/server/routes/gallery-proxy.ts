@@ -29,31 +29,29 @@ function getBackendApiBase(): string {
  * Registers the /gallery proxy route for inline image display.
  */
 export function registerGalleryProxyRoute(app: FastifyInstance): void {
-  app.get<{ Querystring: GalleryQuery }>(
-    "/gallery",
-    async (request, reply) => {
-      const key = request.query.key;
-      if (!key || Array.isArray(key)) {
-        return reply.status(400).send({ error: "Missing key" });
-      }
+  app.get<{ Querystring: GalleryQuery }>("/gallery", async (request, reply) => {
+    const key = request.query.key;
+    if (!key || Array.isArray(key)) {
+      return reply.status(400).send({ error: "Missing key" });
+    }
 
-      const backendBase = getBackendApiBase();
-      const upstreamUrl = `${backendBase}/api/buckets/gallery/download?key=${encodeURIComponent(String(key))}`;
+    const backendBase = getBackendApiBase();
+    const upstreamUrl = `${backendBase}/api/buckets/gallery/download?key=${encodeURIComponent(String(key))}`;
 
-      const upstreamResponse = await fetch(upstreamUrl);
-      reply.status(upstreamResponse.status);
+    const upstreamResponse = await fetch(upstreamUrl);
+    reply.status(upstreamResponse.status);
 
-      upstreamResponse.headers.forEach((value, name) => {
-        const lower = name.toLowerCase();
-        if (lower === "transfer-encoding" || lower === "content-disposition") return;
-        reply.header(name, value);
-      });
+    upstreamResponse.headers.forEach((value, name) => {
+      const lower = name.toLowerCase();
+      if (lower === "transfer-encoding" || lower === "content-disposition")
+        return;
+      reply.header(name, value);
+    });
 
-      // Force inline so browsers render the image, not download it.
-      reply.header("Content-Disposition", "inline");
+    // Force inline so browsers render the image, not download it.
+    reply.header("Content-Disposition", "inline");
 
-      const body = await upstreamResponse.arrayBuffer();
-      return reply.send(Buffer.from(body));
-    },
-  );
+    const body = await upstreamResponse.arrayBuffer();
+    return reply.send(Buffer.from(body));
+  });
 }

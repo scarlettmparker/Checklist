@@ -1,12 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { usePageData } from "@sun/ssr/react";
 import { ListChecklistCategoriesQuery } from "~/generated/graphql";
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  CardTitle,
-} from "@sun/components";
+import { Card, CardBody, CardHeader, CardTitle } from "@sun/components";
 import styles from "./category-list.module.css";
 
 type CategoryListProps = {

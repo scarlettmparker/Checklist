@@ -75,7 +75,11 @@ const EntryHeader = ({ id }: EntryHeaderProps) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem onClick={() => setEditOpen(true)}>
-              <PencilSquareIcon className={styles.menu_icon} width={ICON_SIZE} height={ICON_SIZE} />
+              <PencilSquareIcon
+                className={styles.menu_icon}
+                width={ICON_SIZE}
+                height={ICON_SIZE}
+              />
               {t("edit-label")}
             </DropdownMenuItem>
             <DropdownMenuItem
@@ -85,15 +89,27 @@ const EntryHeader = ({ id }: EntryHeaderProps) => {
                 )
               }
             >
-              <DocumentDuplicateIcon className={styles.menu_icon} width={ICON_SIZE} height={ICON_SIZE} />
+              <DocumentDuplicateIcon
+                className={styles.menu_icon}
+                width={ICON_SIZE}
+                height={ICON_SIZE}
+              />
               {t("create-template-from-entry")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setArchiveOpen(true)}>
-              <ArchiveBoxIcon className={styles.menu_icon} width={ICON_SIZE} height={ICON_SIZE} />
+              <ArchiveBoxIcon
+                className={styles.menu_icon}
+                width={ICON_SIZE}
+                height={ICON_SIZE}
+              />
               {t("archive-label")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setDeleteOpen(true)}>
-              <TrashIcon className={styles.menu_icon} width={ICON_SIZE} height={ICON_SIZE} />
+              <TrashIcon
+                className={styles.menu_icon}
+                width={ICON_SIZE}
+                height={ICON_SIZE}
+              />
               {t("delete-label")}
             </DropdownMenuItem>
           </DropdownMenuContent>

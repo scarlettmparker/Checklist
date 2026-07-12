@@ -47,11 +47,14 @@ export async function requestImageUploads(
   return Promise.all(
     files.map(async (file) => {
       const key = `checklist/checklist-entries/${entryId}/${sanitizeFileName(file.name)}`;
-      const result = await executeMutation("filestore/get-presigned-upload-url", {
-        bucket: GALLERY_BUCKET,
-        key,
-        contentType: file.type,
-      });
+      const result = await executeMutation(
+        "filestore/get-presigned-upload-url",
+        {
+          bucket: GALLERY_BUCKET,
+          key,
+          contentType: file.type,
+        },
+      );
       if (result.__typename !== "QuerySuccess" || !result.id) {
         throw new Error(
           (result.__typename === "StandardError" && result.message) ||
@@ -105,7 +108,9 @@ export async function detachImage(
 /**
  * Deletes a file from the gallery bucket.
  */
-export async function deleteImageFile(imagePath: string): Promise<MutationResult> {
+export async function deleteImageFile(
+  imagePath: string,
+): Promise<MutationResult> {
   return executeMutation("filestore/deleteFile", {
     bucket: GALLERY_BUCKET,
     key: imagePath,

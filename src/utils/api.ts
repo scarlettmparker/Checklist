@@ -341,7 +341,9 @@ export async function fetchGraphQLData<
 }
 
 /** Lists checklist items. */
-export async function fetchListChecklistItems(pagination?: PaginationInput | null) {
+export async function fetchListChecklistItems(
+  pagination?: PaginationInput | null,
+) {
   return fetchGraphQLData("checklistQueries.items", {
     pagination: pagination ?? null,
   });
@@ -695,16 +697,14 @@ export async function mutateDetachChecklistObject(
 
 /** Deletes a file from a bucket. */
 export async function fetchDeleteFile(bucket: string, key: string) {
-  return fetchGraphQLData<DeleteFileMutation>(
-    "filestoreMutations.deleteFile",
-    { bucket, key },
-  );
+  return fetchGraphQLData<DeleteFileMutation>("filestoreMutations.deleteFile", {
+    bucket,
+    key,
+  });
 }
 
 /** Creates a gallery item (image wrapper). */
-export async function fetchCreateGalleryItem(
-  input: GalleryItemInput,
-) {
+export async function fetchCreateGalleryItem(input: GalleryItemInput) {
   return fetchGraphQLData<CreateGalleryItemMutation>(
     "galleryMutations.create",
     { input },

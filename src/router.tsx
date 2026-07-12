@@ -1,12 +1,13 @@
 import { RouteObject, useRoutes } from "react-router-dom";
 import { lazy, Suspense } from "react";
-import ItemsPage from "./routes/items";
-import CreateItemPage from "./routes/items/create";
-import TemplatesPage from "./routes/templates";
-import CreateTemplatePage from "./routes/templates/create";
-import EntriesPage from "./routes/entry";
-import CreateEntryFromTemplatePage from "./routes/entry/create";
-import CategoriesPage from "./routes/categories";
+
+const EntriesPage = lazy(() => import("./routes/entry"));
+const CreateEntryFromTemplatePage = lazy(() => import("./routes/entry/create"));
+const ItemsPage = lazy(() => import("./routes/items"));
+const CreateItemPage = lazy(() => import("./routes/items/create"));
+const TemplatesPage = lazy(() => import("./routes/templates"));
+const CreateTemplatePage = lazy(() => import("./routes/templates/create"));
+const CategoriesPage = lazy(() => import("./routes/categories"));
 
 const NotFound = lazy(() => import("~/routes/not-found"));
 const ItemDetailsPage = lazy(() => import("~/routes/items/[id]"));
@@ -24,11 +25,19 @@ import { EditTemplatePageSkeleton } from "~/components/templates/skeletons";
 export const routes: RouteObject[] = [
   {
     path: "/",
-    element: <EntriesPage />,
+    element: (
+      <Suspense fallback={null}>
+        <EntriesPage />
+      </Suspense>
+    ),
   },
   {
     path: "entry/create",
-    element: <CreateEntryFromTemplatePage />,
+    element: (
+      <Suspense fallback={null}>
+        <CreateEntryFromTemplatePage />
+      </Suspense>
+    ),
   },
   {
     path: "entry/:id",
@@ -40,7 +49,11 @@ export const routes: RouteObject[] = [
   },
   {
     path: "items",
-    element: <ItemsPage />,
+    element: (
+      <Suspense fallback={null}>
+        <ItemsPage />
+      </Suspense>
+    ),
     children: [
       {
         path: ":id",
@@ -50,7 +63,11 @@ export const routes: RouteObject[] = [
   },
   {
     path: "items/create",
-    element: <CreateItemPage />,
+    element: (
+      <Suspense fallback={null}>
+        <CreateItemPage />
+      </Suspense>
+    ),
   },
   {
     path: "items/:id/edit",
@@ -62,7 +79,11 @@ export const routes: RouteObject[] = [
   },
   {
     path: "templates",
-    element: <TemplatesPage />,
+    element: (
+      <Suspense fallback={null}>
+        <TemplatesPage />
+      </Suspense>
+    ),
     children: [
       {
         path: ":id",
@@ -72,7 +93,11 @@ export const routes: RouteObject[] = [
   },
   {
     path: "templates/create",
-    element: <CreateTemplatePage />,
+    element: (
+      <Suspense fallback={null}>
+        <CreateTemplatePage />
+      </Suspense>
+    ),
   },
   {
     path: "templates/:id/edit",
@@ -84,7 +109,11 @@ export const routes: RouteObject[] = [
   },
   {
     path: "categories",
-    element: <CategoriesPage />,
+    element: (
+      <Suspense fallback={null}>
+        <CategoriesPage />
+      </Suspense>
+    ),
   },
   {
     path: "*",

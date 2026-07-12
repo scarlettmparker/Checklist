@@ -104,7 +104,9 @@ const EntryChecklist = ({
       newItems.map(async (item) => {
         const result = await addEntryItem(entryId, item.id);
         const id =
-          result.__typename === "QuerySuccess" ? (result.id ?? item.id) : item.id;
+          result.__typename === "QuerySuccess"
+            ? (result.id ?? item.id)
+            : item.id;
         return {
           id,
           entryId,
@@ -143,7 +145,9 @@ const EntryChecklist = ({
         <CardHeader className={styles.header}>
           <CardTitle className={styles.title}>
             {t("checklist")}
-            {completed && <span className={styles.badge}>{t("completed")}</span>}
+            {completed && (
+              <span className={styles.badge}>{t("completed")}</span>
+            )}
           </CardTitle>
         </CardHeader>
         <CardBody className={styles.body}>
@@ -199,7 +203,9 @@ const EntryChecklist = ({
             </CardHeader>
             <CardBody>
               <Suspense
-                fallback={<Skeleton style={{ width: "100%", height: "6rem" }} />}
+                fallback={
+                  <Skeleton style={{ width: "100%", height: "6rem" }} />
+                }
               >
                 <EntryAddItemsPicker
                   entryId={entryId}

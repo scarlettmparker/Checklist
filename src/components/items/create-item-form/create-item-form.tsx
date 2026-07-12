@@ -39,7 +39,9 @@ const CreateItemForm = () => {
     const icon = formData.get("icon") as string;
     const categoryIdRaw = formData.get("categoryId") as string;
     const categoryId =
-      categoryIdRaw && categoryIdRaw !== CATEGORY_NONE ? categoryIdRaw : undefined;
+      categoryIdRaw && categoryIdRaw !== CATEGORY_NONE
+        ? categoryIdRaw
+        : undefined;
     const result = await createChecklistItem(
       name,
       description,

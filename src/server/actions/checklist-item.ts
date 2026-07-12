@@ -78,9 +78,7 @@ export async function saveChecklistItem(
  * @param id Id of the checklist item to retire.
  * @returns A promise resolving to the result of the mutation.
  */
-export async function retireChecklistItem(
-  id: string,
-): Promise<MutationResult> {
+export async function retireChecklistItem(id: string): Promise<MutationResult> {
   const result = await executeMutation("checklist/retireItem", { id });
 
   if (result.__typename === "Redirect") {

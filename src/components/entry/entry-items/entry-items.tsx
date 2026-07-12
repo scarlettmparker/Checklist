@@ -20,7 +20,9 @@ const EntryItems = ({ id }: EntryItemsProps) => {
   const { data: entry } = getPageData<
     LocateChecklistEntryQuery["checklistQueries"]["entry"]
   >("entry", "entry/:id", { id });
-  const items = (data?.items ?? []).slice().sort((a, b) => a.position - b.position);
+  const items = (data?.items ?? [])
+    .slice()
+    .sort((a, b) => a.position - b.position);
   const completed = entry?.completedAt != null && entry.completedAt !== "";
 
   return <EntryChecklist entryId={id} items={items} completed={completed} />;

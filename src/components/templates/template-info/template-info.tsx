@@ -4,10 +4,7 @@ import { useTranslation } from "react-i18next";
 import { getPageData } from "@sun/ssr";
 import { LocateChecklistTemplateQuery } from "~/generated/graphql";
 import { Button, CardTitle } from "@sun/components";
-import {
-  ArchiveBoxIcon,
-  PencilSquareIcon,
-} from "@heroicons/react/24/outline";
+import { ArchiveBoxIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import ConfirmArchiveTemplateDialog from "~/components/templates/confirm-archive-template-dialog";
 import { archiveChecklistTemplate } from "~/server/actions/checklist-template";
 import styles from "./template-info.module.css";
@@ -43,7 +40,11 @@ const TemplateInfo = ({ id, pattern }: TemplateInfoProps) => {
               title={t("edit-label")}
               aria-label={t("edit-label")}
             >
-              <PencilSquareIcon className={styles.button_icon} width={16} height={16} />
+              <PencilSquareIcon
+                className={styles.button_icon}
+                width={16}
+                height={16}
+              />
               {t("edit-label")}
             </Button>
           </Link>
@@ -53,7 +54,11 @@ const TemplateInfo = ({ id, pattern }: TemplateInfoProps) => {
             aria-label={t("archive-label")}
             onClick={() => setConfirmArchive(true)}
           >
-            <ArchiveBoxIcon className={styles.button_icon} width={16} height={16} />
+            <ArchiveBoxIcon
+              className={styles.button_icon}
+              width={16}
+              height={16}
+            />
             {t("archive-label")}
           </Button>
         </div>

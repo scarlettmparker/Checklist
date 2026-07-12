@@ -2,13 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getPageData } from "@sun/ssr";
 import { LocateChecklistItemQuery } from "~/generated/graphql";
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  CardTitle,
-} from "@sun/components";
+import { Button, Card, CardBody, CardHeader, CardTitle } from "@sun/components";
 import Icon from "~/components/shared/icon";
 import styles from "./item-card.module.css";
 import { MarkdownViewer } from "@sun/components";
@@ -58,7 +52,11 @@ const ItemCard = ({ id, pattern }: ItemCardProps) => {
           aria-label={t("archive-label")}
           onClick={() => setConfirmArchive(true)}
         >
-          <ArchiveBoxIcon className={styles.button_icon} width={16} height={16} />
+          <ArchiveBoxIcon
+            className={styles.button_icon}
+            width={16}
+            height={16}
+          />
           {t("archive-label")}
         </Button>
       </CardHeader>

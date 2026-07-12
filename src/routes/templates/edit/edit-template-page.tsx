@@ -166,7 +166,10 @@ export function registerEditTemplatePageHandlers(): void {
     });
     const data = result.data?.checklistMutations.saveTemplate as MutationResult;
 
-    if (data?.__typename === "QuerySuccess" || data?.__typename === "Redirect") {
+    if (
+      data?.__typename === "QuerySuccess" ||
+      data?.__typename === "Redirect"
+    ) {
       throw new ServerRedirectError(`/templates/${id}`, [
         makeCacheKey("templates:templates", {}),
         makeCacheKey("templates/:id:template", { id }),
@@ -205,7 +208,10 @@ export function registerEditTemplatePageHandlers(): void {
     async (body) => {
       const templateId = body?.templateId as string;
       const itemId = body?.itemId as string;
-      const result = await mutateRemoveChecklistTemplateItem(templateId, itemId);
+      const result = await mutateRemoveChecklistTemplateItem(
+        templateId,
+        itemId,
+      );
       const data = result.data?.checklistMutations
         .removeTemplateItem as MutationResult;
       return {

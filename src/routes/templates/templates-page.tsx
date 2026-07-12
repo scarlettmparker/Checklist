@@ -8,7 +8,10 @@ import { Button } from "@sun/components";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import TemplateList from "~/components/templates/template-list";
 import TemplateDetailPlaceholder from "~/components/templates/template-detail-placeholder";
-import { TemplatesPageSkeleton, TemplateDetailsPageSkeleton } from "~/components/templates/skeletons";
+import {
+  TemplatesPageSkeleton,
+  TemplateDetailsPageSkeleton,
+} from "~/components/templates/skeletons";
 import styles from "./templates-page.module.css";
 
 const TemplatesPage = () => {

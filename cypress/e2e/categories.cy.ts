@@ -26,6 +26,6 @@ describe("Categories", () => {
     cy.contains("button", /Create/).click();
     cy.contains("button", "Cancel").click();
     // No categories created.
-    cy.get("input[name=\"name\"]").should("not.exist");
+    cy.get('input[name="name"]').should("not.exist");
   });
 });

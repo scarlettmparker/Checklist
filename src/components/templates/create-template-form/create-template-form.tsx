@@ -84,7 +84,11 @@ const CreateTemplateForm = () => {
             <FormField name="name">
               <FormLabel>{t("name")}</FormLabel>
               <FormItem>
-                <Input type="text" placeholder={t("name-placeholder")} required />
+                <Input
+                  type="text"
+                  placeholder={t("name-placeholder")}
+                  required
+                />
               </FormItem>
             </FormField>
             <FormField name="description">
@@ -100,7 +104,11 @@ const CreateTemplateForm = () => {
             {error && <p className={styles.error}>{error}</p>}
             <FormFooter>
               <Link to={cancelTo}>
-                <Button type="button" variant="secondary" title={t("cancel-title")}>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  title={t("cancel-title")}
+                >
                   {t("cancel-label")}
                 </Button>
               </Link>

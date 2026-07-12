@@ -2,7 +2,11 @@ import styles from "./layout.module.css";
 import { getBackgroundHex } from "@sun/utils";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { BreadcrumbProvider } from "@sun/components";
-import { ThemeSwitcher, THEME_APPLIED_EVENT, type ThemeOption } from "@sun/themes";
+import {
+  ThemeSwitcher,
+  THEME_APPLIED_EVENT,
+  type ThemeOption,
+} from "@sun/themes";
 import Nav from "~/components/nav";
 
 const useIsomorphicLayoutEffect =

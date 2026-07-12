@@ -70,7 +70,10 @@ const ItemList = ({ pattern, children }: ItemListProps) => {
             items.map((item) => (
               <Link
                 key={item.id}
-                to={{ pathname: `/items/${item.id}`, search: searchParams.toString() }}
+                to={{
+                  pathname: `/items/${item.id}`,
+                  search: searchParams.toString(),
+                }}
                 className={styles.item_link}
               >
                 <Button
@@ -116,9 +119,7 @@ const ItemList = ({ pattern, children }: ItemListProps) => {
           )}
         </CardBody>
         <CardFooter className={styles.footer}>
-          <span>
-            {t("items-count", { count: allItems.length })}
-          </span>
+          <span>{t("items-count", { count: allItems.length })}</span>
         </CardFooter>
       </Card>
       {totalPages > 1 && (
