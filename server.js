@@ -11,12 +11,21 @@ import {
   isProduction,
   backendHost,
   backendPort,
+  clientSecret,
 } from "./config.js";
 import { setupRoutes } from "./routes/index.js";
 import { registerGalleryProxyRoute } from "./src/server/routes/gallery-proxy.ts";
 
 await createServer({
-  config: { port, host, base, isProduction, backendHost, backendPort },
+  config: {
+    port,
+    host,
+    base,
+    isProduction,
+    backendHost,
+    backendPort,
+    clientSecret,
+  },
   setupRoutes,
   configure: (app) => {
     registerGalleryProxyRoute(app);

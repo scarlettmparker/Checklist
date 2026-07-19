@@ -15,6 +15,8 @@ export type ApiResponse<T> = {
 
 const endpoint =
   process.env.GRAPHQL_ENDPOINT || "http://localhost:8083/graphql";
+const clientSecret = process.env.CLIENT_SECRET || "";
+const clientId = process.env.CLIENT_ID || "checklist";
 
 /**
  * Runs a request with backoff so transient backend errors don't surface as 500s.
@@ -48,7 +50,11 @@ export async function executeDocument<T, V = Record<string, unknown>>(
     return await withRetry(async () => {
       const response = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Client-Secret": clientSecret,
+          "X-Client-Id": clientId,
+        },
         body: JSON.stringify({ query: print(document), variables }),
       });
 
