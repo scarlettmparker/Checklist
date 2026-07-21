@@ -18,3 +18,5 @@ build/
 stats.html
 
 .claude/
+.opencode/
+opencode.json
