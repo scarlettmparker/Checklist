@@ -30,6 +30,11 @@ export type Scalars = {
   Date: { input: any; output: any };
 };
 
+export type BucketKeyInput = {
+  bucket: Scalars["String"]["input"];
+  key: Scalars["String"]["input"];
+};
+
 export type ChecklistCategory = {
   __typename?: "ChecklistCategory";
   createdAt?: Maybe<Scalars["Date"]["output"]>;
@@ -331,19 +336,15 @@ export type FilestoreMutations = {
 };
 
 export type FilestoreMutationsDeleteFileArgs = {
-  bucket: Scalars["String"]["input"];
-  key: Scalars["String"]["input"];
+  input: BucketKeyInput;
 };
 
 export type FilestoreMutationsGetPresignedDownloadUrlArgs = {
-  bucket: Scalars["String"]["input"];
-  key: Scalars["String"]["input"];
+  input: BucketKeyInput;
 };
 
 export type FilestoreMutationsGetPresignedUploadUrlArgs = {
-  bucket: Scalars["String"]["input"];
-  contentType?: InputMaybe<Scalars["String"]["input"]>;
-  key: Scalars["String"]["input"];
+  input: PresignInput;
 };
 
 export type FilestoreMutationsGetPresignedUploadUrlsArgs = {
@@ -1138,8 +1139,7 @@ export type SetChecklistItemStatusMutation = {
 };
 
 export type DeleteFileMutationVariables = Exact<{
-  bucket: Scalars["String"]["input"];
-  key: Scalars["String"]["input"];
+  input: BucketKeyInput;
 }>;
 
 export type DeleteFileMutation = {
@@ -1151,9 +1151,7 @@ export type DeleteFileMutation = {
 };
 
 export type GetPresignedUploadUrlMutationVariables = Exact<{
-  bucket: Scalars["String"]["input"];
-  key: Scalars["String"]["input"];
-  contentType?: InputMaybe<Scalars["String"]["input"]>;
+  input: PresignInput;
 }>;
 
 export type GetPresignedUploadUrlMutation = {
@@ -4931,24 +4929,13 @@ export const DeleteFileDocument = {
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "bucket" },
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "String" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "key" } },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "String" },
+              name: { kind: "Name", value: "BucketKeyInput" },
             },
           },
         },
@@ -4968,18 +4955,10 @@ export const DeleteFileDocument = {
                   arguments: [
                     {
                       kind: "Argument",
-                      name: { kind: "Name", value: "bucket" },
+                      name: { kind: "Name", value: "input" },
                       value: {
                         kind: "Variable",
-                        name: { kind: "Name", value: "bucket" },
-                      },
-                    },
-                    {
-                      kind: "Argument",
-                      name: { kind: "Name", value: "key" },
-                      value: {
-                        kind: "Variable",
-                        name: { kind: "Name", value: "key" },
+                        name: { kind: "Name", value: "input" },
                       },
                     },
                   ],
@@ -5004,34 +4983,15 @@ export const GetPresignedUploadUrlDocument = {
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "bucket" },
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "String" },
+              name: { kind: "Name", value: "PresignInput" },
             },
           },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "key" } },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "String" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "contentType" },
-          },
-          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
         },
       ],
       selectionSet: {
@@ -5049,26 +5009,10 @@ export const GetPresignedUploadUrlDocument = {
                   arguments: [
                     {
                       kind: "Argument",
-                      name: { kind: "Name", value: "bucket" },
+                      name: { kind: "Name", value: "input" },
                       value: {
                         kind: "Variable",
-                        name: { kind: "Name", value: "bucket" },
-                      },
-                    },
-                    {
-                      kind: "Argument",
-                      name: { kind: "Name", value: "key" },
-                      value: {
-                        kind: "Variable",
-                        name: { kind: "Name", value: "key" },
-                      },
-                    },
-                    {
-                      kind: "Argument",
-                      name: { kind: "Name", value: "contentType" },
-                      value: {
-                        kind: "Variable",
-                        name: { kind: "Name", value: "contentType" },
+                        name: { kind: "Name", value: "input" },
                       },
                     },
                   ],

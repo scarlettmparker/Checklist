@@ -49,8 +49,8 @@ type Documents = {
   "mutation saveChecklistItem($input: ChecklistItemInput!) {\n  checklistMutations {\n    saveItem(input: $input) {\n      ... on QuerySuccess {\n        __typename\n        message\n        id\n      }\n      ... on StandardError {\n        __typename\n        message\n      }\n    }\n  }\n}": typeof types.SaveChecklistItemDocument;
   "mutation saveChecklistTemplate($input: ChecklistTemplateInput!) {\n  checklistMutations {\n    saveTemplate(input: $input) {\n      ... on QuerySuccess {\n        __typename\n        message\n        id\n      }\n      ... on StandardError {\n        __typename\n        message\n      }\n    }\n  }\n}": typeof types.SaveChecklistTemplateDocument;
   "mutation setChecklistItemStatus($entryId: ID!, $itemId: ID!, $status: ItemStatus!) {\n  checklistMutations {\n    setItemStatus(entryId: $entryId, itemId: $itemId, status: $status) {\n      ... on QuerySuccess {\n        __typename\n        message\n        id\n      }\n      ... on StandardError {\n        __typename\n        message\n      }\n    }\n  }\n}": typeof types.SetChecklistItemStatusDocument;
-  "mutation deleteFile($bucket: String!, $key: String!) {\n  filestoreMutations {\n    deleteFile(bucket: $bucket, key: $key)\n  }\n}": typeof types.DeleteFileDocument;
-  "mutation getPresignedUploadUrl($bucket: String!, $key: String!, $contentType: String) {\n  filestoreMutations {\n    getPresignedUploadUrl(bucket: $bucket, key: $key, contentType: $contentType)\n  }\n}": typeof types.GetPresignedUploadUrlDocument;
+  "mutation deleteFile($input: BucketKeyInput!) {\n  filestoreMutations {\n    deleteFile(input: $input)\n  }\n}": typeof types.DeleteFileDocument;
+  "mutation getPresignedUploadUrl($input: PresignInput!) {\n  filestoreMutations {\n    getPresignedUploadUrl(input: $input)\n  }\n}": typeof types.GetPresignedUploadUrlDocument;
   "mutation getPresignedUploadUrls($input: [PresignInput!]!) {\n  filestoreMutations {\n    getPresignedUploadUrls(input: $input)\n  }\n}": typeof types.GetPresignedUploadUrlsDocument;
   "mutation createGalleryItem($input: GalleryItemInput!) {\n  galleryMutations {\n    create(input: $input) {\n      ... on QuerySuccess {\n        __typename\n        message\n        id\n      }\n      ... on StandardError {\n        __typename\n        message\n      }\n    }\n  }\n}": typeof types.CreateGalleryItemDocument;
   "query locateGalleryItems($ids: [ID!]!) {\n  galleryQueries {\n    locateGalleryItems(ids: $ids) {\n      id\n      title\n      description\n      imagePath\n    }\n  }\n}": typeof types.LocateGalleryItemsDocument;
@@ -126,9 +126,9 @@ const documents: Documents = {
     types.SaveChecklistTemplateDocument,
   "mutation setChecklistItemStatus($entryId: ID!, $itemId: ID!, $status: ItemStatus!) {\n  checklistMutations {\n    setItemStatus(entryId: $entryId, itemId: $itemId, status: $status) {\n      ... on QuerySuccess {\n        __typename\n        message\n        id\n      }\n      ... on StandardError {\n        __typename\n        message\n      }\n    }\n  }\n}":
     types.SetChecklistItemStatusDocument,
-  "mutation deleteFile($bucket: String!, $key: String!) {\n  filestoreMutations {\n    deleteFile(bucket: $bucket, key: $key)\n  }\n}":
+  "mutation deleteFile($input: BucketKeyInput!) {\n  filestoreMutations {\n    deleteFile(input: $input)\n  }\n}":
     types.DeleteFileDocument,
-  "mutation getPresignedUploadUrl($bucket: String!, $key: String!, $contentType: String) {\n  filestoreMutations {\n    getPresignedUploadUrl(bucket: $bucket, key: $key, contentType: $contentType)\n  }\n}":
+  "mutation getPresignedUploadUrl($input: PresignInput!) {\n  filestoreMutations {\n    getPresignedUploadUrl(input: $input)\n  }\n}":
     types.GetPresignedUploadUrlDocument,
   "mutation getPresignedUploadUrls($input: [PresignInput!]!) {\n  filestoreMutations {\n    getPresignedUploadUrls(input: $input)\n  }\n}":
     types.GetPresignedUploadUrlsDocument,
@@ -366,14 +366,14 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "mutation deleteFile($bucket: String!, $key: String!) {\n  filestoreMutations {\n    deleteFile(bucket: $bucket, key: $key)\n  }\n}",
-): (typeof documents)["mutation deleteFile($bucket: String!, $key: String!) {\n  filestoreMutations {\n    deleteFile(bucket: $bucket, key: $key)\n  }\n}"];
+  source: "mutation deleteFile($input: BucketKeyInput!) {\n  filestoreMutations {\n    deleteFile(input: $input)\n  }\n}",
+): (typeof documents)["mutation deleteFile($input: BucketKeyInput!) {\n  filestoreMutations {\n    deleteFile(input: $input)\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "mutation getPresignedUploadUrl($bucket: String!, $key: String!, $contentType: String) {\n  filestoreMutations {\n    getPresignedUploadUrl(bucket: $bucket, key: $key, contentType: $contentType)\n  }\n}",
-): (typeof documents)["mutation getPresignedUploadUrl($bucket: String!, $key: String!, $contentType: String) {\n  filestoreMutations {\n    getPresignedUploadUrl(bucket: $bucket, key: $key, contentType: $contentType)\n  }\n}"];
+  source: "mutation getPresignedUploadUrl($input: PresignInput!) {\n  filestoreMutations {\n    getPresignedUploadUrl(input: $input)\n  }\n}",
+): (typeof documents)["mutation getPresignedUploadUrl($input: PresignInput!) {\n  filestoreMutations {\n    getPresignedUploadUrl(input: $input)\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

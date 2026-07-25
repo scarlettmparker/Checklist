@@ -1,18 +1,19 @@
-type FilestoreMutations {
-  getPresignedUploadUrl(
-    bucket: String!
-    key: String!
-    contentType: String
-  ): String
-  getPresignedUploadUrls(input: [PresignInput!]!): [String!]!
-  getPresignedDownloadUrl(bucket: String!, key: String!): String
-  deleteFile(bucket: String!, key: String!): Boolean
+input BucketKeyInput {
+  bucket: String!
+  key: String!
 }
 
 input PresignInput {
   bucket: String!
   key: String!
   contentType: String
+}
+
+type FilestoreMutations {
+  getPresignedUploadUrl(input: PresignInput!): String
+  getPresignedUploadUrls(input: [PresignInput!]!): [String!]!
+  getPresignedDownloadUrl(input: BucketKeyInput!): String
+  deleteFile(input: BucketKeyInput!): Boolean
 }
 
 extend type Mutation {

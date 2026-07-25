@@ -535,9 +535,11 @@ defineMutation({
     const result = await executeDocument<GetPresignedUploadUrlMutation>(
       GetPresignedUploadUrlDocument,
       {
-        bucket: body.bucket,
-        key: body.key,
-        contentType: body.contentType ?? null,
+        input: {
+          bucket: body.bucket,
+          key: body.key,
+          contentType: body.contentType,
+        },
       },
     );
     const url = result.data?.filestoreMutations?.getPresignedUploadUrl;
@@ -664,7 +666,7 @@ defineMutation({
   }): Promise<MutationResult> {
     const result = await executeDocument<DeleteFileMutation>(
       DeleteFileDocument,
-      { bucket: body.bucket, key: body.key },
+      { input: { bucket: body.bucket, key: body.key } },
     );
     return {
       __typename: result.success ? "QuerySuccess" : "StandardError",
