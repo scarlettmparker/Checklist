@@ -57,8 +57,8 @@ const CreateCategoryDialog = ({ open, onClose }: CreateCategoryDialogProps) => {
       <DialogHeader>
         <DialogTitle>{t("create-category-label")}</DialogTitle>
       </DialogHeader>
-      <Form onSubmit={handleSubmit}>
-        <DialogBody>
+      <DialogBody>
+        <Form id="create-category-form" onSubmit={handleSubmit}>
           <FormField name="name">
             <FormLabel>{t("name")}</FormLabel>
             <FormItem>
@@ -75,20 +75,21 @@ const CreateCategoryDialog = ({ open, onClose }: CreateCategoryDialogProps) => {
               />
             </FormItem>
           </FormField>
-        </DialogBody>
-        <DialogFooter>
-          <Button type="button" variant="secondary" onClick={onClose}>
-            {t("cancel-label")}
-          </Button>
-          <Button
-            type="submit"
-            title={loading ? t("creating-title") : t("create-title")}
-            disabled={loading}
-          >
-            {loading ? t("creating-label") : t("create-label")}
-          </Button>
-        </DialogFooter>
-      </Form>
+        </Form>
+      </DialogBody>
+      <DialogFooter>
+        <Button type="button" variant="secondary" onClick={onClose}>
+          {t("cancel-label")}
+        </Button>
+        <Button
+          type="submit"
+          form="create-category-form"
+          title={loading ? t("creating-title") : t("create-title")}
+          disabled={loading}
+        >
+          {loading ? t("creating-label") : t("create-label")}
+        </Button>
+      </DialogFooter>
     </Dialog>
   );
 };

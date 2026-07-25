@@ -68,8 +68,8 @@ const EditEntryNameDialog = ({
       <DialogHeader>
         <DialogTitle>{t("edit-entry-title")}</DialogTitle>
       </DialogHeader>
-      <Form onSubmit={handleSubmit}>
-        <DialogBody>
+      <DialogBody>
+        <Form id="edit-entry-name-form" onSubmit={handleSubmit}>
           <FormField name="name">
             <FormLabel>{t("name")}</FormLabel>
             <FormItem>
@@ -81,16 +81,16 @@ const EditEntryNameDialog = ({
               />
             </FormItem>
           </FormField>
-        </DialogBody>
-        <DialogFooter>
-          <Button type="button" variant="secondary" onClick={onClose}>
-            {t("cancel-label")}
-          </Button>
-          <Button type="submit" disabled={loading}>
-            {loading ? t("saving-label") : t("edit-entry-submit")}
-          </Button>
-        </DialogFooter>
-      </Form>
+        </Form>
+      </DialogBody>
+      <DialogFooter>
+        <Button type="button" variant="secondary" onClick={onClose}>
+          {t("cancel-label")}
+        </Button>
+        <Button type="submit" form="edit-entry-name-form" disabled={loading}>
+          {loading ? t("saving-label") : t("edit-entry-submit")}
+        </Button>
+      </DialogFooter>
     </Dialog>
   );
 };
