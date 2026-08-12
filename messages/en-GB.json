@@ -157,5 +157,19 @@
     "archive-label": "Archive",
     "archive-template-title": "Archive template",
     "archive-template-body": "Archive {{name}}? This template will be archived."
+  },
+  "login": {
+    "title": "Checklist",
+    "subtitle": "Sign in to continue.",
+    "username": "Username",
+    "username-placeholder": "Enter username",
+    "password": "Password",
+    "password-placeholder": "Enter password",
+    "sign-in-label": "Sign in",
+    "sign-in-title": "Sign in",
+    "error-default": "Invalid credentials"
+  },
+  "nav": {
+    "logout": "Sign out"
   }
 }

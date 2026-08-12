@@ -1,0 +1,9 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  padding-top: calc(var(--lg) * 6);
+}
+
+.card {
+  width: 26rem;
+}

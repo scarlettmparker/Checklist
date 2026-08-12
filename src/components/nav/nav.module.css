@@ -14,3 +14,7 @@
 .button {
   padding: var(--sm) var(--lg);
 }
+
+.logout {
+  margin-left: auto;
+}

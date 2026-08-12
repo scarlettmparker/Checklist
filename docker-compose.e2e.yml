@@ -83,6 +83,7 @@ services:
       NODE_ENV: production
       SERVER_PORT: 3000
       GRAPHQL_ENDPOINT: http://backend:8083/graphql
+      AUTH_DISABLED: "true"
     depends_on:
       backend:
         condition: service_healthy

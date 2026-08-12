@@ -27,7 +27,11 @@ await createServer({
     clientSecret,
   },
   setupRoutes,
-  configure: (app) => {
+  configure: async (app) => {
+    // Parse native form POST bodies (login/logout use PRG so the browser
+    // stores the httpOnly auth cookie, which it won't for a fetch + redirect).
+    const { default: formbody } = await import("@fastify/formbody");
+    await app.register(formbody);
     registerGalleryProxyRoute(app);
   },
 });

@@ -1,3 +1,4 @@
+/* global process */
 /**
  * @fileoverview Defines and sets up all application routes.
  * @module routes
@@ -6,6 +7,16 @@ import { renderApp } from "@sun/ssr/server";
 import { base, isProduction, manifestPath } from "../config.js";
 import { suspenseCache, pageDataRegistry } from "@sun/ssr";
 import { Buffer } from "buffer";
+import { createHmac, timingSafeEqual } from "node:crypto";
+import {
+  AUTH_COOKIE,
+  buildAuthCookie,
+  clearAuthCookie,
+  loginViaGaia,
+} from "../src/utils/auth.ts";
+
+/** Pages that do not require an authenticated session. */
+const PUBLIC_PAGES = new Set(["/login"]);
 
 /**
  * Clears the in-memory page-data caches so the next SSR render fetches fresh.
@@ -40,6 +51,40 @@ function getCookieValue(cookieHeader, name) {
 }
 
 /**
+ * Verifies a JWT's HMAC-SHA256 signature using the configured secret.
+ * Returns the decoded payload if valid, null otherwise.
+ */
+function verifyToken(token) {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) return null;
+
+  const parts = token.split(".");
+  if (parts.length !== 3) return null;
+
+  const data = parts[0] + "." + parts[1];
+  const expectedSig = createHmac("sha256", secret)
+    .update(data)
+    .digest("base64url");
+
+  const expectedBuf = Buffer.from(expectedSig);
+  const actualBuf = Buffer.from(parts[2]);
+  if (
+    expectedBuf.length !== actualBuf.length ||
+    !timingSafeEqual(expectedBuf, actualBuf)
+  ) {
+    return null;
+  }
+
+  try {
+    const payload = JSON.parse(Buffer.from(parts[1], "base64url").toString());
+    if (payload.exp && payload.exp * 1000 < Date.now()) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Sets up all routes for the Fastify application.
  *
  * @param {import("fastify").FastifyInstance} app - The Fastify application instance.
@@ -49,6 +94,31 @@ export function setupRoutes(app, vite) {
   app.post("/__reset-cache", async (_request, reply) => {
     clearAppCache();
     reply.send({ ok: true });
+  });
+
+  /**
+   * Login via PRG: validate against gaia, set the httpOnly cookie, redirect.
+   */
+  app.post("/__login", async (request, reply) => {
+    const { username, password, redirect } = request.body ?? {};
+    const token = await loginViaGaia(username, password);
+    if (!token) return reply.redirect("/login?error=1");
+    reply.header("Set-Cookie", buildAuthCookie(token));
+    const redirectTo =
+      typeof redirect === "string" &&
+      redirect.startsWith("/") &&
+      !redirect.startsWith("//")
+        ? redirect
+        : "/";
+    return reply.redirect(redirectTo);
+  });
+
+  /**
+   * Logout via PRG: clear the cookie, redirect to /login.
+   */
+  app.post("/__logout", async (_request, reply) => {
+    reply.header("Set-Cookie", clearAuthCookie());
+    return reply.redirect("/login");
   });
 
   app.setNotFoundHandler({ method: ["GET"] }, async (request, reply) => {
@@ -75,6 +145,30 @@ export function setupRoutes(app, vite) {
     const pathname = requestUrl.pathname;
     if (/\.[^/]+$/.test(pathname)) {
       return reply.callNotFound();
+    }
+
+    const authDisabled = process.env.AUTH_DISABLED === "true";
+    if (!authDisabled) {
+      const token = getCookieValue(request.headers.cookie, AUTH_COOKIE);
+      if (token && !verifyToken(token)) {
+        reply.header("Set-Cookie", clearAuthCookie());
+        return reply.redirect(
+          `/login?redirect=${encodeURIComponent(request.raw.url)}`,
+        );
+      }
+      const normalizedPath =
+        pathname.length > 1 && pathname.endsWith("/")
+          ? pathname.replace(/\/+$/, "")
+          : pathname;
+      const isPublic = PUBLIC_PAGES.has(normalizedPath);
+      if (!token && !isPublic) {
+        return reply.redirect(
+          `/login?redirect=${encodeURIComponent(request.raw.url)}`,
+        );
+      }
+      if (token && isPublic) {
+        return reply.redirect("/");
+      }
     }
 
     let url = pathname.replace(base, "");

@@ -1,5 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
-import { Button } from "@sun/components";
+import { useTranslation } from "react-i18next";
+import { Button, Form } from "@sun/components";
+import { CsrfField } from "@sun/ssr/react";
 import styles from "./nav.module.css";
 
 type NavItem = {
@@ -20,11 +22,18 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Categories", href: "/categories" },
 ];
 
+const PUBLIC_PATHS = ["/login"];
+
 /**
  * Top-level navigation bar across Checklist pages.
  */
 const Nav = () => {
+  const { t } = useTranslation("nav");
   const { pathname } = useLocation();
+
+  if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) {
+    return null;
+  }
 
   return (
     <nav className={styles.nav}>
@@ -42,6 +51,12 @@ const Nav = () => {
           </Link>
         );
       })}
+      <Form action="/__logout" method="post" className={styles.logout}>
+        <CsrfField />
+        <Button type="submit" variant="secondary">
+          {t("logout")}
+        </Button>
+      </Form>
     </nav>
   );
 };

@@ -11,6 +11,13 @@ import {
 } from "@sun/ssr/server";
 import { createI18nInstance } from "./utils/i18n";
 import "./utils/configure-framework";
+import { AUTH_COOKIE } from "./utils/auth";
+import { configureApi } from "./utils/api";
+
+/**
+ * Server-only config so every backend call forwards the session JWT.
+ */
+configureApi({ authCookie: AUTH_COOKIE });
 
 /**
  * Eager-glob the server-only registration modules so their defineLoader /

@@ -4,6 +4,7 @@
  * endpoint stays out of the client bundle.
  */
 
+import { getRequestCookie } from "@sun/ssr";
 import { print, type DocumentNode } from "graphql";
 
 export type ApiResponse<T> = {
@@ -17,6 +18,46 @@ const endpoint =
   process.env.GRAPHQL_ENDPOINT || "http://localhost:8083/graphql";
 const clientSecret = process.env.CLIENT_SECRET || "";
 const clientId = process.env.CLIENT_ID || "checklist";
+
+let authCookieName: string | undefined;
+
+/**
+ * Configures the cookie holding the caller's JWT. Server-only, called from
+ * entry-server so every request's Authorization header is resolved from it.
+ */
+export function configureApi(config: { authCookie?: string }): void {
+  authCookieName = config.authCookie;
+}
+
+/**
+ * Reads a named cookie value from a raw Cookie header.
+ */
+function getCookieValue(cookieHeader: string, name: string): string | undefined {
+  for (const part of cookieHeader.split(/;\s*/)) {
+    const index = part.indexOf("=");
+    if (index < 0) {
+      continue;
+    }
+    const key = part.slice(0, index).trim();
+    if (key === name) {
+      return decodeURIComponent(part.slice(index + 1));
+    }
+  }
+}
+
+/**
+ * Resolves the Bearer token for the current request, from the configured cookie.
+ */
+function resolveAuthToken(authToken: string | undefined): string | undefined {
+  if (authToken) {
+    return authToken;
+  }
+  if (!authCookieName) {
+    return undefined;
+  }
+  const cookie = getRequestCookie();
+  return cookie ? getCookieValue(cookie, authCookieName) : undefined;
+}
 
 /**
  * Runs a request with backoff so transient backend errors don't surface as 500s.
@@ -45,16 +86,23 @@ async function withRetry<T>(
 export async function executeDocument<T, V = Record<string, unknown>>(
   document: DocumentNode,
   variables?: V,
+  authToken?: string,
 ): Promise<ApiResponse<T>> {
+  const token = resolveAuthToken(authToken);
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    "X-Client-Secret": clientSecret,
+    "X-Client-Id": clientId,
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   try {
     return await withRetry(async () => {
       const response = await fetch(endpoint, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Client-Secret": clientSecret,
-          "X-Client-Id": clientId,
-        },
+        headers,
         body: JSON.stringify({ query: print(document), variables }),
       });
 

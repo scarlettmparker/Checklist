@@ -8,6 +8,7 @@ const CreateItemPage = lazy(() => import("./routes/items/create"));
 const TemplatesPage = lazy(() => import("./routes/templates"));
 const CreateTemplatePage = lazy(() => import("./routes/templates/create"));
 const CategoriesPage = lazy(() => import("./routes/categories"));
+const LoginPage = lazy(() => import("./routes/login"));
 
 const NotFound = lazy(() => import("~/routes/not-found"));
 const ItemDetailsPage = lazy(() => import("~/routes/items/[id]"));
@@ -125,6 +126,14 @@ export const routes: RouteObject[] = [
     element: (
       <Suspense fallback={<CategoryListSkeleton />}>
         <CategoriesPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "login",
+    element: (
+      <Suspense fallback={null}>
+        <LoginPage />
       </Suspense>
     ),
   },
