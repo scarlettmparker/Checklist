@@ -12,12 +12,14 @@ import {
 import { createI18nInstance } from "./utils/i18n";
 import "./utils/configure-framework";
 import { AUTH_COOKIE } from "./utils/auth";
-import { configureApi } from "./utils/api";
+import { clientId, clientSecret, base } from "../config.js";
+import { configureApi } from "@sun/api";
 
 /**
- * Server-only config so every backend call forwards the session JWT.
+ * Server-only config so every backend call forwards the session JWT and the
+ * caller's IP.
  */
-configureApi({ authCookie: AUTH_COOKIE });
+configureApi({ authCookie: AUTH_COOKIE, clientId, clientSecret, appBaseUrl: base });
 
 /**
  * Eager-glob the server-only registration modules so their defineLoader /

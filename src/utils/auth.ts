@@ -1,5 +1,5 @@
+import { executeDocument } from "@sun/api";
 import { LoginDocument, type LoginMutation } from "~/generated/graphql";
-import { executeDocument } from "./api";
 
 /**
  * Name of the httpOnly cookie holding the JWT.

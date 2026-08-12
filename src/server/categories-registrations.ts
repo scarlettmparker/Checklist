@@ -4,7 +4,7 @@ import {
   makeCacheKey,
   type MutationResult,
 } from "@sun/ssr";
-import { executeDocument } from "~/utils/api";
+import { executeDocument } from "@sun/api";
 import {
   ListChecklistCategoriesDocument,
   CreateChecklistCategoryDocument,

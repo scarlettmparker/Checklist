@@ -5,7 +5,7 @@ import {
   ServerRedirectError,
   type MutationResult,
 } from "@sun/ssr";
-import { executeDocument } from "~/utils/api";
+import { executeDocument } from "@sun/api";
 import {
   ListChecklistTemplatesDocument,
   ListChecklistTemplateItemsDocument,
