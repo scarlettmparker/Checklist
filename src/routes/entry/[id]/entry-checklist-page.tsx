@@ -8,7 +8,7 @@ import EntryGallery from "~/components/entry/entry-gallery";
 import { EntryChecklistPageSkeleton } from "~/components/entry/skeletons";
 import styles from "./entry-checklist-page.module.css";
 
-const PAGE = "entry/:id";
+const PAGE = "entry/:id/picker";
 
 const EntryChecklistPage = () => {
   const { id } = useParams<{ id: string }>();

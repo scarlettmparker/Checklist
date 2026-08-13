@@ -4,6 +4,7 @@
  */
 import { Buffer } from "buffer";
 import type { FastifyInstance } from "fastify";
+import { clientId, clientSecret } from "../../../config.js";
 
 type GalleryQuery = {
   key?: string | string[];
@@ -38,7 +39,12 @@ export function registerGalleryProxyRoute(app: FastifyInstance): void {
     const backendBase = getBackendApiBase();
     const upstreamUrl = `${backendBase}/api/buckets/gallery/download?key=${encodeURIComponent(String(key))}`;
 
-    const upstreamResponse = await fetch(upstreamUrl);
+    const upstreamResponse = await fetch(upstreamUrl, {
+      headers: {
+        "X-Client-Id": clientId,
+        "X-Client-Secret": clientSecret,
+      },
+    });
     reply.status(upstreamResponse.status);
 
     upstreamResponse.headers.forEach((value, name) => {

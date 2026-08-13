@@ -158,7 +158,7 @@ defineLoader({
  * Loads the entry's items.
  */
 defineLoader({
-  pattern: "entry/:id",
+  pattern: "entry/:id/items",
   async loader(params) {
     const id = params.id as string;
     if (!id) return null;
@@ -184,7 +184,7 @@ defineLoader({
  * Loads every checklist item for the add-items picker.
  */
 defineLoader({
-  pattern: "entry/:id",
+  pattern: "entry/:id/picker",
   async loader(params) {
     const id = params.id as string;
     if (!id) return null;
@@ -211,7 +211,7 @@ defineLoader({
  * object ids, then batch-fetches the Cerberus GalleryItems.
  */
 defineLoader({
-  pattern: "entry/:id",
+  pattern: "entry/:id/gallery",
   async loader(params) {
     const id = params.id as string;
     if (!id) return null;
@@ -349,7 +349,7 @@ defineMutation({
       },
     );
     const invalidated = [
-      makeCacheKey("entry/:id:entryItems", { id: body.entryId }),
+      makeCacheKey("entry/:id/items:entryItems", { id: body.entryId }),
     ];
     invalidatePageData(invalidated);
     return {
@@ -376,7 +376,7 @@ defineMutation({
       { entryId: body.entryId, itemId: body.itemId },
     );
     const invalidated = [
-      makeCacheKey("entry/:id:entryItems", { id: body.entryId }),
+      makeCacheKey("entry/:id/items:entryItems", { id: body.entryId }),
     ];
     invalidatePageData(invalidated);
     return {
@@ -408,7 +408,7 @@ defineMutation({
       },
     );
     const invalidated = [
-      makeCacheKey("entry/:id:entryItems", { id: body.entryId }),
+      makeCacheKey("entry/:id/items:entryItems", { id: body.entryId }),
     ];
     invalidatePageData(invalidated);
     return {
@@ -461,7 +461,7 @@ defineMutation({
       throw new ServerRedirectError("/", [
         makeCacheKey("entry:entry", {}),
         makeCacheKey("entry/:id:entry", { id: body.entryId }),
-        makeCacheKey("entry/:id:entryItems", { id: body.entryId }),
+        makeCacheKey("entry/:id/items:entryItems", { id: body.entryId }),
       ]);
     }
 
@@ -614,8 +614,7 @@ defineMutation({
         message: result.error || "Failed to attach object.",
       }) as MutationResult),
       invalidated: [
-        makeCacheKey("entry/:id:galleryItems", { id: body.source }),
-        makeCacheKey("entry/:id:entryDetails", { id: body.source }),
+        makeCacheKey("entry/:id/gallery:galleryItems", { id: body.source }),
       ],
     };
   },
@@ -648,8 +647,7 @@ defineMutation({
         message: result.error || "Failed to detach object.",
       }) as MutationResult),
       invalidated: [
-        makeCacheKey("entry/:id:galleryItems", { id: body.source }),
-        makeCacheKey("entry/:id:entryDetails", { id: body.source }),
+        makeCacheKey("entry/:id/gallery:galleryItems", { id: body.source }),
       ],
     };
   },

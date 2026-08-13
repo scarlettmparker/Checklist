@@ -16,7 +16,7 @@ type EntryItemsProps = {
 const EntryItems = ({ id }: EntryItemsProps) => {
   const { data } = getPageData<
     ListChecklistEntryItemsQuery["checklistQueries"]["entryItems"]
-  >("entryItems", "entry/:id", { id });
+  >("entryItems", "entry/:id/items", { id });
   const { data: entry } = getPageData<
     LocateChecklistEntryQuery["checklistQueries"]["entry"]
   >("entry", "entry/:id", { id });

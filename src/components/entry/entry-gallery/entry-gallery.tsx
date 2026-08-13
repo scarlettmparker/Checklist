@@ -41,7 +41,7 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { data: galleryItems } = usePageData<GalleryItem[]>(
     "galleryItems",
-    "entry/:id",
+    "entry/:id/gallery",
     { id: entryId },
   );
   const items: GalleryItem[] = galleryItems ?? [];
@@ -70,7 +70,11 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
           if (!res.ok) {
             throw new Error(`Upload failed: ${res.status} ${res.statusText}`);
           }
-          await confirmImageUpload(entryId, key, files[i].name);
+          const result = await confirmImageUpload(entryId, key, files[i].name);
+          if (result.__typename === "StandardError") {
+            await deleteImageFile(key);
+            throw new Error(result.message || "Failed to attach image");
+          }
         }),
       );
       invalidatePageData(["entry/:id"]);

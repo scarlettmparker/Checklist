@@ -48,7 +48,7 @@ const EntryAddItemsPicker = ({
   const { t } = useTranslation("entry");
   const { data } = getPageData<
     ListChecklistItemsQuery["checklistQueries"]["items"]
-  >("checklistItems", "entry/:id", { id: entryId });
+  >("checklistItems", "entry/:id/picker", { id: entryId });
   const available = (data?.items ?? []).filter((i) => !memberIds.has(i.id));
   const totalPages = Math.max(1, Math.ceil(available.length / PAGE_SIZE));
   const current = Math.min(page, totalPages);
