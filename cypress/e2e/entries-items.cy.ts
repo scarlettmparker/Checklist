@@ -3,7 +3,7 @@
  */
 describe("Entry items", () => {
   beforeEach(() => {
-    // Two items available to add (seeded via the API — faster than the UI flow).
+    // Two items available to add
     cy.mutate("checklist/createItem", { name: "Tent" });
     cy.mutate("checklist/createItem", { name: "Stove" });
     cy.createEntryViaUi("Camping");
