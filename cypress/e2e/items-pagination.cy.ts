@@ -3,7 +3,7 @@
  */
 describe("Items pagination", () => {
   beforeEach(() => {
-    // 12 items → two pages of 10. Seed via the mutation API (faster than UI).
+    // 12 items -> two pages of 10. Seed via the mutation API (faster than UI).
     Cypress._.times(12, (i) =>
       cy.mutate("checklist/createItem", {
         name: `Item ${String(i + 1).padStart(2, "0")}`,

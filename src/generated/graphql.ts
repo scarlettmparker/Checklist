@@ -14,7 +14,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  Date: { input: any; output: any; }
+  DateTime: { input: any; output: any; }
 };
 
 export type AuthResult = {
@@ -31,11 +31,11 @@ export type BucketKeyInput = {
 
 export type ChecklistCategory = {
   __typename?: 'ChecklistCategory';
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type ChecklistCategoryInput = {
@@ -53,17 +53,17 @@ export type ChecklistDetail = {
 
 export type ChecklistEntry = {
   __typename?: 'ChecklistEntry';
-  completedAt?: Maybe<Scalars['Date']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
-  dueAt?: Maybe<Scalars['Date']['output']>;
+  completedAt?: Maybe<Scalars['DateTime']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  dueAt?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
   status: Scalars['String']['output'];
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type ChecklistEntryInput = {
-  dueAt?: InputMaybe<Scalars['Date']['input']>;
+  dueAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
@@ -83,13 +83,13 @@ export type ChecklistEntryItem = {
 export type ChecklistItem = {
   __typename?: 'ChecklistItem';
   categoryId?: Maybe<Scalars['ID']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   icon?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   lifecycleStatus: Scalars['String']['output'];
   name: Scalars['String']['output'];
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type ChecklistItemInput = {
@@ -328,12 +328,12 @@ export type ChecklistQueriesTemplateItemsArgs = {
 
 export type ChecklistTemplate = {
   __typename?: 'ChecklistTemplate';
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   status: Scalars['String']['output'];
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type ChecklistTemplateInput = {
@@ -394,14 +394,14 @@ export type GaiaMutationsLoginArgs = {
 export type GalleryItem = {
   __typename?: 'GalleryItem';
   content?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   imagePath?: Maybe<Scalars['String']['output']>;
   keyDetailId?: Maybe<Scalars['ID']['output']>;
   remoteObject?: Maybe<Array<Scalars['String']['output']>>;
   title: Scalars['String']['output'];
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type GalleryItemInput = {

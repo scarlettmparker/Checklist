@@ -79,7 +79,7 @@ build_app() {
   fi
 
   if docker image inspect "$cache_tag" >/dev/null 2>&1; then
-    echo "==> Reusing cached app image ($cache_tag) — no source changes detected."
+    echo "==> Reusing cached app image ($cache_tag) - no source changes detected."
     docker tag "$cache_tag" "$APP_IMAGE"
     return
   fi
