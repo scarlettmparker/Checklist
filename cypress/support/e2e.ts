@@ -25,7 +25,14 @@ declare global {
 }
 
 Cypress.Commands.add("mutate", (name, body) =>
-  cy.request("POST", `/${name}`, body).then((r) => r.body as MutationResult),
+  cy
+    .request({
+      method: "POST",
+      url: `/${name}`,
+      body,
+      headers: { origin: Cypress.config("baseUrl") as string },
+    })
+    .then((r) => r.body as MutationResult),
 );
 
 Cypress.Commands.add("createItemViaUi", (name) => {

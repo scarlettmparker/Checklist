@@ -5,13 +5,13 @@ import pg from "pg";
  * Cypress configuration for Checklist functional tests.
  *
  * The app + backend + DB are brought up by docker-compose.e2e.yml. In the
- * container, baseUrl is http://app:3000; on the host it's http://localhost:3000.
+ * container, baseUrl is http://app:3000; on the host it's http://localhost:3080.
  */
 const captureOutputs = process.env.CYPRESS_CAPTURE_OUTPUTS === "true";
 
 export default defineConfig({
   e2e: {
-    baseUrl: "http://localhost:3000",
+    baseUrl: "http://localhost:3080",
     specPattern: "cypress/e2e/**/*.cy.{ts,tsx}",
     supportFile: "cypress/support/e2e.ts",
     fixturesFolder: "cypress/fixtures",

@@ -17,29 +17,11 @@ services:
     image: sun-graphql:dev
     environment:
       SPRING_PROFILES_ACTIVE: test
-      # All datasources point at the single test DB; ddl-auto=update builds every
-      # component's tables from the JPA entities on startup.
-      APOLLO_SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/sun_test
-      APOLLO_SPRING_DATASOURCE_USERNAME: sun
-      APOLLO_SPRING_DATASOURCE_PASSWORD: sun
-      BRI_SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/sun_test
-      BRI_SPRING_DATASOURCE_USERNAME: sun
-      BRI_SPRING_DATASOURCE_PASSWORD: sun
-      CERB_SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/sun_test
-      CERB_SPRING_DATASOURCE_USERNAME: sun
-      CERB_SPRING_DATASOURCE_PASSWORD: sun
-      DION_SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/sun_test
-      DION_SPRING_DATASOURCE_USERNAME: sun
-      DION_SPRING_DATASOURCE_PASSWORD: sun
-      ECHO_SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/sun_test
-      ECHO_SPRING_DATASOURCE_USERNAME: sun
-      ECHO_SPRING_DATASOURCE_PASSWORD: sun
-      FATES_SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/sun_test
-      FATES_SPRING_DATASOURCE_USERNAME: sun
-      FATES_SPRING_DATASOURCE_PASSWORD: sun
-      GAIA_SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/sun_test
-      GAIA_SPRING_DATASOURCE_USERNAME: sun
-      GAIA_SPRING_DATASOURCE_PASSWORD: sun
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/sun_test
+      SPRING_DATASOURCE_USERNAME: sun
+      SPRING_DATASOURCE_PASSWORD: sun
+      SPRING_FLYWAY_ENABLED: "false"
+      APP_BYPASS_PERMISSIONS: "true"
       JWT_SECRET: test-secret-key-for-functional-tests-only
       # Dummy values so email/object-store beans construct; not exercised here.
       EMAIL_CLIENT_ID: test
@@ -98,7 +80,7 @@ services:
       retries: 30
       start_period: 10s
     ports:
-      - "3000:3000"
+      - "3080:3000"
 
   cypress:
     build:

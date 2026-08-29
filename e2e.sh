@@ -38,29 +38,30 @@ done
 
 build_backend_if_needed() {
   if [[ "$REBUILD_BACKEND" -eq 1 ]] || ! docker image inspect "$BACKEND_IMAGE" >/dev/null 2>&1; then
-    if [[ ! -f "$BACKEND_DOCKERFILE" ]]; then
-      echo "Backend Dockerfile not found at $BACKEND_DOCKERFILE" >&2
-      echo "Set SUN_DIR to point at your Sun repo checkout." >&2
-      exit 1
-    fi
     echo "==> Building $BACKEND_IMAGE from $SUN_DIR (this is slow the first time)"
-    docker build -f "$BACKEND_DOCKERFILE" -t "$BACKEND_IMAGE" "$BACKEND_BUILD_CTX"
+    if [[ -f "$BACKEND_DOCKERFILE" ]]; then
+      docker build -f "$BACKEND_DOCKERFILE" -t "$BACKEND_IMAGE" "$BACKEND_BUILD_CTX"
+    else
+      echo "    Dockerfile not found at $BACKEND_DOCKERFILE - building jar via gradle..."
+      "$BACKEND_BUILD_CTX/sun-graphql/gradlew" -p "$BACKEND_BUILD_CTX" :sun-graphql:bootJar -x test --no-daemon
+      echo "    Packing jar into $BACKEND_IMAGE..."
+      docker build -t "$BACKEND_IMAGE" -f - "$BACKEND_BUILD_CTX" <<'DOCKERFILE'
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+COPY sun-graphql/build/libs/*.jar app.jar
+EXPOSE 8083
+ENTRYPOINT ["java", "-jar", "app.jar"]
+DOCKERFILE
+    fi
   else
     echo "==> $BACKEND_IMAGE already built (use --rebuild-backend to rebuild after Java changes)"
   fi
 }
 
-# Build the app image so the stack runs against current source, but skip the
-# (slow) vite build when nothing that affects the image has changed. The app
-# Dockerfile runs `npm run build` (vite build for client + server), so a stale
-# image silently tests old code; `docker compose up` alone reuses whatever image
-# is tagged. We tag each build with a hash of its build inputs and reuse it on a
-# hit, which kills the stale-image trap without paying the build cost every run.
 APP_IMAGE="checklist-e2e-app:latest"
 
 build_app() {
-  # Hash the inputs that change the image: the Dockerfile, deps, build config,
-  # and all app source. Specs (cypress/) are mounted at runtime, not baked in.
   local hash
   hash=$(
     {
@@ -97,14 +98,14 @@ case "$COMMAND" in
     build_backend_if_needed
     build_app
     $COMPOSE up -d db backend app
-    echo "Stack is up. App at http://localhost:3000 - stop with: ./e2e.sh down"
+    echo "Stack is up. App at http://localhost:3080 - stop with: ./e2e.sh down"
     ;;
   open)
     build_backend_if_needed
     build_app
     $COMPOSE up -d db backend app
-    echo "Opening Cypress against http://localhost:3000 ..."
-    npx cypress open
+    echo "Opening Cypress against http://localhost:3080 ..."
+    CYPRESS_baseUrl=http://localhost:3080 npx cypress open
     ;;
   run)
     build_backend_if_needed
