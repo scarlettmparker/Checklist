@@ -5,7 +5,7 @@ describe("Categories", () => {
   it("creates a category and the list refreshes in place", () => {
     cy.visit("/categories");
     cy.contains("button", /Create/).click();
-    cy.get('input[name="name"]').type("Gear{enter}");
+    cy.get('#create-category-form input[name="name"]').type("Gear{enter}");
 
     cy.contains("Gear").should("be.visible");
   });
@@ -13,9 +13,10 @@ describe("Categories", () => {
   it("creates a second category without losing the first", () => {
     cy.visit("/categories");
     cy.contains("button", /Create/).click();
-    cy.get('input[name="name"]').type("Gear{enter}");
+    cy.get('#create-category-form input[name="name"]').type("Gear{enter}");
+    cy.contains("Gear").should("be.visible");
     cy.contains("button", /Create/).click();
-    cy.get('input[name="name"]').type("Food{enter}");
+    cy.get('#create-category-form input[name="name"]').type("Food{enter}");
 
     cy.contains("Gear").should("be.visible");
     cy.contains("Food").should("be.visible");

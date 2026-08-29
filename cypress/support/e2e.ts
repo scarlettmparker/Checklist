@@ -37,15 +37,17 @@ Cypress.Commands.add("mutate", (name, body) =>
 
 Cypress.Commands.add("createItemViaUi", (name) => {
   cy.visit("/items/create");
-  cy.get('input[name="name"]').type(name);
-  cy.get('button[type="submit"]').click();
+  cy.get('form input[name="name"]').first().type(name);
+  cy.contains("button", "Create").click();
   cy.url().should("eq", Cypress.config("baseUrl") + "/items");
 });
 
 Cypress.Commands.add("createEntryViaUi", (name) => {
   cy.visit("/");
   cy.contains("button", "Create new Entry").click();
-  cy.get('input[name="name"]').type(`${name ?? ""}{enter}`);
+  cy.get('form input[name="name"]')
+    .first()
+    .type(`${name ?? ""}{enter}`);
   cy.url().should("match", /\/entry\//);
   return cy.url().then((url) => url.split("/entry/")[1]);
 });
@@ -59,6 +61,9 @@ Cypress.Commands.add("confirmInDialog", (label) => {
   cy.get('[role="dialog"]').contains("button", label).click();
 });
 
+const FAKE_JWT =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDEiLCJleHAiOjQxMDI0NDQ4MDB9.Ndd95m1-cByzst52BlI-P16nVy4ce5qbuylQhK49K7Y";
+
 beforeEach(() => {
   // Truncate the DB, then clear the app's in-memory page-data cache so the next
   // SSR render fetches fresh - together these give each test a clean slate.
@@ -68,6 +73,8 @@ beforeEach(() => {
     url: "/__reset-cache",
     failOnStatusCode: false,
   });
+  cy.visit("/", { failOnStatusCode: false });
+  cy.setCookie("checklist_auth", FAKE_JWT, { path: "/", secure: false });
 });
 
 /** Log URL + a body snippet after each test so failures self-diagnose. */

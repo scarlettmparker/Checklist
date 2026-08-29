@@ -7,7 +7,7 @@ describe("Templates CRUD", () => {
     cy.mutate("checklist/createItem", { name: "Stove" });
 
     cy.visit("/templates/create");
-    cy.get('input[name="name"]').type("Camping");
+    cy.get('form input[name="name"]').first().type("Camping");
     cy.contains("Tent").click();
     cy.contains("Stove").click();
     cy.contains("button", "Create").click();
@@ -27,23 +27,23 @@ describe("Templates CRUD", () => {
   it("edits a template's name and returns to its detail", () => {
     // Seed a template via the UI.
     cy.visit("/templates/create");
-    cy.get('input[name="name"]').type("Old name");
-    cy.get('button[type="submit"]').click();
+    cy.get('form input[name="name"]').first().type("Old name");
+    cy.contains("button", "Create").click();
     cy.url().should("eq", Cypress.config("baseUrl") + "/templates");
 
     cy.contains("Old name").click();
     cy.contains("button", "Edit").click();
     cy.url().should("include", "/edit");
-    cy.get('input[name="name"]').clear().type("New name");
-    cy.get('button[type="submit"]').click();
+    cy.get('form input[name="name"]').first().clear().type("New name");
+    cy.contains("button", "Save").click();
     cy.url().should("match", /\/templates\//);
     cy.contains("New name").should("be.visible");
   });
 
   it("archives a template from its detail", () => {
     cy.visit("/templates/create");
-    cy.get('input[name="name"]').type("To archive");
-    cy.get('button[type="submit"]').click();
+    cy.get('form input[name="name"]').first().type("To archive");
+    cy.contains("button", "Create").click();
     cy.url().should("eq", Cypress.config("baseUrl") + "/templates");
 
     cy.contains("To archive").click();
@@ -54,8 +54,8 @@ describe("Templates CRUD", () => {
 
   it("cancel on the archive dialog keeps the template", () => {
     cy.visit("/templates/create");
-    cy.get('input[name="name"]').type("Keep me");
-    cy.get('button[type="submit"]').click();
+    cy.get('form input[name="name"]').first().type("Keep me");
+    cy.contains("button", "Create").click();
     cy.contains("Keep me").click();
     cy.contains("button", "Archive").click();
     cy.contains("button", "Cancel").click();

@@ -22,7 +22,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: sun
       SPRING_FLYWAY_ENABLED: "false"
       APP_BYPASS_PERMISSIONS: "true"
-      JWT_SECRET: test-secret-key-for-functional-tests-only
+      JWT_SECRET: test-secret-key-for-functional-tests-only-very-long-secure-key-1234567890ABCDEF
       # Dummy values so email/object-store beans construct; not exercised here.
       EMAIL_CLIENT_ID: test
       EMAIL_CLIENT_SECRET: test
@@ -65,7 +65,7 @@ services:
       NODE_ENV: production
       SERVER_PORT: 3000
       GRAPHQL_ENDPOINT: http://backend:8083/graphql
-      AUTH_DISABLED: "true"
+      JWT_SECRET: test-secret-key-for-functional-tests-only-very-long-secure-key-1234567890ABCDEF
     depends_on:
       backend:
         condition: service_healthy

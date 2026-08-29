@@ -147,28 +147,25 @@ export function setupRoutes(app, vite) {
       return reply.callNotFound();
     }
 
-    const authDisabled = process.env.AUTH_DISABLED === "true";
-    if (!authDisabled) {
-      const token = getCookieValue(request.headers.cookie, AUTH_COOKIE);
-      if (token && !verifyToken(token)) {
-        reply.header("Set-Cookie", clearAuthCookie());
-        return reply.redirect(
-          `/login?redirect=${encodeURIComponent(request.raw.url)}`,
-        );
-      }
-      const normalizedPath =
-        pathname.length > 1 && pathname.endsWith("/")
-          ? pathname.replace(/\/+$/, "")
-          : pathname;
-      const isPublic = PUBLIC_PAGES.has(normalizedPath);
-      if (!token && !isPublic) {
-        return reply.redirect(
-          `/login?redirect=${encodeURIComponent(request.raw.url)}`,
-        );
-      }
-      if (token && isPublic) {
-        return reply.redirect("/");
-      }
+    const token = getCookieValue(request.headers.cookie, AUTH_COOKIE);
+    if (token && !verifyToken(token)) {
+      reply.header("Set-Cookie", clearAuthCookie());
+      return reply.redirect(
+        `/login?redirect=${encodeURIComponent(request.raw.url)}`,
+      );
+    }
+    const normalizedPath =
+      pathname.length > 1 && pathname.endsWith("/")
+        ? pathname.replace(/\/+$/, "")
+        : pathname;
+    const isPublic = PUBLIC_PAGES.has(normalizedPath);
+    if (!token && !isPublic) {
+      return reply.redirect(
+        `/login?redirect=${encodeURIComponent(request.raw.url)}`,
+      );
+    }
+    if (token && isPublic) {
+      return reply.redirect("/");
     }
 
     let url = pathname.replace(base, "");
