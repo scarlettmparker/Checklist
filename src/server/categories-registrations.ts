@@ -1,9 +1,4 @@
-import {
-  defineLoader,
-  defineMutation,
-  makeCacheKey,
-  type MutationResult,
-} from "@sun/ssr";
+import { defineLoader, defineMutation, MutationError } from "@sun/ssr";
 import { executeDocument } from "@sun/api";
 import {
   ListChecklistCategoriesDocument,
@@ -35,14 +30,11 @@ defineLoader({
 });
 
 /**
- * Creates a new category; invalidates the categories list.
+ * Creates a new category and returns it.
  */
 defineMutation({
   path: "categories/create",
-  async handler(body: {
-    name: string;
-    description?: string;
-  }): Promise<MutationResult> {
+  async handler(body: { name: string; description?: string }) {
     const result = await executeDocument<CreateChecklistCategoryMutation>(
       CreateChecklistCategoryDocument,
       {
@@ -50,15 +42,10 @@ defineMutation({
         description: body.description ?? null,
       },
     );
-    const data = result.data?.checklistMutations
-      .createCategory as MutationResult;
-
-    return {
-      ...(data ?? {
-        __typename: "StandardError",
-        message: result.error || "Failed to create category.",
-      }),
-      invalidated: [makeCacheKey("categories:categories", {})],
-    };
+    const response = result.data?.checklistMutations.createCategory;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to create category.");
+    }
+    return response;
   },
 });

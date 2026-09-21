@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { patchPageData } from "@sun/ssr";
+import { useMutation } from "@sun/ssr/react";
 import {
   Button,
   Dialog,
@@ -14,7 +16,26 @@ import {
   Input,
   MarkdownEditor,
 } from "@sun/components";
+import type {
+  CreateCategoryResponse,
+  ListChecklistCategoriesQuery,
+} from "~/generated/graphql";
 import { createChecklistCategory } from "~/server/actions/checklist-category";
+
+type Category = NonNullable<
+  ListChecklistCategoriesQuery["checklistQueries"]["listCategories"]
+>[number];
+
+type CategoryPayload = {
+  /**
+   * Name of the new category.
+   */
+  name: string;
+  /**
+   * Description of the new category.
+   */
+  description?: string;
+};
 
 type CreateCategoryDialogProps = {
   /**
@@ -34,22 +55,36 @@ const DEFAULT_ROWS = 3;
  */
 const CreateCategoryDialog = ({ open, onClose }: CreateCategoryDialogProps) => {
   const { t } = useTranslation("categories");
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const [, runCreate, pending] = useMutation<
+    CategoryPayload,
+    CreateCategoryResponse,
+    null
+  >({
+    base: null,
+    reducer: () => null,
+    action: (payload) =>
+      createChecklistCategory(payload.name, payload.description),
+    onSuccess: (response) => {
+      patchPageData<Category[]>(
+        "categories",
+        "categories",
+        {},
+        (current) => [...(current ?? []), response.category],
+      );
+      setError(null);
+      onClose();
+    },
+    onError: (mutationError) => setError(mutationError.message),
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
-    const result = await createChecklistCategory(name, description);
-
-    if (result.__typename === "QuerySuccess") {
-      onClose();
-    }
-
-    setLoading(false);
+    runCreate({ name, description });
   };
 
   return (
@@ -75,6 +110,7 @@ const CreateCategoryDialog = ({ open, onClose }: CreateCategoryDialogProps) => {
               />
             </FormItem>
           </FormField>
+          {error && <p>{error}</p>}
         </Form>
       </DialogBody>
       <DialogFooter>
@@ -84,10 +120,10 @@ const CreateCategoryDialog = ({ open, onClose }: CreateCategoryDialogProps) => {
         <Button
           type="submit"
           form="create-category-form"
-          title={loading ? t("creating-title") : t("create-title")}
-          disabled={loading}
+          title={pending ? t("creating-title") : t("create-title")}
+          disabled={pending}
         >
-          {loading ? t("creating-label") : t("create-label")}
+          {pending ? t("creating-label") : t("create-label")}
         </Button>
       </DialogFooter>
     </Dialog>

@@ -1,14 +1,14 @@
 mutation removeChecklistTemplateItem($templateId: ID!, $itemId: ID!) {
   checklistMutations {
     removeTemplateItem(templateId: $templateId, itemId: $itemId) {
-      ... on QuerySuccess {
-      __typename
       message
+      template {
         id
-      }
-      ... on StandardError {
-      __typename
-      message
+        name
+        description
+        status
+        createdAt
+        updatedAt
       }
     }
   }

@@ -67,10 +67,13 @@ const CreateTemplateForm = () => {
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
     const itemIds = Array.from(selected);
-    const result = await createChecklistTemplate(name, description, itemIds);
 
-    if (result.__typename === "StandardError") {
-      setError(result.message);
+    try {
+      await createChecklistTemplate(name, description, itemIds);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to create template.",
+      );
     }
 
     setLoading(false);

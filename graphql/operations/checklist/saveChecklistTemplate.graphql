@@ -1,14 +1,14 @@
 mutation saveChecklistTemplate($input: ChecklistTemplateInput!) {
   checklistMutations {
     saveTemplate(input: $input) {
-      ... on QuerySuccess {
-      __typename
       message
+      template {
         id
-      }
-      ... on StandardError {
-      __typename
-      message
+        name
+        description
+        status
+        createdAt
+        updatedAt
       }
     }
   }

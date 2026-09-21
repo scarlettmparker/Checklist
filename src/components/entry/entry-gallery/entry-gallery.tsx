@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { usePageData } from "@sun/ssr/react";
-import { invalidatePageData } from "@sun/ssr";
+import { patchPageData } from "@sun/ssr";
+import { useMutation, usePageData } from "@sun/ssr/react";
 import {
   Button,
   Card,
@@ -19,11 +19,22 @@ import {
   detachImage,
   deleteImageFile,
 } from "~/server/actions/gallery";
-import { GalleryItem } from "~/generated/graphql";
+import { GalleryItem, type DetachObjectResponse } from "~/generated/graphql";
 import styles from "./entry-gallery.module.css";
 
 type EntryGalleryProps = {
   entryId: string;
+};
+
+type DeletePayload = {
+  /**
+   * The gallery item to detach.
+   */
+  item: GalleryItem;
+  /**
+   * When true, keep the underlying file and only break the link.
+   */
+  detachOnly: boolean;
 };
 
 const GALLERY_PAGE_SIZE = 2;
@@ -35,7 +46,6 @@ const ICON_SIZE = 16;
  */
 const EntryGallery = ({ entryId }: EntryGalleryProps) => {
   const { t } = useTranslation("entry");
-  const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<GalleryItem | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -46,61 +56,99 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
   );
   const items: GalleryItem[] = galleryItems ?? [];
 
-  const images = items.filter((i: GalleryItem) => i.imagePath);
-  const others = items.filter((i: GalleryItem) => !i.imagePath);
+  const [, runUpload, uploading] = useMutation<
+    File[],
+    GalleryItem[],
+    GalleryItem[]
+  >({
+    base: items,
+    reducer: (current) => current,
+    action: async (files) => {
+      const presigned = await requestImageUploads(entryId, files);
+      const created: GalleryItem[] = [];
+      for (let i = 0; i < presigned.length; i++) {
+        const { url, key } = presigned[i];
+        const res = await fetch(url, {
+          method: "PUT",
+          body: files[i],
+          headers: { "Content-Type": files[i].type },
+        });
+        if (!res.ok) {
+          throw new Error(`Upload failed: ${res.status} ${res.statusText}`);
+        }
+        try {
+          const { item } = await confirmImageUpload(entryId, key, files[i].name);
+          created.push(item);
+        } catch (error) {
+          await deleteImageFile(key).catch(() => undefined);
+          throw error;
+        }
+      }
+      return created;
+    },
+    onSuccess: (created) => {
+      setUploadError(null);
+      patchPageData<GalleryItem[]>(
+        "galleryItems",
+        "entry/:id/gallery",
+        { id: entryId },
+        (current) => [...(current ?? []), ...created],
+      );
+    },
+    onError: (error) => setUploadError(error.message),
+  });
+
+  const [optimisticItems, runDelete] = useMutation<
+    DeletePayload,
+    DetachObjectResponse,
+    GalleryItem[]
+  >({
+    base: items,
+    reducer: (current, payload) =>
+      current.filter((item) => item.id !== payload.item.id),
+    action: async (payload) => {
+      const response = await detachImage(entryId, payload.item.id);
+      if (!payload.detachOnly && payload.item.imagePath) {
+        await deleteImageFile(payload.item.imagePath);
+      }
+      return response;
+    },
+    onSuccess: (_response, payload) => {
+      setUploadError(null);
+      patchPageData<GalleryItem[]>(
+        "galleryItems",
+        "entry/:id/gallery",
+        { id: entryId },
+        (current) =>
+          (current ?? []).filter((item) => item.id !== payload.item.id),
+      );
+    },
+    onError: (error) => setUploadError(error.message),
+  });
+
+  const images = optimisticItems.filter((item) => item.imagePath);
+  const others = optimisticItems.filter((item) => !item.imagePath);
 
   /**
-   * Handle uploading an image or images to the filestore and attaching them to the entry.
+   * Handle uploading an image or images to the filestore and attaching them to
+   * the entry.
    */
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (!files.length) return;
-    setUploading(true);
     setUploadError(null);
-
-    try {
-      const presigned = await requestImageUploads(entryId, files);
-      await Promise.all(
-        presigned.map(async ({ url, key }, i) => {
-          const res = await fetch(url, {
-            method: "PUT",
-            body: files[i],
-            headers: { "Content-Type": files[i].type },
-          });
-          if (!res.ok) {
-            throw new Error(`Upload failed: ${res.status} ${res.statusText}`);
-          }
-          const result = await confirmImageUpload(entryId, key, files[i].name);
-          if (result.__typename === "StandardError") {
-            await deleteImageFile(key);
-            throw new Error(result.message || "Failed to attach image");
-          }
-        }),
-      );
-      invalidatePageData(["entry/:id"]);
-    } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Upload failed");
-    }
-    setUploading(false);
+    runUpload(files);
     e.target.value = "";
   };
 
   /**
    * Handle deleting an image from the filestore and detaching it from the entry.
-   * @param detachOnly Whether to delete the image file or not
+   * @param detachOnly Whether to keep the image file
    */
-  const handleDelete = async (detachOnly: boolean) => {
+  const handleDelete = (detachOnly: boolean) => {
     if (!deleteTarget) return;
     setUploadError(null);
-    try {
-      await detachImage(entryId, deleteTarget.id);
-      if (!detachOnly && deleteTarget.imagePath) {
-        await deleteImageFile(deleteTarget.imagePath);
-      }
-      invalidatePageData(["entry/:id"]);
-    } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Delete failed");
-    }
+    runDelete({ item: deleteTarget, detachOnly });
     setDeleteTarget(null);
   };
 

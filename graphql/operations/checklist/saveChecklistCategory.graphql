@@ -1,14 +1,13 @@
 mutation saveChecklistCategory($input: ChecklistCategoryInput!) {
   checklistMutations {
     saveCategory(input: $input) {
-      ... on QuerySuccess {
-      __typename
       message
+      category {
         id
-      }
-      ... on StandardError {
-      __typename
-      message
+        name
+        description
+        createdAt
+        updatedAt
       }
     }
   }

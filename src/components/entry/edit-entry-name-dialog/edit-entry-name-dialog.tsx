@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { TFunction } from "i18next";
+import { patchPageData } from "@sun/ssr";
 import {
   Button,
   Dialog,
@@ -13,7 +14,10 @@ import {
   FormLabel,
   Input,
 } from "@sun/components";
-import { ChecklistEntry } from "~/generated/graphql";
+import {
+  ChecklistEntry,
+  type ListChecklistEntriesQuery,
+} from "~/generated/graphql";
 import { saveEntry } from "~/server/actions/checklist-entry";
 
 type EditEntryNameDialogProps = {
@@ -58,7 +62,24 @@ const EditEntryNameDialog = ({
     setLoading(true);
     const formData = new FormData(e.currentTarget);
     const name = (formData.get("name") as string).trim();
-    await saveEntry(entry.id, name);
+    try {
+      const response = await saveEntry(entry.id, name);
+      patchPageData(
+        "entry",
+        "entry/:id",
+        { id: entry.id },
+        () => response.entry,
+      );
+      patchPageData<
+        NonNullable<ListChecklistEntriesQuery["checklistQueries"]["listEntries"]>
+      >("entry", "entry", {}, (current) =>
+        (current ?? []).map((item) =>
+          item.id === response.entry.id ? response.entry : item,
+        ),
+      );
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : error);
+    }
     setLoading(false);
     onClose();
   };

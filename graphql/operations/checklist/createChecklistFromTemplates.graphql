@@ -1,14 +1,15 @@
 mutation createChecklistFromTemplates($templateIds: [ID!]!, $name: String) {
   checklistMutations {
     createChecklistFromTemplates(templateIds: $templateIds, name: $name) {
-      ... on QuerySuccess {
-      __typename
       message
+      entry {
         id
-      }
-      ... on StandardError {
-      __typename
-      message
+        name
+        dueAt
+        completedAt
+        status
+        createdAt
+        updatedAt
       }
     }
   }

@@ -1,14 +1,17 @@
 mutation createGalleryItem($input: GalleryItemInput!) {
   galleryMutations {
     create(input: $input) {
-      ... on QuerySuccess {
-        __typename
-        message
+      message
+      item {
         id
-      }
-      ... on StandardError {
-        __typename
-        message
+        title
+        description
+        content
+        imagePath
+        remoteObject
+        keyDetailId
+        createdAt
+        updatedAt
       }
     }
   }

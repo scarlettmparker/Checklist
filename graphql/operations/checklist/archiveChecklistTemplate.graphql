@@ -1,14 +1,14 @@
 mutation archiveChecklistTemplate($id: ID!) {
   checklistMutations {
     archiveTemplate(id: $id) {
-      ... on QuerySuccess {
-      __typename
       message
+      template {
         id
-      }
-      ... on StandardError {
-      __typename
-      message
+        name
+        description
+        status
+        createdAt
+        updatedAt
       }
     }
   }

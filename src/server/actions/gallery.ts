@@ -1,4 +1,12 @@
-import { executeMutation, MutationResult } from "@sun/ssr";
+import { executeMutation } from "@sun/ssr";
+import type {
+  AttachChecklistObjectResponse,
+  CreateGalleryItemResponse,
+  DeleteFileResponse,
+  DetachObjectResponse,
+  GalleryItem,
+  GetPresignedUploadUrlResponse,
+} from "~/generated/graphql";
 
 const GALLERY_BUCKET = "gallery";
 
@@ -21,20 +29,16 @@ export async function requestImageUpload(
   file: { name: string; type: string },
 ): Promise<{ url: string; key: string }> {
   const key = `checklist/checklist-entries/${entryId}/${sanitizeFileName(file.name)}`;
-  const result = await executeMutation("filestore/get-presigned-upload-url", {
-    bucket: GALLERY_BUCKET,
-    key,
-    contentType: file.type,
-  });
+  const response = await executeMutation<GetPresignedUploadUrlResponse>(
+    "filestore/get-presigned-upload-url",
+    {
+      bucket: GALLERY_BUCKET,
+      key,
+      contentType: file.type,
+    },
+  );
 
-  if (result.__typename !== "QuerySuccess" || !result.id) {
-    throw new Error(
-      (result.__typename === "StandardError" && result.message) ||
-        "Failed to get upload URL",
-    );
-  }
-
-  return { url: result.id, key };
+  return { url: response.url, key };
 }
 
 /**
@@ -47,7 +51,7 @@ export async function requestImageUploads(
   return Promise.all(
     files.map(async (file) => {
       const key = `checklist/checklist-entries/${entryId}/${sanitizeFileName(file.name)}`;
-      const result = await executeMutation(
+      const response = await executeMutation<GetPresignedUploadUrlResponse>(
         "filestore/get-presigned-upload-url",
         {
           bucket: GALLERY_BUCKET,
@@ -55,13 +59,7 @@ export async function requestImageUploads(
           contentType: file.type,
         },
       );
-      if (result.__typename !== "QuerySuccess" || !result.id) {
-        throw new Error(
-          (result.__typename === "StandardError" && result.message) ||
-            "Failed to get upload URL",
-        );
-      }
-      return { url: result.id, key };
+      return { url: response.url, key };
     }),
   );
 }
@@ -74,21 +72,25 @@ export async function confirmImageUpload(
   entryId: string,
   key: string,
   title: string,
-): Promise<MutationResult> {
-  const createResult = await executeMutation("gallery/create", {
-    title,
-    imagePath: key,
-  });
+): Promise<{ item: GalleryItem; attach: AttachChecklistObjectResponse }> {
+  const createResult = await executeMutation<CreateGalleryItemResponse>(
+    "gallery/create",
+    {
+      title,
+      imagePath: key,
+    },
+  );
 
-  if (createResult.__typename !== "QuerySuccess" || !createResult.id) {
-    return createResult;
-  }
+  const attach = await executeMutation<AttachChecklistObjectResponse>(
+    "checklist/attachObject",
+    {
+      source: entryId,
+      target: createResult.item.id,
+      ownerType: "ENTRY",
+    },
+  );
 
-  return executeMutation("checklist/attachObject", {
-    source: entryId,
-    target: createResult.id,
-    ownerType: "ENTRY",
-  });
+  return { item: createResult.item, attach };
 }
 
 /**
@@ -97,8 +99,8 @@ export async function confirmImageUpload(
 export async function detachImage(
   entryId: string,
   galleryItemId: string,
-): Promise<MutationResult> {
-  return executeMutation("checklist/detachObject", {
+): Promise<DetachObjectResponse> {
+  return executeMutation<DetachObjectResponse>("checklist/detachObject", {
     source: entryId,
     target: galleryItemId,
     ownerType: "ENTRY",
@@ -110,8 +112,8 @@ export async function detachImage(
  */
 export async function deleteImageFile(
   imagePath: string,
-): Promise<MutationResult> {
-  return executeMutation("filestore/deleteFile", {
+): Promise<DeleteFileResponse> {
+  return executeMutation<DeleteFileResponse>("filestore/deleteFile", {
     bucket: GALLERY_BUCKET,
     key: imagePath,
   });

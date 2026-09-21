@@ -3,10 +3,10 @@
  * Shared commands + seed helpers for the functional tests.
  */
 
-type MutationResult =
-  | { __typename: "QuerySuccess"; id?: string | null; message: string }
-  | { __typename: "StandardError"; message: string }
-  | { __typename: "Redirect"; redirectTo: string };
+type MutationResponse = {
+  message?: string;
+  [key: string]: unknown;
+};
 
 declare global {
   namespace Cypress {
@@ -14,7 +14,7 @@ declare global {
       mutate(
         name: string,
         body: Record<string, unknown>,
-      ): Chainable<MutationResult>;
+      ): Chainable<MutationResponse>;
       createItemViaUi(name: string): Chainable<void>;
       createEntryViaUi(name?: string): Chainable<string>;
       openEntryMenu(item: string): Chainable<void>;
@@ -32,7 +32,7 @@ Cypress.Commands.add("mutate", (name, body) =>
       body,
       headers: { origin: Cypress.config("baseUrl") as string },
     })
-    .then((r) => r.body as MutationResult),
+    .then((r) => r.body as MutationResponse),
 );
 
 Cypress.Commands.add("createItemViaUi", (name) => {

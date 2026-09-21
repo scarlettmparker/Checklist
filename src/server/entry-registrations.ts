@@ -1,11 +1,4 @@
-import {
-  defineLoader,
-  defineMutation,
-  invalidatePageData,
-  makeCacheKey,
-  ServerRedirectError,
-  type MutationResult,
-} from "@sun/ssr";
+import { defineLoader, defineMutation, MutationError } from "@sun/ssr";
 import { executeDocument } from "@sun/api";
 import {
   ListChecklistEntriesDocument,
@@ -245,101 +238,71 @@ defineLoader({
 });
 
 /**
- * Creates a blank entry; redirects into it and invalidates the entries list.
+ * Creates a blank entry and returns it.
  */
 defineMutation({
   path: "entry/create",
-  async handler(body: { name?: string }): Promise<MutationResult> {
+  async handler(body: { name?: string }) {
     const result = await executeDocument<CreateChecklistEntryMutation>(
       CreateChecklistEntryDocument,
       { name: body.name ?? null },
     );
-    const data = result.data?.checklistMutations
-      .createChecklist as MutationResult;
-
-    if (data?.__typename === "QuerySuccess" && data.id) {
-      throw new ServerRedirectError(
-        `/entry/${data.id}`,
-        makeCacheKey("entry:entry", {}),
-      );
+    const response = result.data?.checklistMutations.createChecklist;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to create entry.");
     }
-
-    return {
-      __typename: "StandardError",
-      message: result.error || "Failed to create entry.",
-    };
+    return response;
   },
 });
 
 /**
- * Creates an entry seeded from a single template; redirects into it.
+ * Creates an entry seeded from a single template and returns it.
  */
 defineMutation({
   path: "entry/createFromTemplate",
-  async handler(body: {
-    templateId: string;
-    name?: string;
-  }): Promise<MutationResult> {
+  async handler(body: { templateId: string; name?: string }) {
     const result = await executeDocument<CreateChecklistFromTemplateMutation>(
       CreateChecklistFromTemplateDocument,
       { templateId: body.templateId, name: body.name ?? null },
     );
-    const data = result.data?.checklistMutations
-      .createChecklistFromTemplate as MutationResult;
-
-    if (data?.__typename === "QuerySuccess" && data.id) {
-      throw new ServerRedirectError(
-        `/entry/${data.id}`,
-        makeCacheKey("entry:entry", {}),
+    const response =
+      result.data?.checklistMutations.createChecklistFromTemplate;
+    if (response == null) {
+      throw new MutationError(
+        result.error ?? "Failed to create entry from template.",
       );
     }
-
-    return {
-      __typename: "StandardError",
-      message: result.error || "Failed to create entry from template.",
-    };
+    return response;
   },
 });
 
 /**
- * Composes an entry from multiple templates; redirects into it.
+ * Composes an entry from multiple templates and returns it.
  */
 defineMutation({
   path: "entry/createFromTemplates",
-  async handler(body: {
-    templateIds: string[];
-    name?: string;
-  }): Promise<MutationResult> {
+  async handler(body: { templateIds: string[]; name?: string }) {
     const result = await executeDocument<CreateChecklistFromTemplatesMutation>(
       CreateChecklistFromTemplatesDocument,
       { templateIds: body.templateIds, name: body.name ?? null },
     );
-    const data = result.data?.checklistMutations
-      .createChecklistFromTemplates as MutationResult;
-
-    if (data?.__typename === "QuerySuccess" && data.id) {
-      throw new ServerRedirectError(
-        `/entry/${data.id}`,
-        makeCacheKey("entry:entry", {}),
+    const response =
+      result.data?.checklistMutations.createChecklistFromTemplates;
+    if (response == null) {
+      throw new MutationError(
+        result.error ?? "Failed to create entry from templates.",
       );
     }
-
-    return {
-      __typename: "StandardError",
-      message: result.error || "Failed to create entry from templates.",
-    };
+    return response;
   },
 });
 
 /**
- * Adds an item to an entry; invalidates the entry's items.
+ * Adds an item to an entry and returns the updated entry.
  */
 defineMutation({
   path: "entry/addItem",
-  async handler(body: {
-    entryId: string;
-    itemId: string;
-  }): Promise<MutationResult> {
+  async handler(body: { entryId: string; itemId: string }) {
     const result = await executeDocument<AddChecklistItemMutation>(
       AddChecklistItemDocument,
       {
@@ -348,49 +311,34 @@ defineMutation({
         position: null,
       },
     );
-    const invalidated = [
-      makeCacheKey("entry/:id/items:entryItems", { id: body.entryId }),
-    ];
-    invalidatePageData(invalidated);
-    return {
-      ...((result.data?.checklistMutations.addItem as MutationResult) ?? {
-        __typename: "StandardError",
-        message: result.error || "Failed to add item.",
-      }),
-      invalidated,
-    };
+    const response = result.data?.checklistMutations.addItem;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to add item.");
+    }
+    return response;
   },
 });
 
 /**
- * Removes an item from an entry; invalidates the entry's items.
+ * Removes an item from an entry and returns the updated entry.
  */
 defineMutation({
   path: "entry/removeItem",
-  async handler(body: {
-    entryId: string;
-    itemId: string;
-  }): Promise<MutationResult> {
+  async handler(body: { entryId: string; itemId: string }) {
     const result = await executeDocument<RemoveChecklistItemMutation>(
       RemoveChecklistItemDocument,
       { entryId: body.entryId, itemId: body.itemId },
     );
-    const invalidated = [
-      makeCacheKey("entry/:id/items:entryItems", { id: body.entryId }),
-    ];
-    invalidatePageData(invalidated);
-    return {
-      ...((result.data?.checklistMutations.removeItem as MutationResult) ?? {
-        __typename: "StandardError",
-        message: result.error || "Failed to remove item.",
-      }),
-      invalidated,
-    };
+    const response = result.data?.checklistMutations.removeItem;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to remove item.");
+    }
+    return response;
   },
 });
 
 /**
- * Sets an item's status within an entry; invalidates the entry's items.
+ * Sets an item's status within an entry and returns the updated entry.
  */
 defineMutation({
   path: "entry/setItemStatus",
@@ -398,7 +346,7 @@ defineMutation({
     entryId: string;
     itemId: string;
     status: ItemStatus;
-  }): Promise<MutationResult> {
+  }) {
     const result = await executeDocument<SetChecklistItemStatusMutation>(
       SetChecklistItemStatusDocument,
       {
@@ -407,118 +355,83 @@ defineMutation({
         status: body.status,
       },
     );
-    const invalidated = [
-      makeCacheKey("entry/:id/items:entryItems", { id: body.entryId }),
-    ];
-    invalidatePageData(invalidated);
-    return {
-      ...((result.data?.checklistMutations.setItemStatus as MutationResult) ?? {
-        __typename: "StandardError",
-        message: result.error || "Failed to set item status.",
-      }),
-      invalidated,
-    };
+    const response = result.data?.checklistMutations.setItemStatus;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to set item status.");
+    }
+    return response;
   },
 });
 
 /**
- * Marks an entry complete; invalidates the entry itself.
+ * Marks an entry complete and returns the updated entry.
  */
 defineMutation({
   path: "entry/completeChecklist",
-  async handler(body: { entryId: string }): Promise<MutationResult> {
+  async handler(body: { entryId: string }) {
     const result = await executeDocument<CompleteChecklistMutation>(
       CompleteChecklistDocument,
       { id: body.entryId },
     );
-    const invalidated = [makeCacheKey("entry/:id:entry", { id: body.entryId })];
-    invalidatePageData(invalidated);
-    return {
-      ...((result.data?.checklistMutations
-        .completeChecklist as MutationResult) ?? {
-        __typename: "StandardError",
-        message: result.error || "Failed to complete checklist.",
-      }),
-      invalidated,
-    };
+    const response = result.data?.checklistMutations.completeChecklist;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to complete checklist.");
+    }
+    return response;
   },
 });
 
 /**
- * Archives an entry; redirects home and invalidates the entry and its items.
+ * Archives an entry and returns it.
  */
 defineMutation({
   path: "entry/archiveChecklist",
-  async handler(body: { entryId: string }): Promise<MutationResult> {
+  async handler(body: { entryId: string }) {
     const result = await executeDocument<ArchiveChecklistMutation>(
       ArchiveChecklistDocument,
       { id: body.entryId },
     );
-    const data = result.data?.checklistMutations
-      .archiveChecklist as MutationResult;
-
-    if (data?.__typename === "QuerySuccess") {
-      throw new ServerRedirectError("/", [
-        makeCacheKey("entry:entry", {}),
-        makeCacheKey("entry/:id:entry", { id: body.entryId }),
-        makeCacheKey("entry/:id/items:entryItems", { id: body.entryId }),
-      ]);
+    const response = result.data?.checklistMutations.archiveChecklist;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to archive checklist.");
     }
-
-    return {
-      __typename: "StandardError",
-      message: result.error || "Failed to archive checklist.",
-    };
+    return response;
   },
 });
 
 /**
- * Permanently deletes an entry; redirects home.
+ * Permanently deletes an entry and returns its id.
  */
 defineMutation({
   path: "entry/delete",
-  async handler(body: { entryId: string }): Promise<MutationResult> {
+  async handler(body: { entryId: string }) {
     const result = await executeDocument<DeleteChecklistMutation>(
       DeleteChecklistDocument,
       { id: body.entryId },
     );
-    const data = result.data?.checklistMutations
-      .deleteChecklist as MutationResult;
-
-    if (data?.__typename === "QuerySuccess") {
-      throw new ServerRedirectError("/", [makeCacheKey("entry:entry", {})]);
+    const response = result.data?.checklistMutations.deleteChecklist;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to delete checklist.");
     }
-
-    return {
-      __typename: "StandardError",
-      message: result.error || "Failed to delete checklist.",
-    };
+    return response;
   },
 });
 
 /**
- * Renames an entry; invalidates the entries list and the entry itself.
+ * Renames an entry and returns it.
  */
 defineMutation({
   path: "entry/save",
-  async handler(body: { id: string; name: string }): Promise<MutationResult> {
+  async handler(body: { id: string; name: string }) {
     const result = await executeDocument<SaveChecklistEntryMutation>(
       SaveChecklistEntryDocument,
       { input: { id: body.id, name: body.name } },
     );
-    const data = result.data?.checklistMutations
-      .saveChecklist as MutationResult;
-
-    return {
-      ...((data ?? {
-        __typename: "StandardError",
-        message: result.error || "Failed to save checklist.",
-      }) as MutationResult),
-      invalidated: [
-        makeCacheKey("entry:entry", {}),
-        makeCacheKey("entry/:id:entry", { id: body.id }),
-      ],
-    };
+    const response = result.data?.checklistMutations.saveChecklist;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to save checklist.");
+    }
+    return response;
   },
 });
 
@@ -531,7 +444,7 @@ defineMutation({
     bucket: string;
     key: string;
     contentType?: string;
-  }): Promise<MutationResult> {
+  }) {
     const result = await executeDocument<GetPresignedUploadUrlMutation>(
       GetPresignedUploadUrlDocument,
       {
@@ -542,18 +455,13 @@ defineMutation({
         },
       },
     );
-    const url = result.data?.filestoreMutations?.getPresignedUploadUrl;
-    if (url) {
-      return {
-        __typename: "QuerySuccess" as const,
-        id: url,
-        message: "Presigned upload URL",
-      };
+    const response = result.data?.filestoreMutations.getPresignedUploadUrl;
+    if (response == null) {
+      throw new MutationError(
+        result.error ?? "Failed to get presigned upload URL.",
+      );
     }
-    return {
-      __typename: "StandardError" as const,
-      message: result.error || "Failed to get presigned upload URL.",
-    };
+    return response;
   },
 });
 
@@ -566,7 +474,7 @@ defineMutation({
     title: string;
     imagePath: string;
     description?: string;
-  }): Promise<MutationResult> {
+  }) {
     const result = await executeDocument<CreateGalleryItemMutation>(
       CreateGalleryItemDocument,
       {
@@ -577,19 +485,16 @@ defineMutation({
         },
       },
     );
-    const data = result.data?.galleryMutations?.create as MutationResult;
-    return (
-      data ?? {
-        __typename: "StandardError",
-        message: result.error || "Failed to create gallery item.",
-      }
-    );
+    const response = result.data?.galleryMutations.create;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to create gallery item.");
+    }
+    return response;
   },
 });
 
 /**
- * Attaches a remote object to a checklist detail; invalidates the gallery and
- * entry detail of the owning entry.
+ * Attaches a remote object to a checklist detail.
  */
 defineMutation({
   path: "checklist/attachObject",
@@ -597,7 +502,7 @@ defineMutation({
     source: string;
     target: string;
     ownerType?: RemoteObjectType;
-  }): Promise<MutationResult> {
+  }) {
     const result = await executeDocument<AttachChecklistObjectMutation>(
       AttachChecklistObjectDocument,
       {
@@ -606,23 +511,16 @@ defineMutation({
         ownerType: body.ownerType ?? null,
       },
     );
-    const data = result.data?.checklistMutations
-      ?.attachObject as MutationResult;
-    return {
-      ...((data ?? {
-        __typename: "StandardError",
-        message: result.error || "Failed to attach object.",
-      }) as MutationResult),
-      invalidated: [
-        makeCacheKey("entry/:id/gallery:galleryItems", { id: body.source }),
-      ],
-    };
+    const response = result.data?.checklistMutations.attachObject;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to attach object.");
+    }
+    return response;
   },
 });
 
 /**
- * Detaches a remote object from a checklist detail; invalidates the gallery and
- * entry detail of the owning entry.
+ * Detaches a remote object from a checklist detail.
  */
 defineMutation({
   path: "checklist/detachObject",
@@ -630,7 +528,7 @@ defineMutation({
     source: string;
     target: string;
     ownerType?: RemoteObjectType;
-  }): Promise<MutationResult> {
+  }) {
     const result = await executeDocument<DetachChecklistObjectMutation>(
       DetachChecklistObjectDocument,
       {
@@ -639,17 +537,11 @@ defineMutation({
         ownerType: body.ownerType ?? null,
       },
     );
-    const data = result.data?.checklistMutations
-      ?.detachObject as MutationResult;
-    return {
-      ...((data ?? {
-        __typename: "StandardError",
-        message: result.error || "Failed to detach object.",
-      }) as MutationResult),
-      invalidated: [
-        makeCacheKey("entry/:id/gallery:galleryItems", { id: body.source }),
-      ],
-    };
+    const response = result.data?.checklistMutations.detachObject;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to detach object.");
+    }
+    return response;
   },
 });
 
@@ -658,19 +550,15 @@ defineMutation({
  */
 defineMutation({
   path: "filestore/deleteFile",
-  async handler(body: {
-    bucket: string;
-    key: string;
-  }): Promise<MutationResult> {
+  async handler(body: { bucket: string; key: string }) {
     const result = await executeDocument<DeleteFileMutation>(
       DeleteFileDocument,
       { input: { bucket: body.bucket, key: body.key } },
     );
-    return {
-      __typename: result.success ? "QuerySuccess" : "StandardError",
-      message: result.success
-        ? "File deleted"
-        : (result.error ?? "Failed to delete file."),
-    } as MutationResult;
+    const response = result.data?.filestoreMutations.deleteFile;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to delete file.");
+    }
+    return response;
   },
 });

@@ -1,14 +1,15 @@
 mutation setChecklistItemStatus($entryId: ID!, $itemId: ID!, $status: ItemStatus!) {
   checklistMutations {
     setItemStatus(entryId: $entryId, itemId: $itemId, status: $status) {
-      ... on QuerySuccess {
-      __typename
       message
+      entry {
         id
-      }
-      ... on StandardError {
-      __typename
-      message
+        name
+        dueAt
+        completedAt
+        status
+        createdAt
+        updatedAt
       }
     }
   }

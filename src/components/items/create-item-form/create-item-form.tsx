@@ -26,12 +26,12 @@ const CreateItemForm = () => {
   const DEFAULT_ROWS = 3;
 
   const [loading, setLoading] = useState(false);
-  const [_error, setError] = useState<string | null>(null);
-  const [_success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
@@ -42,17 +42,11 @@ const CreateItemForm = () => {
       categoryIdRaw && categoryIdRaw !== CATEGORY_NONE
         ? categoryIdRaw
         : undefined;
-    const result = await createChecklistItem(
-      name,
-      description,
-      categoryId,
-      icon,
-    );
 
-    if (result.__typename === "QuerySuccess") {
-      setSuccess(true);
-    } else if (result.__typename === "StandardError") {
-      setError(result.message);
+    try {
+      await createChecklistItem(name, description, categoryId, icon);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create item.");
     }
 
     setLoading(false);
@@ -104,6 +98,7 @@ const CreateItemForm = () => {
           />
         </FormItem>
       </FormField>
+      {error && <p className={styles.error}>{error}</p>}
       <FormFooter>
         <Link to={cancelTo}>
           <Button type="button" variant="secondary" title={t("cancel-title")}>

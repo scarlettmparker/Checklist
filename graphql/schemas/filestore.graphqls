@@ -9,11 +9,35 @@ input PresignInput {
   contentType: String
 }
 
+# Response payload for the getPresignedUploadUrl mutation.
+type GetPresignedUploadUrlResponse {
+  message: String!
+  url: String!
+}
+
+# Response payload for the getPresignedUploadUrls mutation.
+type GetPresignedUploadUrlsResponse {
+  message: String!
+  urls: [String!]!
+}
+
+# Response payload for the getPresignedDownloadUrl mutation.
+type GetPresignedDownloadUrlResponse {
+  message: String!
+  url: String!
+}
+
+# Response payload for the deleteFile mutation.
+type DeleteFileResponse {
+  message: String!
+  key: String!
+}
+
 type FilestoreMutations {
-  getPresignedUploadUrl(input: PresignInput!): String
-  getPresignedUploadUrls(input: [PresignInput!]!): [String!]!
-  getPresignedDownloadUrl(input: BucketKeyInput!): String
-  deleteFile(input: BucketKeyInput!): Boolean
+  getPresignedUploadUrl(input: PresignInput!): GetPresignedUploadUrlResponse!
+  getPresignedUploadUrls(input: [PresignInput!]!): GetPresignedUploadUrlsResponse!
+  getPresignedDownloadUrl(input: BucketKeyInput!): GetPresignedDownloadUrlResponse!
+  deleteFile(input: BucketKeyInput!): DeleteFileResponse!
 }
 
 extend type Mutation {

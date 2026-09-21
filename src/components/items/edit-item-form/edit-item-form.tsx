@@ -65,16 +65,11 @@ const EditItemForm = ({ itemId, pattern }: EditItemFormProps) => {
       categoryIdRaw && categoryIdRaw !== CATEGORY_NONE
         ? categoryIdRaw
         : undefined;
-    const result = await saveChecklistItem(
-      itemId,
-      name,
-      description,
-      categoryId,
-      icon,
-    );
 
-    if (result.__typename === "StandardError") {
-      console.error(result.message);
+    try {
+      await saveChecklistItem(itemId, name, description, categoryId, icon);
+    } catch (err) {
+      console.error(err instanceof Error ? err.message : err);
     }
 
     setLoading(false);

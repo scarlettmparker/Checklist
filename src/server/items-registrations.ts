@@ -1,10 +1,4 @@
-import {
-  defineLoader,
-  defineMutation,
-  makeCacheKey,
-  ServerRedirectError,
-  type MutationResult,
-} from "@sun/ssr";
+import { defineLoader, defineMutation, MutationError } from "@sun/ssr";
 import { executeDocument } from "@sun/api";
 import {
   ListChecklistItemsDocument,
@@ -139,7 +133,7 @@ defineLoader({
 });
 
 /**
- * Creates a new checklist item, then redirects to the items list.
+ * Creates a new checklist item and returns it.
  */
 defineMutation({
   path: "checklist/createItem",
@@ -148,12 +142,11 @@ defineMutation({
     description?: string;
     categoryId?: string;
     icon?: string;
-  }): Promise<MutationResult> {
+  }) {
     if (typeof body.name !== "string" || body.name.trim() === "") {
-      return {
-        __typename: "StandardError",
-        message: "Name is required and must be a non-empty string.",
-      };
+      throw new MutationError(
+        "Name is required and must be a non-empty string.",
+      );
     }
 
     const result = await executeDocument<CreateChecklistItemMutation>(
@@ -165,27 +158,16 @@ defineMutation({
         icon: body.icon ?? null,
       },
     );
-    const data = result.data?.checklistMutations.createItem as MutationResult;
-
-    if (
-      data?.__typename === "QuerySuccess" ||
-      data?.__typename === "Redirect"
-    ) {
-      throw new ServerRedirectError(
-        "/items",
-        makeCacheKey("checklist:checklistItems", {}),
-      );
+    const response = result.data?.checklistMutations.createItem;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to create checklist item.");
     }
-
-    return {
-      __typename: "StandardError",
-      message: result.error || "Failed to create checklist item.",
-    };
+    return response;
   },
 });
 
 /**
- * Saves an existing checklist item, then redirects to its detail page.
+ * Saves an existing checklist item and returns it.
  */
 defineMutation({
   path: "checklist/saveItem",
@@ -195,12 +177,11 @@ defineMutation({
     description?: string;
     categoryId?: string;
     icon?: string;
-  }): Promise<MutationResult> {
+  }) {
     if (typeof body.name !== "string" || body.name.trim() === "") {
-      return {
-        __typename: "StandardError",
-        message: "Name is required and must be a non-empty string.",
-      };
+      throw new MutationError(
+        "Name is required and must be a non-empty string.",
+      );
     }
 
     const input: ChecklistItemInput = {
@@ -215,50 +196,28 @@ defineMutation({
       SaveChecklistItemDocument,
       { input },
     );
-    const data = result.data?.checklistMutations.saveItem as MutationResult;
-
-    if (
-      data?.__typename === "QuerySuccess" ||
-      data?.__typename === "Redirect"
-    ) {
-      throw new ServerRedirectError(`/items/${body.id}`, [
-        makeCacheKey("checklist:checklistItems", {}),
-        makeCacheKey("checklist/:id:item", { id: body.id }),
-      ]);
+    const response = result.data?.checklistMutations.saveItem;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to save item.");
     }
-
-    return {
-      __typename: "StandardError",
-      message: result.error || "Failed to save item.",
-    };
+    return response;
   },
 });
 
 /**
- * Soft-retires a checklist item, then redirects to the items list.
+ * Soft-retires a checklist item and returns it.
  */
 defineMutation({
   path: "checklist/retireItem",
-  async handler(body: { id: string }): Promise<MutationResult> {
+  async handler(body: { id: string }) {
     const result = await executeDocument<RetireChecklistItemMutation>(
       RetireChecklistItemDocument,
       { id: body.id },
     );
-    const data = result.data?.checklistMutations.retireItem as MutationResult;
-
-    if (
-      data?.__typename === "QuerySuccess" ||
-      data?.__typename === "Redirect"
-    ) {
-      throw new ServerRedirectError("/items", [
-        makeCacheKey("checklist:checklistItems", {}),
-        makeCacheKey("checklist/:id:item", { id: body.id }),
-      ]);
+    const response = result.data?.checklistMutations.retireItem;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to archive item.");
     }
-
-    return {
-      __typename: "StandardError",
-      message: result.error || "Failed to archive item.",
-    };
+    return response;
   },
 });

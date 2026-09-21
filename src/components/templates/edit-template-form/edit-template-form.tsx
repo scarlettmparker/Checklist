@@ -1,6 +1,7 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useTransition } from "react";
 import { useTranslation } from "react-i18next";
-import { getPageData, invalidatePageData, makeCacheKey } from "@sun/ssr";
+import { patchPageData } from "@sun/ssr";
+import { useMutation, usePageData } from "@sun/ssr/react";
 import {
   Button,
   Card,
@@ -18,8 +19,10 @@ import {
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
   ChecklistTemplateItem,
-  ListChecklistTemplateItemsQuery,
-  LocateChecklistTemplateQuery,
+  type AddTemplateItemResponse,
+  type ListChecklistTemplateItemsQuery,
+  type LocateChecklistTemplateQuery,
+  type RemoveTemplateItemResponse,
 } from "~/generated/graphql";
 import Icon from "~/components/shared/icon";
 import {
@@ -33,6 +36,41 @@ import styles from "./edit-template-form.module.css";
 const DEFAULT_ROWS = 3;
 const ICON_SIZE = 16;
 
+type TemplateItemPayload =
+  | {
+      /**
+       * Item to add to the template.
+       */
+      kind: "add";
+      itemId: string;
+      name?: string | null;
+      icon?: string | null;
+    }
+  | {
+      /**
+       * Item to remove from the template.
+       */
+      kind: "remove";
+      itemId: string;
+    };
+
+type TemplateItemResponse =
+  | AddTemplateItemResponse
+  | RemoveTemplateItemResponse;
+
+type TemplateItemsPage = NonNullable<
+  ListChecklistTemplateItemsQuery["checklistQueries"]["templateItems"]
+>;
+
+const EMPTY_PAGE_INFO = {
+  page: 0,
+  size: 0,
+  totalPages: 0,
+  totalCount: 0,
+  hasNextPage: false,
+  hasPreviousPage: false,
+};
+
 type EditTemplateFormProps = {
   /**
    * Id of the template being edited.
@@ -45,69 +83,114 @@ type EditTemplateFormProps = {
 };
 
 /**
+ * Folds an optimistic template-item payload into the current items list.
+ */
+const applyTemplateItemChange = (
+  templateId: string,
+  current: ChecklistTemplateItem[],
+  payload: TemplateItemPayload,
+): ChecklistTemplateItem[] => {
+  if (payload.kind === "add") {
+    if (current.some((item) => item.itemId === payload.itemId)) {
+      return current;
+    }
+    return [
+      ...current,
+      {
+        __typename: "ChecklistTemplateItem" as const,
+        id: payload.itemId,
+        templateId,
+        itemId: payload.itemId,
+        name: payload.name ?? null,
+        icon: payload.icon ?? null,
+        position: current.length,
+      },
+    ];
+  }
+  return current.filter((item) => item.itemId !== payload.itemId);
+};
+
+/**
  * Form for editing a template's name/description and managing its items
  * (add via picker, remove via per-row button) with optimistic updates.
  */
 const EditTemplateForm = ({ templateId, pattern }: EditTemplateFormProps) => {
   const { t } = useTranslation("templates");
-  const { data: template } = getPageData<
+  const { data: template } = usePageData<
     LocateChecklistTemplateQuery["checklistQueries"]["template"]
   >("template", pattern, { id: templateId });
-  const { data: templateItemsData } = getPageData<
+  const { data: templateItemsData } = usePageData<
     ListChecklistTemplateItemsQuery["checklistQueries"]["templateItems"]
   >("templateItems", pattern, { id: templateId });
 
   const fetchedItems = templateItemsData?.items ?? [];
-  const [items, setItems] = useState<ChecklistTemplateItem[]>(fetchedItems);
-  const [saving, setSaving] = useState(false);
+  const [saving, startSaving] = useTransition();
 
-  useEffect(() => {
-    setItems(fetchedItems);
-  }, [fetchedItems]);
+  const [optimisticItems, runItems] = useMutation<
+    TemplateItemPayload,
+    TemplateItemResponse,
+    ChecklistTemplateItem[]
+  >({
+    base: fetchedItems,
+    reducer: (current, payload) =>
+      applyTemplateItemChange(templateId, current, payload),
+    action: (payload) => {
+      if (payload.kind === "add") {
+        return addTemplateItem(templateId, payload.itemId);
+      }
+      return removeTemplateItem(templateId, payload.itemId);
+    },
+    onSuccess: (response, payload) => {
+      patchPageData<TemplateItemsPage>(
+        "templateItems",
+        pattern,
+        { id: templateId },
+        (current) => {
+          const base = current ?? {
+            items: [],
+            pageInfo: EMPTY_PAGE_INFO,
+          };
+          return {
+            ...base,
+            items: applyTemplateItemChange(templateId, base.items, payload),
+          };
+        },
+      );
+      patchPageData(
+        "template",
+        pattern,
+        { id: templateId },
+        () => response.template,
+      );
+    },
+  });
 
   if (!template) {
     return null;
   }
 
-  const memberIds = new Set(items.map((i) => i.itemId));
-  const invalidate = () =>
-    invalidatePageData([
-      makeCacheKey("templates/:id:templateItems", { id: templateId }),
-    ]);
+  const memberIds = new Set(optimisticItems.map((item) => item.itemId));
 
-  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSaving(true);
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
-    await saveChecklistTemplate(templateId, name, description);
-    setSaving(false);
+    startSaving(async () => {
+      await saveChecklistTemplate(templateId, name, description);
+    });
   };
 
-  const handleAdd = async (
+  const handleAdd = (
     itemId: string,
     name?: string | null,
     icon?: string | null,
   ) => {
-    const entry: ChecklistTemplateItem = {
-      __typename: "ChecklistTemplateItem",
-      id: itemId,
-      itemId,
-      templateId,
-      name: name ?? null,
-      icon: icon ?? null,
-      position: items.length,
-    };
-    setItems((prev) => [...prev, entry]);
-    await addTemplateItem(templateId, itemId);
-    invalidate();
+    runItems({ kind: "add", itemId, name, icon });
   };
 
-  const handleRemove = async (itemId: string) => {
-    setItems((prev) => prev.filter((i) => i.itemId !== itemId));
-    await removeTemplateItem(templateId, itemId);
-    invalidate();
+  const handleRemove = (itemId: string) => {
+    runItems({ kind: "remove", itemId });
   };
 
   return (
@@ -156,10 +239,10 @@ const EditTemplateForm = ({ templateId, pattern }: EditTemplateFormProps) => {
         </CardTitle>
         <Card>
           <CardBody className={styles.items_body}>
-            {items.length === 0 ? (
+            {optimisticItems.length === 0 ? (
               <p className={styles.empty}>{t("no-items")}</p>
             ) : (
-              items.map((item) => (
+              optimisticItems.map((item) => (
                 <div key={item.itemId} className={styles.item_row}>
                   <Icon
                     name={item.icon}

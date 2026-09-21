@@ -1,14 +1,16 @@
 mutation retireChecklistItem($id: ID!) {
   checklistMutations {
     retireItem(id: $id) {
-      ... on QuerySuccess {
-      __typename
       message
+      item {
         id
-      }
-      ... on StandardError {
-      __typename
-      message
+        name
+        description
+        icon
+        categoryId
+        lifecycleStatus
+        createdAt
+        updatedAt
       }
     }
   }

@@ -1,10 +1,4 @@
-import {
-  defineLoader,
-  defineMutation,
-  makeCacheKey,
-  ServerRedirectError,
-  type MutationResult,
-} from "@sun/ssr";
+import { defineLoader, defineMutation, MutationError } from "@sun/ssr";
 import { executeDocument } from "@sun/api";
 import {
   ListChecklistTemplatesDocument,
@@ -269,7 +263,7 @@ defineLoader({
 });
 
 /**
- * Creates a new template, then redirects to the templates list.
+ * Creates a new template and returns it.
  */
 defineMutation({
   path: "templates/create",
@@ -277,12 +271,11 @@ defineMutation({
     name: string;
     description?: string;
     itemIds?: string[];
-  }): Promise<MutationResult> {
+  }) {
     if (typeof body.name !== "string" || body.name.trim() === "") {
-      return {
-        __typename: "StandardError",
-        message: "Name is required and must be a non-empty string.",
-      };
+      throw new MutationError(
+        "Name is required and must be a non-empty string.",
+      );
     }
 
     const result = await executeDocument<CreateChecklistTemplateMutation>(
@@ -293,58 +286,34 @@ defineMutation({
         itemIds: body.itemIds ?? null,
       },
     );
-    const data = result.data?.checklistMutations
-      .createTemplate as MutationResult;
-
-    if (
-      data?.__typename === "QuerySuccess" ||
-      data?.__typename === "Redirect"
-    ) {
-      throw new ServerRedirectError(
-        "/templates",
-        makeCacheKey("templates:templates", {}),
-      );
+    const response = result.data?.checklistMutations.createTemplate;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to create template.");
     }
-
-    return {
-      __typename: "StandardError",
-      message: result.error || "Failed to create template.",
-    };
+    return response;
   },
 });
 
 /**
- * Archives a template, then redirects to the templates list.
+ * Archives a template and returns it.
  */
 defineMutation({
   path: "templates/archive",
-  async handler(body: { id: string }): Promise<MutationResult> {
+  async handler(body: { id: string }) {
     const result = await executeDocument<ArchiveChecklistTemplateMutation>(
       ArchiveChecklistTemplateDocument,
       { id: body.id },
     );
-    const data = result.data?.checklistMutations
-      .archiveTemplate as MutationResult;
-
-    if (
-      data?.__typename === "QuerySuccess" ||
-      data?.__typename === "Redirect"
-    ) {
-      throw new ServerRedirectError("/templates", [
-        makeCacheKey("templates:templates", {}),
-        makeCacheKey("templates/:id:template", { id: body.id }),
-      ]);
+    const response = result.data?.checklistMutations.archiveTemplate;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to archive template.");
     }
-
-    return {
-      __typename: "StandardError",
-      message: result.error || "Failed to archive template.",
-    };
+    return response;
   },
 });
 
 /**
- * Saves a template's name/description, then redirects to its detail page.
+ * Saves a template's name/description and returns it.
  */
 defineMutation({
   path: "templates/save",
@@ -352,7 +321,7 @@ defineMutation({
     id: string;
     name: string;
     description?: string;
-  }): Promise<MutationResult> {
+  }) {
     const result = await executeDocument<SaveChecklistTemplateMutation>(
       SaveChecklistTemplateDocument,
       {
@@ -363,76 +332,46 @@ defineMutation({
         },
       },
     );
-    const data = result.data?.checklistMutations.saveTemplate as MutationResult;
-
-    if (
-      data?.__typename === "QuerySuccess" ||
-      data?.__typename === "Redirect"
-    ) {
-      throw new ServerRedirectError(`/templates/${body.id}`, [
-        makeCacheKey("templates:templates", {}),
-        makeCacheKey("templates/:id:template", { id: body.id }),
-        makeCacheKey("templates/:id:templateItems", { id: body.id }),
-      ]);
+    const response = result.data?.checklistMutations.saveTemplate;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to save template.");
     }
-
-    return {
-      __typename: "StandardError",
-      message: result.error || "Failed to save template.",
-    };
+    return response;
   },
 });
 
 /**
- * Adds an item to a template; invalidates the template's items.
+ * Adds an item to a template and returns the updated template.
  */
 defineMutation({
   path: "templates/addItem",
-  async handler(body: {
-    templateId: string;
-    itemId: string;
-  }): Promise<MutationResult> {
+  async handler(body: { templateId: string; itemId: string }) {
     const result = await executeDocument<AddChecklistTemplateItemMutation>(
       AddChecklistTemplateItemDocument,
       { templateId: body.templateId, itemId: body.itemId, position: null },
     );
-    const data = result.data?.checklistMutations
-      .addTemplateItem as MutationResult;
-    return {
-      ...(data ?? {
-        __typename: "StandardError",
-        message: result.error || "Failed to add item.",
-      }),
-      invalidated: [
-        makeCacheKey("templates/:id:templateItems", { id: body.templateId }),
-      ],
-    };
+    const response = result.data?.checklistMutations.addTemplateItem;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to add item.");
+    }
+    return response;
   },
 });
 
 /**
- * Removes an item from a template; invalidates the template's items.
+ * Removes an item from a template and returns the updated template.
  */
 defineMutation({
   path: "templates/removeItem",
-  async handler(body: {
-    templateId: string;
-    itemId: string;
-  }): Promise<MutationResult> {
+  async handler(body: { templateId: string; itemId: string }) {
     const result = await executeDocument<RemoveChecklistTemplateItemMutation>(
       RemoveChecklistTemplateItemDocument,
       { templateId: body.templateId, itemId: body.itemId },
     );
-    const data = result.data?.checklistMutations
-      .removeTemplateItem as MutationResult;
-    return {
-      ...(data ?? {
-        __typename: "StandardError",
-        message: result.error || "Failed to remove item.",
-      }),
-      invalidated: [
-        makeCacheKey("templates/:id:templateItems", { id: body.templateId }),
-      ],
-    };
+    const response = result.data?.checklistMutations.removeTemplateItem;
+    if (response == null) {
+      throw new MutationError(result.error ?? "Failed to remove item.");
+    }
+    return response;
   },
 });

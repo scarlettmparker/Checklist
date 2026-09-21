@@ -1,109 +1,117 @@
-import { executeMutation, MutationResult } from "@sun/ssr";
+import { executeMutation } from "@sun/ssr";
+import type {
+  AddTemplateItemResponse,
+  ArchiveTemplateResponse,
+  CreateTemplateResponse,
+  RemoveTemplateItemResponse,
+  SaveTemplateResponse,
+} from "~/generated/graphql";
 
 /**
- * Creates a new checklist template, optionally seeded with items.
+ * Creates a new checklist template, optionally seeded with items, then
+ * navigates to the templates list.
  *
  * @param name Name of the template.
  * @param description Description of the template.
  * @param itemIds Ids of items to attach to the template.
- * @returns A promise resolving to the result of the mutation.
  */
 export async function createChecklistTemplate(
   name: string,
   description?: string,
   itemIds: string[] = [],
-): Promise<MutationResult> {
+): Promise<CreateTemplateResponse> {
   if (typeof name !== "string" || name.trim() === "") {
-    return {
-      __typename: "StandardError",
-      message: "Name is required and must be a non-empty string.",
-    };
+    throw new Error("Name is required and must be a non-empty string.");
   }
 
-  const result = await executeMutation("templates/create", {
-    name,
-    description: description || "",
-    itemIds,
-  });
+  const response = await executeMutation<CreateTemplateResponse>(
+    "templates/create",
+    {
+      name,
+      description: description || "",
+      itemIds,
+    },
+  );
 
-  if (result.__typename === "Redirect") {
-    window.location.assign(result.redirectTo);
-  }
-
-  return result;
+  window.location.assign("/templates");
+  return response;
 }
 
 /**
- * Saves (creates or updates) a checklist template.
+ * Saves (creates or updates) a checklist template and navigates to its detail
+ * page.
+ *
  * @param id Id of the template.
  * @param name Name of the template.
  * @param description Description of the template.
- * @returns A promise resolving to the result of the mutation.
  */
 export async function saveChecklistTemplate(
   id: string,
   name: string,
   description?: string,
-): Promise<MutationResult> {
+): Promise<SaveTemplateResponse> {
   if (typeof name !== "string" || name.trim() === "") {
-    return {
-      __typename: "StandardError",
-      message: "Name is required and must be a non-empty string.",
-    };
+    throw new Error("Name is required and must be a non-empty string.");
   }
 
-  const result = await executeMutation("templates/save", {
-    id,
-    name,
-    description: description || "",
-  });
+  const response = await executeMutation<SaveTemplateResponse>(
+    "templates/save",
+    {
+      id,
+      name,
+      description: description || "",
+    },
+  );
 
-  if (result.__typename === "Redirect") {
-    window.location.assign(result.redirectTo);
-  }
-
-  return result;
+  window.location.assign(`/templates/${id}`);
+  return response;
 }
 
 /**
- * Archives a checklist template.
+ * Archives a checklist template and navigates to the templates list.
+ *
  * @param id Id of the template to archive.
- * @returns A promise resolving to the result of the mutation.
  */
 export async function archiveChecklistTemplate(
   id: string,
-): Promise<MutationResult> {
-  const result = await executeMutation("templates/archive", { id });
+): Promise<ArchiveTemplateResponse> {
+  const response = await executeMutation<ArchiveTemplateResponse>(
+    "templates/archive",
+    { id },
+  );
 
-  if (result.__typename === "Redirect") {
-    window.location.assign(result.redirectTo);
-  }
-
-  return result;
+  window.location.assign("/templates");
+  return response;
 }
 
 /**
  * Adds an item to a template.
+ *
  * @param templateId Id of the template.
  * @param itemId Id of the item to add.
- * @returns A promise resolving to the result of the mutation.
  */
 export async function addTemplateItem(
   templateId: string,
   itemId: string,
-): Promise<MutationResult> {
-  return executeMutation("templates/addItem", { templateId, itemId });
+): Promise<AddTemplateItemResponse> {
+  return executeMutation<AddTemplateItemResponse>("templates/addItem", {
+    templateId,
+    itemId,
+  });
 }
 
 /**
  * Removes an item from a template.
+ *
  * @param templateId Id of the template.
  * @param itemId Id of the item to remove.
- * @returns A promise resolving to the result of the mutation.
  */
 export async function removeTemplateItem(
   templateId: string,
   itemId: string,
-): Promise<MutationResult> {
-  return executeMutation("templates/removeItem", { templateId, itemId });
+): Promise<RemoveTemplateItemResponse> {
+  return executeMutation<RemoveTemplateItemResponse>("templates/removeItem", {
+    templateId,
+    itemId,
+  });
 }
