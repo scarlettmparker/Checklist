@@ -11,11 +11,20 @@ import {
   isProduction,
   backendHost,
   backendPort,
+  clientId,
   clientSecret,
 } from "./config.js";
+import { configureApi } from "@sun/api";
 import { setupRoutes } from "./routes/index.js";
 import { registerGalleryProxyRoute } from "./src/server/routes/gallery-proxy.ts";
 import { AUTH_COOKIE } from "./src/utils/auth.ts";
+
+configureApi({
+  authCookie: AUTH_COOKIE,
+  clientId,
+  clientSecret,
+  appBaseUrl: base,
+});
 
 await createServer({
   config: {
