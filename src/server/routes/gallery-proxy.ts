@@ -3,12 +3,8 @@
  * they render in <img> tags instead of downloading.
  */
 import { Buffer } from "buffer";
-import type { FastifyInstance } from "fastify";
+import type { SunApp } from "@sun/ssr/server";
 import { clientId, clientSecret } from "../../../config.js";
-
-type GalleryQuery = {
-  key?: string | string[];
-};
 
 /**
  * Returns the backend API base URL derived from GRAPHQL_ENDPOINT.
@@ -29,8 +25,8 @@ function getBackendApiBase(): string {
 /**
  * Registers the /gallery proxy route for inline image display.
  */
-export function registerGalleryProxyRoute(app: FastifyInstance): void {
-  app.get<{ Querystring: GalleryQuery }>("/gallery", async (request, reply) => {
+export function registerGalleryProxyRoute(app: SunApp): void {
+  app.get("/gallery", async (request, reply) => {
     const key = request.query.key;
     if (!key || Array.isArray(key)) {
       return reply.status(400).send({ error: "Missing key" });
