@@ -1,5 +1,5 @@
 import { useState, Suspense } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@sun/i18n";
 import { Button } from "@sun/components";
 import { PlusOutline } from "preact-heroicons";
 import CategoryList from "~/components/categories/category-list";

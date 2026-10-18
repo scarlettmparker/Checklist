@@ -1,4 +1,4 @@
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@sun/i18n";
 import { getPageData } from "@sun/ssr";
 import { ListChecklistTemplatesQuery } from "~/generated/graphql";
 import { Link } from "react-router-dom";

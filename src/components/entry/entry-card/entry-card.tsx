@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@sun/i18n";
 import { Card, CardBody, CardTitle } from "@sun/components";
 import { ChecklistEntry } from "~/generated/graphql";
 import styles from "./entry-card.module.css";

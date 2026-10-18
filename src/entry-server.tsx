@@ -7,6 +7,7 @@ import { matchRoutes } from "react-router-dom";
 import { createRenderer, type ResolvedTheme } from "@sun/ssr/renderer";
 import { autoDiscoverRegistrations } from "@sun/ssr/server";
 import { createI18nInstance } from "./utils/i18n";
+import { setI18n } from "@sun/i18n";
 import "./utils/configure-framework";
 import { AUTH_COOKIE } from "./utils/auth";
 import { clientId, clientSecret, base } from "../config.js";
@@ -31,8 +32,9 @@ const renderer = createRenderer({
   title: "Checklist | Scarlet Sun",
   emitFrontendMode: true,
   initI18n(locale, translations) {
-    const i18n = createI18nInstance();
-    return i18n.init({
+    const instance = createI18nInstance();
+    setI18n(instance);
+    return instance.init({
       lng: locale,
       fallbackLng: "en",
       resources: { [locale]: translations } as never,

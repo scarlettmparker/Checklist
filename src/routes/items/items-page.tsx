@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Link, useLocation, useOutlet } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@sun/i18n";
 import { Button } from "@sun/components";
 import { PlusOutline } from "preact-heroicons";
 import ItemList from "~/components/items/item-list";

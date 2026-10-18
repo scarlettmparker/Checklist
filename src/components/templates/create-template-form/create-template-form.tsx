@@ -1,5 +1,5 @@
 import { useState, Suspense } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@sun/i18n";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   Card,

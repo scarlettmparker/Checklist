@@ -1,5 +1,5 @@
 import { Suspense, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@sun/i18n";
 import { patchPageData } from "@sun/ssr";
 import { useMutation, usePageData } from "@sun/ssr/react";
 import {
