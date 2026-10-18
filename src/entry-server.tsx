@@ -4,11 +4,8 @@ import { Router, routes } from "./router";
 import Layout from "./components/layout";
 import NotFound from "./routes/not-found";
 import { matchRoutes } from "react-router-dom";
-import {
-  autoDiscoverRegistrations,
-  createRenderer,
-  type ResolvedTheme,
-} from "@sun/ssr/server";
+import { createRenderer, type ResolvedTheme } from "@sun/ssr/renderer";
+import { autoDiscoverRegistrations } from "@sun/ssr/server";
 import { createI18nInstance } from "./utils/i18n";
 import "./utils/configure-framework";
 import { AUTH_COOKIE } from "./utils/auth";
