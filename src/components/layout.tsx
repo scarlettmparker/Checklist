@@ -1,7 +1,9 @@
 import styles from "./layout.module.css";
 import { getBackgroundHex } from "@sun/utils";
 import { useEffect, useLayoutEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { BreadcrumbProvider } from "@sun/components";
+import { usePageViewTracking } from "@sun/ssr";
 import {
   ThemeSwitcher,
   THEME_APPLIED_EVENT,
@@ -16,6 +18,8 @@ type LayoutProps = React.PropsWithChildren;
 
 const Layout = (props: LayoutProps) => {
   const { children } = props;
+  const { pathname } = useLocation();
+  usePageViewTracking(pathname);
   // Computed after mount (not during render) so the SSR HTML and the client's
   // first render match. getBackgroundHex() depends on the wall clock, so
   // computing it during hydration caused React #418 when the boundary between

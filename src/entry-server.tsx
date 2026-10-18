@@ -32,7 +32,6 @@ autoDiscoverRegistrations(
 
 const renderer = createRenderer({
   title: "Checklist | Scarlet Sun",
-  posthog: true,
   emitFrontendMode: true,
   initI18n(locale, translations) {
     const i18n = createI18nInstance();

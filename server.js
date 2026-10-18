@@ -15,6 +15,7 @@ import {
 } from "./config.js";
 import { setupRoutes } from "./routes/index.js";
 import { registerGalleryProxyRoute } from "./src/server/routes/gallery-proxy.ts";
+import { AUTH_COOKIE } from "./src/utils/auth.ts";
 
 await createServer({
   config: {
@@ -33,5 +34,9 @@ await createServer({
     const { default: formbody } = await import("@fastify/formbody");
     await app.register(formbody);
     registerGalleryProxyRoute(app);
+  },
+  analytics: {
+    app: "checklist",
+    authCookie: AUTH_COOKIE,
   },
 });
