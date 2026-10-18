@@ -8,7 +8,7 @@ import styles from "./item-card.module.css";
 import { MarkdownViewer } from "@sun/components";
 import { Link } from "react-router-dom";
 import { formatDate } from "@sun/utils";
-import { ArchiveBoxIcon } from "@heroicons/react/24/outline";
+import { ArchiveBoxOutline } from "preact-heroicons";
 import ConfirmArchiveItemDialog from "~/components/items/confirm-archive-item-dialog";
 import { retireChecklistItem } from "~/server/actions/checklist-item";
 
@@ -52,7 +52,7 @@ const ItemCard = ({ id, pattern }: ItemCardProps) => {
           aria-label={t("archive-label")}
           onClick={() => setConfirmArchive(true)}
         >
-          <ArchiveBoxIcon
+          <ArchiveBoxOutline
             className={styles.button_icon}
             width={16}
             height={16}

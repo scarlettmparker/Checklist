@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Link, useLocation, useOutlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@sun/components";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { PlusOutline } from "preact-heroicons";
 import ItemList from "~/components/items/item-list";
 import ItemDetailPlaceholder from "~/components/items/item-detail-placeholder";
 import {
@@ -27,7 +27,7 @@ const ItemsPage = () => {
               className={styles.create_item_button}
             >
               <Button title={t("create-new-item-label")} variant="secondary">
-                <PlusIcon
+                <PlusOutline
                   className={styles.create_item_icon}
                   width={ICON_SIZE}
                   height={ICON_SIZE}

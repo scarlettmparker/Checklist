@@ -12,7 +12,7 @@ import {
   Pagination,
   Skeleton,
 } from "@sun/components";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkOutline } from "preact-heroicons";
 import {
   ChecklistEntryItem,
   ItemStatus,
@@ -278,7 +278,7 @@ const EntryChecklist = ({ entryId }: EntryChecklistProps) => {
                 aria-label={t("cancel")}
                 onClick={() => setShowPicker(false)}
               >
-                <XMarkIcon width={16} height={16} />
+                <XMarkOutline width={16} height={16} />
               </Button>
             </CardHeader>
             <CardBody>

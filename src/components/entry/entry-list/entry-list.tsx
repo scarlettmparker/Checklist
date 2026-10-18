@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { ListChecklistEntriesQuery } from "~/generated/graphql";
 import { Button, Card, CardBody } from "@sun/components";
 import { CardHeader, CardTitle } from "@sun/components";
-import { FolderIcon } from "lucide-react";
+import { FolderIcon } from "lucide-preact";
 import Carousel from "~/components/shared/carousel";
 import EntryCard from "~/components/entry/entry-card";
 import CreateEntryDialog from "~/components/entry/create-entry-dialog";

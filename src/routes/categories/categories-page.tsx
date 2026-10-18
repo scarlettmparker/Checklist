@@ -1,7 +1,7 @@
 import { useState, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@sun/components";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { PlusOutline } from "preact-heroicons";
 import CategoryList from "~/components/categories/category-list";
 import { CategoryListSkeleton } from "~/components/categories/skeletons";
 import CreateCategoryDialog from "~/components/categories/create-category-dialog";
@@ -27,7 +27,7 @@ const CategoriesPage = () => {
           title={t("create-category-label")}
           onClick={() => setShowCreate(true)}
         >
-          <PlusIcon
+          <PlusOutline
             className={styles.button_icon}
             width={ICON_SIZE}
             height={ICON_SIZE}

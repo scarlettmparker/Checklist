@@ -1,31 +1,41 @@
-import * as OutlineIcons from "@heroicons/react/24/outline";
-import { WrenchIcon } from "@heroicons/react/24/outline";
+import * as Heroicons from "preact-heroicons";
 import type { ComponentType, SVGProps } from "react";
 
 type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
 
-const icons = OutlineIcons as unknown as Record<string, IconComponent>;
+const icons = Heroicons as unknown as Record<string, IconComponent>;
 
 /**
- * Every Heroicons 24/outline export name, e.g. "WrenchIcon".
+ * Maps a stored Heroicons name to its preact-heroicons outline export.
+ */
+function toOutlineName(name: string): string {
+  const base = name.replace(/Icon$/, "");
+  return `${base === "Squares2X2" ? "Squares2x2" : base}Outline`;
+}
+
+/**
+ * Every Heroicons 24/outline export name, e.g. "WrenchOutline".
  */
 export const ICON_NAMES: string[] = Object.keys(icons).filter((name) =>
-  name.endsWith("Icon"),
+  name.endsWith("Outline"),
 );
 
 /**
  * Fallback icon used when an item has no icon (or an unknown one).
  */
-export const FALLBACK_ICON = "WrenchIcon";
+export const FALLBACK_ICON = "WrenchOutline";
 
 /**
  * Resolves a stored icon name to its component.
  */
 export function getIcon(name?: string | null): IconComponent {
-  if (name && icons[name]) {
-    return icons[name];
+  if (name) {
+    const resolved = icons[name] ?? icons[toOutlineName(name)];
+    if (resolved) {
+      return resolved;
+    }
   }
-  return WrenchIcon;
+  return icons[FALLBACK_ICON];
 }
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "name"> & {

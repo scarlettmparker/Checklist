@@ -14,7 +14,7 @@ import {
   FormLabel,
   Input,
 } from "@sun/components";
-import { RectangleStackIcon } from "@heroicons/react/24/outline";
+import { RectangleStackOutline } from "preact-heroicons";
 import Icon from "~/components/shared/icon";
 import { createEntryFromTemplates } from "~/server/actions/checklist-entry";
 import styles from "./compose-from-templates.module.css";
@@ -109,7 +109,7 @@ const ComposeFromTemplates = ({ pattern }: ComposeFromTemplatesProps) => {
               className={styles.label_wrapper}
               label={
                 <div className={styles.label}>
-                  <RectangleStackIcon
+                  <RectangleStackOutline
                     className={styles.icon}
                     width={ICON_SIZE}
                     height={ICON_SIZE}

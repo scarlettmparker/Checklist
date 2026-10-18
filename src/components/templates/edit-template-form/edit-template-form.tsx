@@ -16,7 +16,7 @@ import {
   MarkdownEditor,
   Skeleton,
 } from "@sun/components";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkOutline } from "preact-heroicons";
 import {
   ChecklistTemplateItem,
   type AddTemplateItemResponse,
@@ -258,7 +258,7 @@ const EditTemplateForm = ({ templateId, pattern }: EditTemplateFormProps) => {
                     aria-label={t("remove-item-label")}
                     onClick={() => handleRemove(item.itemId)}
                   >
-                    <XMarkIcon width={ICON_SIZE} height={ICON_SIZE} />
+                    <XMarkOutline width={ICON_SIZE} height={ICON_SIZE} />
                   </Button>
                 </div>
               ))

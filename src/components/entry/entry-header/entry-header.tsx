@@ -13,13 +13,7 @@ import {
   DropdownMenuTrigger,
   useBreadcrumbContext,
 } from "@sun/components";
-import {
-  ArchiveBoxIcon,
-  DocumentDuplicateIcon,
-  EllipsisVerticalIcon,
-  PencilSquareIcon,
-  TrashIcon,
-} from "@heroicons/react/24/outline";
+import { ArchiveBoxOutline, DocumentDuplicateOutline, EllipsisVerticalOutline, PencilSquareOutline, TrashOutline } from "preact-heroicons";
 import EditEntryNameDialog from "~/components/entry/edit-entry-name-dialog";
 import ConfirmArchiveEntryDialog from "~/components/entry/confirm-archive-entry-dialog";
 import ConfirmDeleteEntryDialog from "~/components/entry/confirm-delete-entry-dialog";
@@ -70,12 +64,12 @@ const EntryHeader = ({ id }: EntryHeaderProps) => {
               title={t("entry-title")}
               aria-label={t("entry-title")}
             >
-              <EllipsisVerticalIcon width={ICON_SIZE} height={ICON_SIZE} />
+              <EllipsisVerticalOutline width={ICON_SIZE} height={ICON_SIZE} />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem onClick={() => setEditOpen(true)}>
-              <PencilSquareIcon
+              <PencilSquareOutline
                 className={styles.menu_icon}
                 width={ICON_SIZE}
                 height={ICON_SIZE}
@@ -89,7 +83,7 @@ const EntryHeader = ({ id }: EntryHeaderProps) => {
                 )
               }
             >
-              <DocumentDuplicateIcon
+              <DocumentDuplicateOutline
                 className={styles.menu_icon}
                 width={ICON_SIZE}
                 height={ICON_SIZE}
@@ -97,7 +91,7 @@ const EntryHeader = ({ id }: EntryHeaderProps) => {
               {t("create-template-from-entry")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setArchiveOpen(true)}>
-              <ArchiveBoxIcon
+              <ArchiveBoxOutline
                 className={styles.menu_icon}
                 width={ICON_SIZE}
                 height={ICON_SIZE}
@@ -105,7 +99,7 @@ const EntryHeader = ({ id }: EntryHeaderProps) => {
               {t("archive-label")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setDeleteOpen(true)}>
-              <TrashIcon
+              <TrashOutline
                 className={styles.menu_icon}
                 width={ICON_SIZE}
                 height={ICON_SIZE}

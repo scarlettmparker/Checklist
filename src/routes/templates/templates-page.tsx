@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Link, useLocation, useOutlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@sun/components";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { PlusOutline } from "preact-heroicons";
 import TemplateList from "~/components/templates/template-list";
 import TemplateDetailPlaceholder from "~/components/templates/template-detail-placeholder";
 import {
@@ -32,7 +32,7 @@ const TemplatesPage = () => {
             className={styles.create_template_button}
           >
             <Button title={t("create-new-template-label")}>
-              <PlusIcon
+              <PlusOutline
                 className={styles.create_template_icon}
                 width={ICON_SIZE}
                 height={ICON_SIZE}

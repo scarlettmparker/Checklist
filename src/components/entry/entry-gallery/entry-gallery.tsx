@@ -10,7 +10,7 @@ import {
   CardTitle,
   Figure,
 } from "@sun/components";
-import { CameraIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { CameraOutline, XMarkOutline } from "preact-heroicons";
 import Carousel from "~/components/shared/carousel";
 import DeleteImageDialog from "~/components/entry/delete-image-dialog";
 import {
@@ -174,7 +174,7 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
                   aria-label={t("delete-image")}
                   onClick={() => setDeleteTarget(item)}
                 >
-                  <XMarkIcon width={ICON_SIZE} height={ICON_SIZE} />
+                  <XMarkOutline width={ICON_SIZE} height={ICON_SIZE} />
                 </Button>
               </div>
             ))}
@@ -210,7 +210,7 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
           title={t("upload-image")}
           onClick={() => fileInputRef.current?.click()}
         >
-          <CameraIcon
+          <CameraOutline
             width={ICON_SIZE}
             height={ICON_SIZE}
             className={styles.icon}

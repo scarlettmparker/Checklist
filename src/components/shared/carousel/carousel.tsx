@@ -1,5 +1,5 @@
 import { Children, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-preact";
 import { Button } from "@sun/components";
 import styles from "./carousel.module.css";
 

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button, Checkbox } from "@sun/components";
-import { PencilSquareIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { PencilSquareOutline, XMarkOutline } from "preact-heroicons";
 import Icon from "~/components/shared/icon";
 import { ChecklistEntryItem, ItemStatus } from "~/generated/graphql";
 import styles from "./entry-item-row.module.css";
@@ -68,7 +68,7 @@ const EntryItemRow = ({
           title="Edit"
           aria-label="Edit"
         >
-          <PencilSquareIcon width={ICON_SIZE} height={ICON_SIZE} />
+          <PencilSquareOutline width={ICON_SIZE} height={ICON_SIZE} />
         </Button>
       </Link>
       <Button
@@ -79,7 +79,7 @@ const EntryItemRow = ({
         disabled={disabled}
         onClick={() => onRemove(item.itemId)}
       >
-        <XMarkIcon width={ICON_SIZE} height={ICON_SIZE} />
+        <XMarkOutline width={ICON_SIZE} height={ICON_SIZE} />
       </Button>
     </div>
   );

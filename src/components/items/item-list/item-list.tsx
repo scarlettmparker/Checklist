@@ -15,10 +15,7 @@ import {
   DropdownMenuTrigger,
   Pagination,
 } from "@sun/components";
-import {
-  EllipsisVerticalIcon,
-  PencilSquareIcon,
-} from "@heroicons/react/24/outline";
+import { EllipsisVerticalOutline, PencilSquareOutline } from "preact-heroicons";
 import Icon from "~/components/shared/icon";
 import styles from "./item-list.module.css";
 
@@ -94,7 +91,7 @@ const ItemList = ({ pattern, children }: ItemListProps) => {
                   <span className={styles.item_actions}>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <EllipsisVerticalIcon
+                        <EllipsisVerticalOutline
                           width={16}
                           height={16}
                           onClick={(e: React.MouseEvent) => {
@@ -107,7 +104,7 @@ const ItemList = ({ pattern, children }: ItemListProps) => {
                         <DropdownMenuItem
                           onClick={() => navigate(`/items/${item.id}/edit`)}
                         >
-                          <PencilSquareIcon width={16} height={16} />
+                          <PencilSquareOutline width={16} height={16} />
                           {t("edit-label")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
