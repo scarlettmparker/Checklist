@@ -13,9 +13,7 @@ import { useState } from "react";
 import { createChecklistItem } from "~/server/actions/checklist-item";
 import { Link, useSearchParams } from "react-router-dom";
 import Icon, { ICON_NAMES, FALLBACK_ICON } from "~/components/shared/icon";
-import CategorySelect, {
-  CATEGORY_NONE,
-} from "~/components/categories/category-select";
+import CategorySelect, { CATEGORY_NONE } from "~/components/categories/category-select";
 import styles from "./create-item-form.module.css";
 
 const CreateItemForm = () => {
@@ -38,10 +36,7 @@ const CreateItemForm = () => {
     const description = formData.get("description") as string;
     const icon = formData.get("icon") as string;
     const categoryIdRaw = formData.get("categoryId") as string;
-    const categoryId =
-      categoryIdRaw && categoryIdRaw !== CATEGORY_NONE
-        ? categoryIdRaw
-        : undefined;
+    const categoryId = categoryIdRaw && categoryIdRaw !== CATEGORY_NONE ? categoryIdRaw : undefined;
 
     try {
       await createChecklistItem(name, description, categoryId, icon);
@@ -68,15 +63,8 @@ const CreateItemForm = () => {
               {ICON_NAMES.map((iconName) => (
                 <SelectOption key={iconName} value={iconName}>
                   <div className={styles.icon_option}>
-                    <Icon
-                      className={styles.icon}
-                      name={iconName}
-                      width={16}
-                      height={16}
-                    />
-                    <p className={styles.icon_name}>
-                      {iconName.replace(/Icon$/, "")}
-                    </p>
+                    <Icon className={styles.icon} name={iconName} width={16} height={16} />
+                    <p className={styles.icon_name}>{iconName.replace(/Icon$/, "")}</p>
                   </div>
                 </SelectOption>
               ))}

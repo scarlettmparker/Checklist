@@ -16,10 +16,7 @@ import {
   Input,
   MarkdownEditor,
 } from "@sun/components";
-import type {
-  CreateCategoryResponse,
-  ListChecklistCategoriesQuery,
-} from "~/generated/graphql";
+import type { CreateCategoryResponse, ListChecklistCategoriesQuery } from "~/generated/graphql";
 import { createChecklistCategory } from "~/server/actions/checklist-category";
 
 type Category = NonNullable<
@@ -57,22 +54,15 @@ const CreateCategoryDialog = ({ open, onClose }: CreateCategoryDialogProps) => {
   const { t } = useTranslation("categories");
   const [error, setError] = useState<string | null>(null);
 
-  const [, runCreate, pending] = useMutation<
-    CategoryPayload,
-    CreateCategoryResponse,
-    null
-  >({
+  const [, runCreate, pending] = useMutation<CategoryPayload, CreateCategoryResponse, null>({
     base: null,
     reducer: () => null,
-    action: (payload) =>
-      createChecklistCategory(payload.name, payload.description),
+    action: (payload) => createChecklistCategory(payload.name, payload.description),
     onSuccess: (response) => {
-      patchPageData<Category[]>(
-        "categories",
-        "categories",
-        {},
-        (current) => [...(current ?? []), response.category],
-      );
+      patchPageData<Category[]>("categories", "categories", {}, (current) => [
+        ...(current ?? []),
+        response.category,
+      ]);
       setError(null);
       onClose();
     },

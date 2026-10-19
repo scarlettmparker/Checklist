@@ -70,9 +70,7 @@ defineLoader({
   pattern: "entry",
   async loader() {
     try {
-      const result = await executeDocument<ListChecklistEntriesQuery>(
-        ListChecklistEntriesDocument,
-      );
+      const result = await executeDocument<ListChecklistEntriesQuery>(ListChecklistEntriesDocument);
       if (result?.data && result.success) {
         const entries = result.data.checklistQueries.listEntries;
         return { entry: entries ?? [] };
@@ -92,12 +90,10 @@ defineLoader({
   pattern: "entry/create",
   async loader() {
     try {
-      const templatesResult =
-        await executeDocument<ListChecklistTemplatesQuery>(
-          ListChecklistTemplatesDocument,
-        );
-      const templates =
-        templatesResult?.data?.checklistQueries.listTemplates ?? [];
+      const templatesResult = await executeDocument<ListChecklistTemplatesQuery>(
+        ListChecklistTemplatesDocument,
+      );
+      const templates = templatesResult?.data?.checklistQueries.listTemplates ?? [];
 
       const templateItems: Record<string, unknown> = {};
       for (const template of templates) {
@@ -108,8 +104,7 @@ defineLoader({
             pagination: { page: 0, size: 100 },
           },
         );
-        templateItems[template.id] =
-          result?.data?.checklistQueries.templateItems?.items ?? [];
+        templateItems[template.id] = result?.data?.checklistQueries.templateItems?.items ?? [];
       }
 
       return { composeData: { templates, templateItems } };
@@ -182,10 +177,9 @@ defineLoader({
     const id = params.id as string;
     if (!id) return null;
     try {
-      const result = await executeDocument<ListChecklistItemsQuery>(
-        ListChecklistItemsDocument,
-        { pagination: null },
-      );
+      const result = await executeDocument<ListChecklistItemsQuery>(ListChecklistItemsDocument, {
+        pagination: null,
+      });
       if (result?.success && result.data) {
         return {
           checklistItems: result.data.checklistQueries.items ?? EMPTY_PAGE,
@@ -209,26 +203,21 @@ defineLoader({
     const id = params.id as string;
     if (!id) return null;
     try {
-      const detailsResult =
-        await executeDocument<LocateChecklistEntryDetailsQuery>(
-          LocateChecklistEntryDetailsDocument,
-          { id },
-        );
+      const detailsResult = await executeDocument<LocateChecklistEntryDetailsQuery>(
+        LocateChecklistEntryDetailsDocument,
+        { id },
+      );
       const ids = detailsResult?.success
-        ? (detailsResult.data?.checklistQueries.entryDetails?.remoteObject ??
-          [])
+        ? (detailsResult.data?.checklistQueries.entryDetails?.remoteObject ?? [])
         : [];
       if (ids.length === 0) {
         return { galleryItems: [] };
       }
-      const result = await executeDocument<LocateGalleryItemsQuery>(
-        LocateGalleryItemsDocument,
-        { ids },
-      );
+      const result = await executeDocument<LocateGalleryItemsQuery>(LocateGalleryItemsDocument, {
+        ids,
+      });
       return {
-        galleryItems: result?.success
-          ? (result.data?.galleryQueries.locateGalleryItems ?? [])
-          : [],
+        galleryItems: result?.success ? (result.data?.galleryQueries.locateGalleryItems ?? []) : [],
       };
     } catch (error) {
       console.error("Failed to fetch entry gallery items:", error);
@@ -265,12 +254,9 @@ defineMutation({
       CreateChecklistFromTemplateDocument,
       { templateId: body.templateId, name: body.name ?? null },
     );
-    const response =
-      result.data?.checklistMutations.createChecklistFromTemplate;
+    const response = result.data?.checklistMutations.createChecklistFromTemplate;
     if (response == null) {
-      throw new MutationError(
-        result.error ?? "Failed to create entry from template.",
-      );
+      throw new MutationError(result.error ?? "Failed to create entry from template.");
     }
     return response;
   },
@@ -286,12 +272,9 @@ defineMutation({
       CreateChecklistFromTemplatesDocument,
       { templateIds: body.templateIds, name: body.name ?? null },
     );
-    const response =
-      result.data?.checklistMutations.createChecklistFromTemplates;
+    const response = result.data?.checklistMutations.createChecklistFromTemplates;
     if (response == null) {
-      throw new MutationError(
-        result.error ?? "Failed to create entry from templates.",
-      );
+      throw new MutationError(result.error ?? "Failed to create entry from templates.");
     }
     return response;
   },
@@ -303,14 +286,11 @@ defineMutation({
 defineMutation({
   path: "entry/addItem",
   async handler(body: { entryId: string; itemId: string }) {
-    const result = await executeDocument<AddChecklistItemMutation>(
-      AddChecklistItemDocument,
-      {
-        entryId: body.entryId,
-        itemId: body.itemId,
-        position: null,
-      },
-    );
+    const result = await executeDocument<AddChecklistItemMutation>(AddChecklistItemDocument, {
+      entryId: body.entryId,
+      itemId: body.itemId,
+      position: null,
+    });
     const response = result.data?.checklistMutations.addItem;
     if (response == null) {
       throw new MutationError(result.error ?? "Failed to add item.");
@@ -325,10 +305,10 @@ defineMutation({
 defineMutation({
   path: "entry/removeItem",
   async handler(body: { entryId: string; itemId: string }) {
-    const result = await executeDocument<RemoveChecklistItemMutation>(
-      RemoveChecklistItemDocument,
-      { entryId: body.entryId, itemId: body.itemId },
-    );
+    const result = await executeDocument<RemoveChecklistItemMutation>(RemoveChecklistItemDocument, {
+      entryId: body.entryId,
+      itemId: body.itemId,
+    });
     const response = result.data?.checklistMutations.removeItem;
     if (response == null) {
       throw new MutationError(result.error ?? "Failed to remove item.");
@@ -342,11 +322,7 @@ defineMutation({
  */
 defineMutation({
   path: "entry/setItemStatus",
-  async handler(body: {
-    entryId: string;
-    itemId: string;
-    status: ItemStatus;
-  }) {
+  async handler(body: { entryId: string; itemId: string; status: ItemStatus }) {
     const result = await executeDocument<SetChecklistItemStatusMutation>(
       SetChecklistItemStatusDocument,
       {
@@ -369,10 +345,9 @@ defineMutation({
 defineMutation({
   path: "entry/completeChecklist",
   async handler(body: { entryId: string }) {
-    const result = await executeDocument<CompleteChecklistMutation>(
-      CompleteChecklistDocument,
-      { id: body.entryId },
-    );
+    const result = await executeDocument<CompleteChecklistMutation>(CompleteChecklistDocument, {
+      id: body.entryId,
+    });
     const response = result.data?.checklistMutations.completeChecklist;
     if (response == null) {
       throw new MutationError(result.error ?? "Failed to complete checklist.");
@@ -387,10 +362,9 @@ defineMutation({
 defineMutation({
   path: "entry/archiveChecklist",
   async handler(body: { entryId: string }) {
-    const result = await executeDocument<ArchiveChecklistMutation>(
-      ArchiveChecklistDocument,
-      { id: body.entryId },
-    );
+    const result = await executeDocument<ArchiveChecklistMutation>(ArchiveChecklistDocument, {
+      id: body.entryId,
+    });
     const response = result.data?.checklistMutations.archiveChecklist;
     if (response == null) {
       throw new MutationError(result.error ?? "Failed to archive checklist.");
@@ -405,10 +379,9 @@ defineMutation({
 defineMutation({
   path: "entry/delete",
   async handler(body: { entryId: string }) {
-    const result = await executeDocument<DeleteChecklistMutation>(
-      DeleteChecklistDocument,
-      { id: body.entryId },
-    );
+    const result = await executeDocument<DeleteChecklistMutation>(DeleteChecklistDocument, {
+      id: body.entryId,
+    });
     const response = result.data?.checklistMutations.deleteChecklist;
     if (response == null) {
       throw new MutationError(result.error ?? "Failed to delete checklist.");
@@ -423,10 +396,9 @@ defineMutation({
 defineMutation({
   path: "entry/save",
   async handler(body: { id: string; name: string }) {
-    const result = await executeDocument<SaveChecklistEntryMutation>(
-      SaveChecklistEntryDocument,
-      { input: { id: body.id, name: body.name } },
-    );
+    const result = await executeDocument<SaveChecklistEntryMutation>(SaveChecklistEntryDocument, {
+      input: { id: body.id, name: body.name },
+    });
     const response = result.data?.checklistMutations.saveChecklist;
     if (response == null) {
       throw new MutationError(result.error ?? "Failed to save checklist.");
@@ -440,11 +412,7 @@ defineMutation({
  */
 defineMutation({
   path: "filestore/get-presigned-upload-url",
-  async handler(body: {
-    bucket: string;
-    key: string;
-    contentType?: string;
-  }) {
+  async handler(body: { bucket: string; key: string; contentType?: string }) {
     const result = await executeDocument<GetPresignedUploadUrlMutation>(
       GetPresignedUploadUrlDocument,
       {
@@ -457,9 +425,7 @@ defineMutation({
     );
     const response = result.data?.filestoreMutations.getPresignedUploadUrl;
     if (response == null) {
-      throw new MutationError(
-        result.error ?? "Failed to get presigned upload URL.",
-      );
+      throw new MutationError(result.error ?? "Failed to get presigned upload URL.");
     }
     return response;
   },
@@ -470,21 +436,14 @@ defineMutation({
  */
 defineMutation({
   path: "gallery/create",
-  async handler(body: {
-    title: string;
-    imagePath: string;
-    description?: string;
-  }) {
-    const result = await executeDocument<CreateGalleryItemMutation>(
-      CreateGalleryItemDocument,
-      {
-        input: {
-          title: body.title,
-          imagePath: body.imagePath,
-          description: body.description ?? null,
-        },
+  async handler(body: { title: string; imagePath: string; description?: string }) {
+    const result = await executeDocument<CreateGalleryItemMutation>(CreateGalleryItemDocument, {
+      input: {
+        title: body.title,
+        imagePath: body.imagePath,
+        description: body.description ?? null,
       },
-    );
+    });
     const response = result.data?.galleryMutations.create;
     if (response == null) {
       throw new MutationError(result.error ?? "Failed to create gallery item.");
@@ -498,11 +457,7 @@ defineMutation({
  */
 defineMutation({
   path: "checklist/attachObject",
-  async handler(body: {
-    source: string;
-    target: string;
-    ownerType?: RemoteObjectType;
-  }) {
+  async handler(body: { source: string; target: string; ownerType?: RemoteObjectType }) {
     const result = await executeDocument<AttachChecklistObjectMutation>(
       AttachChecklistObjectDocument,
       {
@@ -524,11 +479,7 @@ defineMutation({
  */
 defineMutation({
   path: "checklist/detachObject",
-  async handler(body: {
-    source: string;
-    target: string;
-    ownerType?: RemoteObjectType;
-  }) {
+  async handler(body: { source: string; target: string; ownerType?: RemoteObjectType }) {
     const result = await executeDocument<DetachChecklistObjectMutation>(
       DetachChecklistObjectDocument,
       {
@@ -551,10 +502,9 @@ defineMutation({
 defineMutation({
   path: "filestore/deleteFile",
   async handler(body: { bucket: string; key: string }) {
-    const result = await executeDocument<DeleteFileMutation>(
-      DeleteFileDocument,
-      { input: { bucket: body.bucket, key: body.key } },
-    );
+    const result = await executeDocument<DeleteFileMutation>(DeleteFileDocument, {
+      input: { bucket: body.bucket, key: body.key },
+    });
     const response = result.data?.filestoreMutations.deleteFile;
     if (response == null) {
       throw new MutationError(result.error ?? "Failed to delete file.");

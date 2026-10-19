@@ -5,10 +5,7 @@ import { Button } from "@sun/components";
 import { PlusOutline } from "preact-heroicons";
 import ItemList from "~/components/items/item-list";
 import ItemDetailPlaceholder from "~/components/items/item-detail-placeholder";
-import {
-  ItemsPageSkeleton,
-  ItemDetailsPageSkeleton,
-} from "~/components/items/skeletons";
+import { ItemsPageSkeleton, ItemDetailsPageSkeleton } from "~/components/items/skeletons";
 import styles from "./items-page.module.css";
 
 const ItemsPage = () => {

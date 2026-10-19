@@ -2,14 +2,7 @@ import { useTranslation } from "@sun/i18n";
 import { getPageData } from "@sun/ssr";
 import { ListChecklistTemplatesQuery } from "~/generated/graphql";
 import { Link } from "react-router-dom";
-import {
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@sun/components";
+import { Button, Card, CardBody, CardFooter, CardHeader, CardTitle } from "@sun/components";
 import Icon from "~/components/shared/icon";
 import styles from "./template-list.module.css";
 
@@ -25,9 +18,10 @@ type TemplateListProps = {
  */
 const TemplateList = ({ pattern }: TemplateListProps) => {
   const { t } = useTranslation("templates");
-  const { data } = getPageData<
-    ListChecklistTemplatesQuery["checklistQueries"]["listTemplates"]
-  >("templates", pattern);
+  const { data } = getPageData<ListChecklistTemplatesQuery["checklistQueries"]["listTemplates"]>(
+    "templates",
+    pattern,
+  );
   const templates = data ?? [];
 
   return (
@@ -58,9 +52,7 @@ const TemplateList = ({ pattern }: TemplateListProps) => {
           ))
         )}
       </CardBody>
-      <CardFooter>
-        {t("templates-count", { count: templates.length })}
-      </CardFooter>
+      <CardFooter>{t("templates-count", { count: templates.length })}</CardFooter>
     </Card>
   );
 };

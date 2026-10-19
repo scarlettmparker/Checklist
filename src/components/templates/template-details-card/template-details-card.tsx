@@ -42,15 +42,11 @@ const TemplateDetailsCard = ({ id, pattern }: TemplateDetailsCardProps) => {
         <p className={styles.detail_value}>{details.ownerId}</p>
 
         <label>{t("description")}</label>
-        <p className={styles.detail_value}>
-          {details.description || t("no-description")}
-        </p>
+        <p className={styles.detail_value}>{details.description || t("no-description")}</p>
 
         <label>{t("remote-objects")}</label>
         <p className={styles.detail_value}>
-          {details.remoteObject?.length
-            ? details.remoteObject.join(", ")
-            : t("none")}
+          {details.remoteObject?.length ? details.remoteObject.join(", ") : t("none")}
         </p>
       </CardBody>
     </Card>

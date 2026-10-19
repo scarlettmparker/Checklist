@@ -18,9 +18,7 @@ const EntryCard = ({ entry }: EntryCardProps) => {
     <Link to={`/entry/${entry.id}`} className={styles.link}>
       <Card className={styles.card}>
         <CardBody>
-          <CardTitle className={styles.title}>
-            {entry.name || t("untitled-entry")}
-          </CardTitle>
+          <CardTitle className={styles.title}>{entry.name || t("untitled-entry")}</CardTitle>
         </CardBody>
       </Card>
     </Link>

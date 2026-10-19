@@ -32,12 +32,7 @@ type ConfirmArchiveEntryDialogProps = {
 /**
  * Confirmation dialog for archiving a checklist entry.
  */
-const ConfirmArchiveEntryDialog = ({
-  open,
-  onClose,
-  entry,
-  t,
-}: ConfirmArchiveEntryDialogProps) => {
+const ConfirmArchiveEntryDialog = ({ open, onClose, entry, t }: ConfirmArchiveEntryDialogProps) => {
   if (!entry) {
     return null;
   }

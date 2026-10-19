@@ -14,9 +14,7 @@ import {
   MarkdownEditor,
 } from "@sun/components";
 import Icon, { ICON_NAMES, FALLBACK_ICON } from "~/components/shared/icon";
-import CategorySelect, {
-  CATEGORY_NONE,
-} from "~/components/categories/category-select";
+import CategorySelect, { CATEGORY_NONE } from "~/components/categories/category-select";
 import { getPageData } from "@sun/ssr";
 import { LocateChecklistItemQuery } from "~/generated/graphql";
 import { saveChecklistItem } from "~/server/actions/checklist-item";
@@ -41,9 +39,11 @@ const EditItemForm = ({ itemId, pattern }: EditItemFormProps) => {
   const [searchParams] = useSearchParams();
   const cancelTo = searchParams.get("from") || `/items/${itemId}`;
 
-  const { data: item } = getPageData<
-    LocateChecklistItemQuery["checklistQueries"]["item"]
-  >("item", pattern, { id: itemId });
+  const { data: item } = getPageData<LocateChecklistItemQuery["checklistQueries"]["item"]>(
+    "item",
+    pattern,
+    { id: itemId },
+  );
 
   const DEFAULT_ROWS = 3;
   const [loading, setLoading] = useState(false);
@@ -61,10 +61,7 @@ const EditItemForm = ({ itemId, pattern }: EditItemFormProps) => {
     const description = formData.get("description") as string;
     const icon = formData.get("icon") as string;
     const categoryIdRaw = formData.get("categoryId") as string;
-    const categoryId =
-      categoryIdRaw && categoryIdRaw !== CATEGORY_NONE
-        ? categoryIdRaw
-        : undefined;
+    const categoryId = categoryIdRaw && categoryIdRaw !== CATEGORY_NONE ? categoryIdRaw : undefined;
 
     try {
       await saveChecklistItem(itemId, name, description, categoryId, icon);
@@ -96,15 +93,8 @@ const EditItemForm = ({ itemId, pattern }: EditItemFormProps) => {
               {ICON_NAMES.map((iconName) => (
                 <SelectOption key={iconName} value={iconName}>
                   <div className={styles.icon_option}>
-                    <Icon
-                      name={iconName}
-                      width={16}
-                      height={16}
-                      className={styles.icon}
-                    />
-                    <span className={styles.icon_name}>
-                      {iconName.replace(/Icon$/, "")}
-                    </span>
+                    <Icon name={iconName} width={16} height={16} className={styles.icon} />
+                    <span className={styles.icon_name}>{iconName.replace(/Icon$/, "")}</span>
                   </div>
                 </SelectOption>
               ))}

@@ -51,23 +51,13 @@ const EntryItemRow = ({
         className={styles.label_wrapper}
         label={
           <div className={styles.label}>
-            <Icon
-              name={item.icon}
-              className={styles.icon}
-              width={ICON_SIZE}
-              height={ICON_SIZE}
-            />
+            <Icon name={item.icon} className={styles.icon} width={ICON_SIZE} height={ICON_SIZE} />
             <span className={styles.name}>{item.name}</span>
           </div>
         }
       />
       <Link to={editTo}>
-        <Button
-          variant="secondary"
-          className={styles.action}
-          title="Edit"
-          aria-label="Edit"
-        >
+        <Button variant="secondary" className={styles.action} title="Edit" aria-label="Edit">
           <PencilSquareOutline width={ICON_SIZE} height={ICON_SIZE} />
         </Button>
       </Link>

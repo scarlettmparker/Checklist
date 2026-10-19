@@ -142,8 +142,7 @@ defineLoader({
       );
       if (result?.success && result.data) {
         return {
-          templateItems:
-            result.data.checklistQueries.templateItems ?? EMPTY_PAGE,
+          templateItems: result.data.checklistQueries.templateItems ?? EMPTY_PAGE,
         };
       }
       return { templateItems: EMPTY_PAGE };
@@ -169,9 +168,7 @@ defineLoader({
       );
       if (result?.success && result.data) {
         return {
-          templateDetails:
-            result.data.checklistQueries.templateDetails ??
-            EMPTY_TEMPLATE_DETAILS,
+          templateDetails: result.data.checklistQueries.templateDetails ?? EMPTY_TEMPLATE_DETAILS,
         };
       }
       return { templateDetails: EMPTY_TEMPLATE_DETAILS };
@@ -224,8 +221,7 @@ defineLoader({
       );
       if (result?.success && result.data) {
         return {
-          templateItems:
-            result.data.checklistQueries.templateItems ?? EMPTY_PAGE,
+          templateItems: result.data.checklistQueries.templateItems ?? EMPTY_PAGE,
         };
       }
       return { templateItems: EMPTY_PAGE };
@@ -245,10 +241,9 @@ defineLoader({
     const id = params.id as string;
     if (!id) return null;
     try {
-      const result = await executeDocument<ListChecklistItemsQuery>(
-        ListChecklistItemsDocument,
-        { pagination: null },
-      );
+      const result = await executeDocument<ListChecklistItemsQuery>(ListChecklistItemsDocument, {
+        pagination: null,
+      });
       if (result?.success && result.data) {
         return {
           checklistItems: result.data.checklistQueries.items ?? EMPTY_PAGE,
@@ -267,15 +262,9 @@ defineLoader({
  */
 defineMutation({
   path: "templates/create",
-  async handler(body: {
-    name: string;
-    description?: string;
-    itemIds?: string[];
-  }) {
+  async handler(body: { name: string; description?: string; itemIds?: string[] }) {
     if (typeof body.name !== "string" || body.name.trim() === "") {
-      throw new MutationError(
-        "Name is required and must be a non-empty string.",
-      );
+      throw new MutationError("Name is required and must be a non-empty string.");
     }
 
     const result = await executeDocument<CreateChecklistTemplateMutation>(
@@ -317,11 +306,7 @@ defineMutation({
  */
 defineMutation({
   path: "templates/save",
-  async handler(body: {
-    id: string;
-    name: string;
-    description?: string;
-  }) {
+  async handler(body: { id: string; name: string; description?: string }) {
     const result = await executeDocument<SaveChecklistTemplateMutation>(
       SaveChecklistTemplateDocument,
       {

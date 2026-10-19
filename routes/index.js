@@ -9,12 +9,7 @@ import { base, isProduction, manifestPath } from "../config.js";
 import { suspenseCache, pageDataRegistry } from "@sun/ssr";
 import { Buffer } from "buffer";
 import { createHmac, timingSafeEqual } from "node:crypto";
-import {
-  AUTH_COOKIE,
-  buildAuthCookie,
-  clearAuthCookie,
-  loginViaGaia,
-} from "../src/utils/auth.ts";
+import { AUTH_COOKIE, buildAuthCookie, clearAuthCookie, loginViaGaia } from "../src/utils/auth.ts";
 
 /** Pages that do not require an authenticated session. */
 const PUBLIC_PAGES = new Set(["/login"]);
@@ -63,16 +58,11 @@ function verifyToken(token) {
   if (parts.length !== 3) return null;
 
   const data = parts[0] + "." + parts[1];
-  const expectedSig = createHmac("sha256", secret)
-    .update(data)
-    .digest("base64url");
+  const expectedSig = createHmac("sha256", secret).update(data).digest("base64url");
 
   const expectedBuf = Buffer.from(expectedSig);
   const actualBuf = Buffer.from(parts[2]);
-  if (
-    expectedBuf.length !== actualBuf.length ||
-    !timingSafeEqual(expectedBuf, actualBuf)
-  ) {
+  if (expectedBuf.length !== actualBuf.length || !timingSafeEqual(expectedBuf, actualBuf)) {
     return null;
   }
 
@@ -112,9 +102,7 @@ export function setupRoutes(app, vite) {
     });
     reply.header("Set-Cookie", buildAuthCookie(token));
     const redirectTo =
-      typeof redirect === "string" &&
-      redirect.startsWith("/") &&
-      !redirect.startsWith("//")
+      typeof redirect === "string" && redirect.startsWith("/") && !redirect.startsWith("//")
         ? redirect
         : "/";
     return reply.redirect(redirectTo);
@@ -145,19 +133,13 @@ export function setupRoutes(app, vite) {
     const token = getCookieValue(request.headers.cookie, AUTH_COOKIE);
     if (token && !verifyToken(token)) {
       reply.header("Set-Cookie", clearAuthCookie());
-      return reply.redirect(
-        `/login?redirect=${encodeURIComponent(request.raw.url)}`,
-      );
+      return reply.redirect(`/login?redirect=${encodeURIComponent(request.raw.url)}`);
     }
     const normalizedPath =
-      pathname.length > 1 && pathname.endsWith("/")
-        ? pathname.replace(/\/+$/, "")
-        : pathname;
+      pathname.length > 1 && pathname.endsWith("/") ? pathname.replace(/\/+$/, "") : pathname;
     const isPublic = PUBLIC_PAGES.has(normalizedPath);
     if (!token && !isPublic) {
-      return reply.redirect(
-        `/login?redirect=${encodeURIComponent(request.raw.url)}`,
-      );
+      return reply.redirect(`/login?redirect=${encodeURIComponent(request.raw.url)}`);
     }
     if (token && isPublic) {
       return reply.redirect("/");
@@ -175,8 +157,7 @@ export function setupRoutes(app, vite) {
     // it must resolve to "entry" (not "home") or SSR won't load that namespace
     // and the entries page-data key never hydrates.
     const pathOnly = url.split("?")[0];
-    const pageName =
-      pathOnly === "/" ? "entry" : pathOnly.split("/")[1] || "home";
+    const pageName = pathOnly === "/" ? "entry" : pathOnly.split("/")[1] || "home";
     const frontendMode = "checklist";
 
     trackPageView({

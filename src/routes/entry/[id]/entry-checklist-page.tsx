@@ -31,9 +31,7 @@ const EntryChecklistPage = () => {
           </Suspense>
         </div>
         <div className={styles.right_column}>
-          <Suspense
-            fallback={<Skeleton style={{ width: "100%", height: "12rem" }} />}
-          >
+          <Suspense fallback={<Skeleton style={{ width: "100%", height: "12rem" }} />}>
             <EntryGallery entryId={id} />
           </Suspense>
         </div>

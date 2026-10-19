@@ -23,12 +23,12 @@ export const CATEGORY_NONE = "__none__";
  */
 const CategorySelectInner = ({ name, defaultValue }: CategorySelectProps) => {
   const { t } = useTranslation("items");
-  const { data } = getPageData<
-    ListChecklistCategoriesQuery["checklistQueries"]["listCategories"]
-  >("categories", "categories");
+  const { data } = getPageData<ListChecklistCategoriesQuery["checklistQueries"]["listCategories"]>(
+    "categories",
+    "categories",
+  );
   const categories = data ?? [];
-  const selected =
-    defaultValue && defaultValue.length > 0 ? defaultValue : CATEGORY_NONE;
+  const selected = defaultValue && defaultValue.length > 0 ? defaultValue : CATEGORY_NONE;
 
   return (
     <Select name={name} defaultValue={selected}>

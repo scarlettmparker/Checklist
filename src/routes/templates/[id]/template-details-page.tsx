@@ -25,9 +25,7 @@ const TemplateDetailsPage = () => {
         <Card>
           <CardBody className={styles.overview_body}>
             <TemplateInfo id={id} pattern={PAGE} />
-            <Suspense
-              fallback={<Skeleton style={{ width: "100%", height: "6rem" }} />}
-            >
+            <Suspense fallback={<Skeleton style={{ width: "100%", height: "6rem" }} />}>
               <TemplateItems id={id} pattern={PAGE} />
             </Suspense>
           </CardBody>

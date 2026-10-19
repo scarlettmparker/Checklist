@@ -16,9 +16,7 @@ function toOutlineName(name: string): string {
 /**
  * Every Heroicons 24/outline export name, e.g. "WrenchOutline".
  */
-export const ICON_NAMES: string[] = Object.keys(icons).filter((name) =>
-  name.endsWith("Outline"),
-);
+export const ICON_NAMES: string[] = Object.keys(icons).filter((name) => name.endsWith("Outline"));
 
 /**
  * Fallback icon used when an item has no icon (or an unknown one).

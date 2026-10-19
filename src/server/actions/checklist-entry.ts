@@ -16,13 +16,8 @@ import type {
 /**
  * Creates a blank checklist entry and navigates into it.
  */
-export async function createEntry(
-  name?: string,
-): Promise<CreateChecklistResponse> {
-  const response = await executeMutation<CreateChecklistResponse>(
-    "entry/create",
-    { name },
-  );
+export async function createEntry(name?: string): Promise<CreateChecklistResponse> {
+  const response = await executeMutation<CreateChecklistResponse>("entry/create", { name });
   window.location.assign(`/entry/${response.entry.id}`);
   return response;
 }
@@ -60,10 +55,7 @@ export async function createEntryFromTemplates(
 /**
  * Adds an item to an entry.
  */
-export async function addEntryItem(
-  entryId: string,
-  itemId: string,
-): Promise<AddItemResponse> {
+export async function addEntryItem(entryId: string, itemId: string): Promise<AddItemResponse> {
   return executeMutation<AddItemResponse>("entry/addItem", { entryId, itemId });
 }
 
@@ -98,9 +90,7 @@ export async function setEntryItemStatus(
 /**
  * Marks an entry as complete (idempotent; cannot be un-completed).
  */
-export async function completeChecklistEntry(
-  entryId: string,
-): Promise<CompleteChecklistResponse> {
+export async function completeChecklistEntry(entryId: string): Promise<CompleteChecklistResponse> {
   return executeMutation<CompleteChecklistResponse>("entry/completeChecklist", {
     entryId,
   });
@@ -109,13 +99,10 @@ export async function completeChecklistEntry(
 /**
  * Archives an entry and navigates home.
  */
-export async function archiveEntry(
-  entryId: string,
-): Promise<ArchiveChecklistResponse> {
-  const response = await executeMutation<ArchiveChecklistResponse>(
-    "entry/archiveChecklist",
-    { entryId },
-  );
+export async function archiveEntry(entryId: string): Promise<ArchiveChecklistResponse> {
+  const response = await executeMutation<ArchiveChecklistResponse>("entry/archiveChecklist", {
+    entryId,
+  });
   window.location.assign("/");
   return response;
 }
@@ -123,13 +110,8 @@ export async function archiveEntry(
 /**
  * Permanently deletes an entry and its items, then navigates home.
  */
-export async function deleteEntry(
-  entryId: string,
-): Promise<DeleteChecklistResponse> {
-  const response = await executeMutation<DeleteChecklistResponse>(
-    "entry/delete",
-    { entryId },
-  );
+export async function deleteEntry(entryId: string): Promise<DeleteChecklistResponse> {
+  const response = await executeMutation<DeleteChecklistResponse>("entry/delete", { entryId });
   window.location.assign("/");
   return response;
 }
@@ -137,10 +119,7 @@ export async function deleteEntry(
 /**
  * Saves an entry's name (and other editable fields).
  */
-export async function saveEntry(
-  entryId: string,
-  name: string,
-): Promise<SaveChecklistResponse> {
+export async function saveEntry(entryId: string, name: string): Promise<SaveChecklistResponse> {
   return executeMutation<SaveChecklistResponse>("entry/save", {
     id: entryId,
     name,

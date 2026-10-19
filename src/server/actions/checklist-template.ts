@@ -24,14 +24,11 @@ export async function createChecklistTemplate(
     throw new Error("Name is required and must be a non-empty string.");
   }
 
-  const response = await executeMutation<CreateTemplateResponse>(
-    "templates/create",
-    {
-      name,
-      description: description || "",
-      itemIds,
-    },
-  );
+  const response = await executeMutation<CreateTemplateResponse>("templates/create", {
+    name,
+    description: description || "",
+    itemIds,
+  });
 
   window.location.assign("/templates");
   return response;
@@ -54,14 +51,11 @@ export async function saveChecklistTemplate(
     throw new Error("Name is required and must be a non-empty string.");
   }
 
-  const response = await executeMutation<SaveTemplateResponse>(
-    "templates/save",
-    {
-      id,
-      name,
-      description: description || "",
-    },
-  );
+  const response = await executeMutation<SaveTemplateResponse>("templates/save", {
+    id,
+    name,
+    description: description || "",
+  });
 
   window.location.assign(`/templates/${id}`);
   return response;
@@ -72,13 +66,8 @@ export async function saveChecklistTemplate(
  *
  * @param id Id of the template to archive.
  */
-export async function archiveChecklistTemplate(
-  id: string,
-): Promise<ArchiveTemplateResponse> {
-  const response = await executeMutation<ArchiveTemplateResponse>(
-    "templates/archive",
-    { id },
-  );
+export async function archiveChecklistTemplate(id: string): Promise<ArchiveTemplateResponse> {
+  const response = await executeMutation<ArchiveTemplateResponse>("templates/archive", { id });
 
   window.location.assign("/templates");
   return response;

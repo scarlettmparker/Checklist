@@ -55,11 +55,7 @@ const CreateEntryDialog = ({ open, onClose, t }: CreateEntryDialogProps) => {
           <FormField name="name">
             <FormLabel>{t("name")}</FormLabel>
             <FormItem>
-              <Input
-                type="text"
-                placeholder={t("name-placeholder")}
-                autoFocus
-              />
+              <Input type="text" placeholder={t("name-placeholder")} autoFocus />
             </FormItem>
           </FormField>
         </Form>

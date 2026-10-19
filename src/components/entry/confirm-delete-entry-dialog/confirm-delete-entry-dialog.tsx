@@ -32,12 +32,7 @@ type ConfirmDeleteEntryDialogProps = {
 /**
  * Confirmation dialog for permanently deleting a checklist entry.
  */
-const ConfirmDeleteEntryDialog = ({
-  open,
-  onClose,
-  entry,
-  t,
-}: ConfirmDeleteEntryDialogProps) => {
+const ConfirmDeleteEntryDialog = ({ open, onClose, entry, t }: ConfirmDeleteEntryDialogProps) => {
   if (!entry) {
     return null;
   }

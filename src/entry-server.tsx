@@ -24,9 +24,7 @@ configureApi({ authCookie: AUTH_COOKIE, clientId, clientSecret, appBaseUrl: base
  * defineMutation calls run once at boot. Must live in app code (not @sun/ssr)
  * since @sun/ssr is externalized.
  */
-autoDiscoverRegistrations(
-  import.meta.glob("./server/**/*-registrations.ts", { eager: true }),
-);
+autoDiscoverRegistrations(import.meta.glob("./server/**/*-registrations.ts", { eager: true }));
 
 const renderer = createRenderer({
   title: "Checklist | Scarlet Sun",
@@ -42,20 +40,19 @@ const renderer = createRenderer({
     });
   },
   async resolveTheme(): Promise<ResolvedTheme | null> {
-    const endpoint =
-      process.env.GRAPHQL_ENDPOINT || "http://localhost:8083/graphql";
+    const endpoint = process.env.GRAPHQL_ENDPOINT || "http://localhost:8083/graphql";
     try {
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          query:
-            '{ gaiaQueries { propertySet(ownerKey:"ReactApp", name:"themes") } }',
+          query: '{ gaiaQueries { propertySet(ownerKey:"ReactApp", name:"themes") } }',
         }),
       });
       const json = await res.json();
       const map = json?.data?.gaiaQueries?.propertySet as
-        Record<string, Record<string, string>> | undefined;
+        | Record<string, Record<string, string>>
+        | undefined;
       if (map && typeof map === "object") {
         return {
           current: map["greek"] ?? null,

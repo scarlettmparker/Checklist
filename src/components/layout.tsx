@@ -4,15 +4,10 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { BreadcrumbProvider } from "@sun/components";
 import { usePageViewTracking } from "@sun/ssr";
-import {
-  ThemeSwitcher,
-  THEME_APPLIED_EVENT,
-  type ThemeOption,
-} from "@sun/themes";
+import { ThemeSwitcher, THEME_APPLIED_EVENT, type ThemeOption } from "@sun/themes";
 import Nav from "~/components/nav";
 
-const useIsomorphicLayoutEffect =
-  typeof window !== "undefined" ? useLayoutEffect : useEffect;
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 type LayoutProps = React.PropsWithChildren;
 
@@ -24,9 +19,7 @@ const Layout = (props: LayoutProps) => {
   // first render match. getBackgroundHex() depends on the wall clock, so
   // computing it during hydration caused React #418 when the boundary between
   // server render and client mount changed the interpolated colour.
-  const [backgroundColour, setBackgroundColour] = useState<string | undefined>(
-    undefined,
-  );
+  const [backgroundColour, setBackgroundColour] = useState<string | undefined>(undefined);
   const [themes, setThemes] = useState<ThemeOption[]>([]);
 
   useIsomorphicLayoutEffect(() => {

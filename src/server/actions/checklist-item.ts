@@ -1,9 +1,5 @@
 import { executeMutation } from "@sun/ssr";
-import type {
-  CreateItemResponse,
-  RetireItemResponse,
-  SaveItemResponse,
-} from "~/generated/graphql";
+import type { CreateItemResponse, RetireItemResponse, SaveItemResponse } from "~/generated/graphql";
 
 /**
  * Creates a new checklist item and navigates to the items list.
@@ -23,15 +19,12 @@ export async function createChecklistItem(
     throw new Error("Name is required and must be a non-empty string.");
   }
 
-  const response = await executeMutation<CreateItemResponse>(
-    "checklist/createItem",
-    {
-      name,
-      description: description || "",
-      categoryId: categoryId || null,
-      icon: icon || null,
-    },
-  );
+  const response = await executeMutation<CreateItemResponse>("checklist/createItem", {
+    name,
+    description: description || "",
+    categoryId: categoryId || null,
+    icon: icon || null,
+  });
 
   window.location.assign("/items");
   return response;
@@ -57,16 +50,13 @@ export async function saveChecklistItem(
     throw new Error("Name is required and must be a non-empty string.");
   }
 
-  const response = await executeMutation<SaveItemResponse>(
-    "checklist/saveItem",
-    {
-      id,
-      name,
-      description: description || "",
-      categoryId: categoryId || null,
-      icon: icon || null,
-    },
-  );
+  const response = await executeMutation<SaveItemResponse>("checklist/saveItem", {
+    id,
+    name,
+    description: description || "",
+    categoryId: categoryId || null,
+    icon: icon || null,
+  });
 
   window.location.assign(`/items/${id}`);
   return response;
@@ -77,13 +67,8 @@ export async function saveChecklistItem(
  *
  * @param id Id of the checklist item to retire.
  */
-export async function retireChecklistItem(
-  id: string,
-): Promise<RetireItemResponse> {
-  const response = await executeMutation<RetireItemResponse>(
-    "checklist/retireItem",
-    { id },
-  );
+export async function retireChecklistItem(id: string): Promise<RetireItemResponse> {
+  const response = await executeMutation<RetireItemResponse>("checklist/retireItem", { id });
 
   window.location.assign("/items");
   return response;

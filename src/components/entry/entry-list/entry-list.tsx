@@ -16,17 +16,16 @@ import styles from "./entry-list.module.css";
  */
 const EntryList = () => {
   const { t } = useTranslation("entry");
-  const { data } = usePageData<
-    ListChecklistEntriesQuery["checklistQueries"]["listEntries"]
-  >("entry", "entry");
+  const { data } = usePageData<ListChecklistEntriesQuery["checklistQueries"]["listEntries"]>(
+    "entry",
+    "entry",
+  );
   const entries = data ?? [];
   const [createOpen, setCreateOpen] = useState(false);
 
   const createButtons = (
     <div className={styles.create_buttons}>
-      <Button onClick={() => setCreateOpen(true)}>
-        {t("create-entry-label")}
-      </Button>
+      <Button onClick={() => setCreateOpen(true)}>{t("create-entry-label")}</Button>
       <Link to="/entry/create">
         <Button variant="secondary">{t("create-from-template")}</Button>
       </Link>
@@ -56,11 +55,7 @@ const EntryList = () => {
           {createButtons}
         </div>
       )}
-      <CreateEntryDialog
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-        t={t}
-      />
+      <CreateEntryDialog open={createOpen} onClose={() => setCreateOpen(false)} t={t} />
     </>
   );
 };

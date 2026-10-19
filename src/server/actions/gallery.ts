@@ -73,22 +73,16 @@ export async function confirmImageUpload(
   key: string,
   title: string,
 ): Promise<{ item: GalleryItem; attach: AttachChecklistObjectResponse }> {
-  const createResult = await executeMutation<CreateGalleryItemResponse>(
-    "gallery/create",
-    {
-      title,
-      imagePath: key,
-    },
-  );
+  const createResult = await executeMutation<CreateGalleryItemResponse>("gallery/create", {
+    title,
+    imagePath: key,
+  });
 
-  const attach = await executeMutation<AttachChecklistObjectResponse>(
-    "checklist/attachObject",
-    {
-      source: entryId,
-      target: createResult.item.id,
-      ownerType: "ENTRY",
-    },
-  );
+  const attach = await executeMutation<AttachChecklistObjectResponse>("checklist/attachObject", {
+    source: entryId,
+    target: createResult.item.id,
+    ownerType: "ENTRY",
+  });
 
   return { item: createResult.item, attach };
 }
@@ -110,9 +104,7 @@ export async function detachImage(
 /**
  * Deletes a file from the gallery bucket.
  */
-export async function deleteImageFile(
-  imagePath: string,
-): Promise<DeleteFileResponse> {
+export async function deleteImageFile(imagePath: string): Promise<DeleteFileResponse> {
   return executeMutation<DeleteFileResponse>("filestore/deleteFile", {
     bucket: GALLERY_BUCKET,
     key: imagePath,

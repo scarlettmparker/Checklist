@@ -41,9 +41,11 @@ const EditTemplateAddItemPicker = ({
 }: EditTemplateAddItemPickerProps) => {
   const { t } = useTranslation("templates");
   const [page, setPage] = useState(1);
-  const { data } = getPageData<
-    ListChecklistItemsQuery["checklistQueries"]["items"]
-  >("checklistItems", pattern, { id: templateId });
+  const { data } = getPageData<ListChecklistItemsQuery["checklistQueries"]["items"]>(
+    "checklistItems",
+    pattern,
+    { id: templateId },
+  );
   const available = (data?.items ?? []).filter((i) => !memberIds.has(i.id));
   const totalPages = Math.max(1, Math.ceil(available.length / PAGE_SIZE));
   const current = Math.min(page, totalPages);
@@ -66,10 +68,7 @@ const EditTemplateAddItemPicker = ({
                   height={ICON_SIZE}
                 />
                 <span className={styles.item_name}>{item.name}</span>
-                <Button
-                  variant="secondary"
-                  onClick={() => onAdd(item.id, item.name, item.icon)}
-                >
+                <Button variant="secondary" onClick={() => onAdd(item.id, item.name, item.icon)}>
                   {t("add-item")}
                 </Button>
               </div>
@@ -78,11 +77,7 @@ const EditTemplateAddItemPicker = ({
         </CardBody>
       </Card>
       {totalPages > 1 && (
-        <Pagination
-          page={current}
-          totalPages={totalPages}
-          onPageChange={setPage}
-        />
+        <Pagination page={current} totalPages={totalPages} onPageChange={setPage} />
       )}
     </>
   );

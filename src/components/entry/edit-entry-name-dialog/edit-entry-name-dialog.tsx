@@ -14,10 +14,7 @@ import {
   FormLabel,
   Input,
 } from "@sun/components";
-import {
-  ChecklistEntry,
-  type ListChecklistEntriesQuery,
-} from "~/generated/graphql";
+import { ChecklistEntry, type ListChecklistEntriesQuery } from "~/generated/graphql";
 import { saveEntry } from "~/server/actions/checklist-entry";
 
 type EditEntryNameDialogProps = {
@@ -42,12 +39,7 @@ type EditEntryNameDialogProps = {
 /**
  * Dialog for renaming a checklist entry via saveChecklist.
  */
-const EditEntryNameDialog = ({
-  open,
-  onClose,
-  entry,
-  t,
-}: EditEntryNameDialogProps) => {
+const EditEntryNameDialog = ({ open, onClose, entry, t }: EditEntryNameDialogProps) => {
   const [loading, setLoading] = useState(false);
 
   if (!entry) {
@@ -64,18 +56,13 @@ const EditEntryNameDialog = ({
     const name = (formData.get("name") as string).trim();
     try {
       const response = await saveEntry(entry.id, name);
-      patchPageData(
+      patchPageData("entry", "entry/:id", { id: entry.id }, () => response.entry);
+      patchPageData<NonNullable<ListChecklistEntriesQuery["checklistQueries"]["listEntries"]>>(
         "entry",
-        "entry/:id",
-        { id: entry.id },
-        () => response.entry,
-      );
-      patchPageData<
-        NonNullable<ListChecklistEntriesQuery["checklistQueries"]["listEntries"]>
-      >("entry", "entry", {}, (current) =>
-        (current ?? []).map((item) =>
-          item.id === response.entry.id ? response.entry : item,
-        ),
+        "entry",
+        {},
+        (current) =>
+          (current ?? []).map((item) => (item.id === response.entry.id ? response.entry : item)),
       );
     } catch (error) {
       console.error(error instanceof Error ? error.message : error);

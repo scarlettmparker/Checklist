@@ -46,9 +46,11 @@ const EntryAddItemsPicker = ({
   onSubmit,
 }: EntryAddItemsPickerProps) => {
   const { t } = useTranslation("entry");
-  const { data } = getPageData<
-    ListChecklistItemsQuery["checklistQueries"]["items"]
-  >("checklistItems", "entry/:id/picker", { id: entryId });
+  const { data } = getPageData<ListChecklistItemsQuery["checklistQueries"]["items"]>(
+    "checklistItems",
+    "entry/:id/picker",
+    { id: entryId },
+  );
   const available = (data?.items ?? []).filter((i) => !memberIds.has(i.id));
   const totalPages = Math.max(1, Math.ceil(available.length / PAGE_SIZE));
   const current = Math.min(page, totalPages);
@@ -91,12 +93,7 @@ const EntryAddItemsPicker = ({
               className={styles.label_wrapper}
               label={
                 <div className={styles.label}>
-                  <Icon
-                    name={item.icon}
-                    className={styles.icon}
-                    width={16}
-                    height={16}
-                  />
+                  <Icon name={item.icon} className={styles.icon} width={16} height={16} />
                   <span className={styles.name}>{item.name}</span>
                 </div>
               }

@@ -38,14 +38,10 @@ const Nav = () => {
   return (
     <nav className={styles.nav}>
       {NAV_ITEMS.map((item) => {
-        const active =
-          item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+        const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
         return (
           <Link key={item.href} to={item.href} className={styles.link}>
-            <Button
-              variant={active ? "default" : "secondary"}
-              className={styles.button}
-            >
+            <Button variant={active ? "default" : "secondary"} className={styles.button}>
               {item.label}
             </Button>
           </Link>

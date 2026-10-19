@@ -10,8 +10,7 @@ import { clientId, clientSecret } from "../../../config.js";
  * Returns the backend API base URL derived from GRAPHQL_ENDPOINT.
  */
 function getBackendApiBase(): string {
-  const endpoint =
-    process.env.GRAPHQL_ENDPOINT || "http://localhost:8083/graphql";
+  const endpoint = process.env.GRAPHQL_ENDPOINT || "http://localhost:8083/graphql";
   try {
     const url = new URL(endpoint);
     url.pathname = "/";
@@ -45,8 +44,7 @@ export function registerGalleryProxyRoute(app: SunApp): void {
 
     upstreamResponse.headers.forEach((value, name) => {
       const lower = name.toLowerCase();
-      if (lower === "transfer-encoding" || lower === "content-disposition")
-        return;
+      if (lower === "transfer-encoding" || lower === "content-disposition") return;
       reply.header(name, value);
     });
 

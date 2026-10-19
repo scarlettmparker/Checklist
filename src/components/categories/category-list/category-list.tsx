@@ -16,9 +16,10 @@ type CategoryListProps = {
  */
 const CategoryList = ({ pattern }: CategoryListProps) => {
   const { t } = useTranslation("categories");
-  const { data } = usePageData<
-    ListChecklistCategoriesQuery["checklistQueries"]["listCategories"]
-  >("categories", pattern);
+  const { data } = usePageData<ListChecklistCategoriesQuery["checklistQueries"]["listCategories"]>(
+    "categories",
+    pattern,
+  );
   const categories = data ?? [];
 
   if (categories.length === 0) {
@@ -39,9 +40,7 @@ const CategoryList = ({ pattern }: CategoryListProps) => {
             <CardTitle>{category.name}</CardTitle>
           </CardHeader>
           <CardBody>
-            <p className={styles.description}>
-              {category.description || t("no-description")}
-            </p>
+            <p className={styles.description}>{category.description || t("no-description")}</p>
           </CardBody>
         </Card>
       ))}

@@ -33,8 +33,7 @@ export default defineConfig({
         // Delete everything from the DB and reset all sequences. Used to isolate tests.
         async dbReset() {
           const connectionString =
-            process.env.DATABASE_URL ||
-            "postgres://sun:sun@localhost:5432/sun_test";
+            process.env.DATABASE_URL || "postgres://sun:sun@localhost:5432/sun_test";
           if (!client) {
             client = new pg.Client({ connectionString });
             await client.connect();
@@ -44,9 +43,7 @@ export default defineConfig({
           );
           if (rows.length > 0) {
             const list = rows.map((r) => `"${r.tablename}"`).join(", ");
-            await client.query(
-              `TRUNCATE TABLE ${list} RESTART IDENTITY CASCADE`,
-            );
+            await client.query(`TRUNCATE TABLE ${list} RESTART IDENTITY CASCADE`);
           }
           return null;
         },

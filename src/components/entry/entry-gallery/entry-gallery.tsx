@@ -2,14 +2,7 @@ import { useRef, useState } from "react";
 import { useTranslation } from "@sun/i18n";
 import { patchPageData } from "@sun/ssr";
 import { useMutation, usePageData } from "@sun/ssr/react";
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  CardTitle,
-  Figure,
-} from "@sun/components";
+import { Button, Card, CardBody, CardHeader, CardTitle, Figure } from "@sun/components";
 import { CameraOutline, XMarkOutline } from "preact-heroicons";
 import Carousel from "~/components/shared/carousel";
 import DeleteImageDialog from "~/components/entry/delete-image-dialog";
@@ -49,18 +42,12 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<GalleryItem | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { data: galleryItems } = usePageData<GalleryItem[]>(
-    "galleryItems",
-    "entry/:id/gallery",
-    { id: entryId },
-  );
+  const { data: galleryItems } = usePageData<GalleryItem[]>("galleryItems", "entry/:id/gallery", {
+    id: entryId,
+  });
   const items: GalleryItem[] = galleryItems ?? [];
 
-  const [, runUpload, uploading] = useMutation<
-    File[],
-    GalleryItem[],
-    GalleryItem[]
-  >({
+  const [, runUpload, uploading] = useMutation<File[], GalleryItem[], GalleryItem[]>({
     base: items,
     reducer: (current) => current,
     action: async (files) => {
@@ -104,8 +91,7 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
     GalleryItem[]
   >({
     base: items,
-    reducer: (current, payload) =>
-      current.filter((item) => item.id !== payload.item.id),
+    reducer: (current, payload) => current.filter((item) => item.id !== payload.item.id),
     action: async (payload) => {
       const response = await detachImage(entryId, payload.item.id);
       if (!payload.detachOnly && payload.item.imagePath) {
@@ -119,8 +105,7 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
         "galleryItems",
         "entry/:id/gallery",
         { id: entryId },
-        (current) =>
-          (current ?? []).filter((item) => item.id !== payload.item.id),
+        (current) => (current ?? []).filter((item) => item.id !== payload.item.id),
       );
     },
     onError: (error) => setUploadError(error.message),
@@ -210,11 +195,7 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
           title={t("upload-image")}
           onClick={() => fileInputRef.current?.click()}
         >
-          <CameraOutline
-            width={ICON_SIZE}
-            height={ICON_SIZE}
-            className={styles.icon}
-          />
+          <CameraOutline width={ICON_SIZE} height={ICON_SIZE} className={styles.icon} />
           {uploading ? t("uploading-image") : t("upload-image")}
         </Button>
       </CardBody>

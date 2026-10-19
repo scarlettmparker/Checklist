@@ -23,9 +23,7 @@ import {
   type SetItemStatusResponse,
 } from "~/generated/graphql";
 import EntryItemRow from "~/components/entry/entry-item-row";
-import EntryAddItemsPicker, {
-  type PickerItem,
-} from "~/components/entry/entry-add-items-picker";
+import EntryAddItemsPicker, { type PickerItem } from "~/components/entry/entry-add-items-picker";
 import {
   addEntryItem,
   completeChecklistEntry,
@@ -60,14 +58,9 @@ type EntryItemPayload =
       status: ItemStatus;
     };
 
-type EntryItemResponse =
-  | AddItemResponse
-  | RemoveItemResponse
-  | SetItemStatusResponse;
+type EntryItemResponse = AddItemResponse | RemoveItemResponse | SetItemStatusResponse;
 
-type EntryItemsPage = NonNullable<
-  ListChecklistEntryItemsQuery["checklistQueries"]["entryItems"]
->;
+type EntryItemsPage = NonNullable<ListChecklistEntryItemsQuery["checklistQueries"]["entryItems"]>;
 
 const EMPTY_PAGE_INFO = {
   page: 0,
@@ -125,13 +118,13 @@ const EntryChecklist = ({ entryId }: EntryChecklistProps) => {
   const { data: itemsData } = usePageData<
     ListChecklistEntryItemsQuery["checklistQueries"]["entryItems"]
   >("entryItems", "entry/:id/items", { id: entryId });
-  const { data: entry } = usePageData<
-    LocateChecklistEntryQuery["checklistQueries"]["entry"]
-  >("entry", "entry/:id", { id: entryId });
+  const { data: entry } = usePageData<LocateChecklistEntryQuery["checklistQueries"]["entry"]>(
+    "entry",
+    "entry/:id",
+    { id: entryId },
+  );
 
-  const items = (itemsData?.items ?? [])
-    .slice()
-    .sort((a, b) => a.position - b.position);
+  const items = (itemsData?.items ?? []).slice().sort((a, b) => a.position - b.position);
   const completed = entry?.completedAt != null && entry.completedAt !== "";
 
   const [showPicker, setShowPicker] = useState(false);
@@ -146,8 +139,7 @@ const EntryChecklist = ({ entryId }: EntryChecklistProps) => {
     ChecklistEntryItem[]
   >({
     base: items,
-    reducer: (current, payload) =>
-      applyEntryItemChange(entryId, current, payload),
+    reducer: (current, payload) => applyEntryItemChange(entryId, current, payload),
     action: (payload) => {
       if (payload.kind === "add") {
         return addEntryItems(entryId, payload.items);
@@ -158,27 +150,17 @@ const EntryChecklist = ({ entryId }: EntryChecklistProps) => {
       return setEntryItemStatus(entryId, payload.itemId, payload.status);
     },
     onSuccess: (response, payload) => {
-      patchPageData<EntryItemsPage>(
-        "entryItems",
-        "entry/:id/items",
-        { id: entryId },
-        (current) => {
-          const base = current ?? {
-            items: [],
-            pageInfo: EMPTY_PAGE_INFO,
-          };
-          return {
-            ...base,
-            items: applyEntryItemChange(entryId, base.items, payload),
-          };
-        },
-      );
-      patchPageData(
-        "entry",
-        "entry/:id",
-        { id: entryId },
-        () => response.entry,
-      );
+      patchPageData<EntryItemsPage>("entryItems", "entry/:id/items", { id: entryId }, (current) => {
+        const base = current ?? {
+          items: [],
+          pageInfo: EMPTY_PAGE_INFO,
+        };
+        return {
+          ...base,
+          items: applyEntryItemChange(entryId, base.items, payload),
+        };
+      });
+      patchPageData("entry", "entry/:id", { id: entryId }, () => response.entry);
       if (payload.kind === "status") {
         maybeComplete(entryId, items, payload);
       }
@@ -196,9 +178,7 @@ const EntryChecklist = ({ entryId }: EntryChecklistProps) => {
       return;
     }
     const next =
-      current.status === ItemStatus.Complete
-        ? ItemStatus.NotStarted
-        : ItemStatus.Complete;
+      current.status === ItemStatus.Complete ? ItemStatus.NotStarted : ItemStatus.Complete;
     runItems({ kind: "status", itemId, status: next });
   };
 
@@ -225,9 +205,7 @@ const EntryChecklist = ({ entryId }: EntryChecklistProps) => {
         <CardHeader className={styles.header}>
           <CardTitle className={styles.title}>
             {t("checklist")}
-            {completed && (
-              <span className={styles.badge}>{t("completed")}</span>
-            )}
+            {completed && <span className={styles.badge}>{t("completed")}</span>}
           </CardTitle>
         </CardHeader>
         <CardBody className={styles.body}>
@@ -282,11 +260,7 @@ const EntryChecklist = ({ entryId }: EntryChecklistProps) => {
               </Button>
             </CardHeader>
             <CardBody>
-              <Suspense
-                fallback={
-                  <Skeleton style={{ width: "100%", height: "6rem" }} />
-                }
-              >
+              <Suspense fallback={<Skeleton style={{ width: "100%", height: "6rem" }} />}>
                 <EntryAddItemsPicker
                   entryId={entryId}
                   memberIds={memberIds}
@@ -314,10 +288,7 @@ const EntryChecklist = ({ entryId }: EntryChecklistProps) => {
 /**
  * Adds several items sequentially, returning the final updated entry.
  */
-async function addEntryItems(
-  entryId: string,
-  items: PickerItem[],
-): Promise<AddItemResponse> {
+async function addEntryItems(entryId: string, items: PickerItem[]): Promise<AddItemResponse> {
   let last: AddItemResponse | null = null;
   for (const item of items) {
     last = await addEntryItem(entryId, item.id);
@@ -345,12 +316,7 @@ function maybeComplete(
   }
   void completeChecklistEntry(entryId)
     .then((response) => {
-      patchPageData(
-        "entry",
-        "entry/:id",
-        { id: entryId },
-        () => response.entry,
-      );
+      patchPageData("entry", "entry/:id", { id: entryId }, () => response.entry);
     })
     .catch(() => undefined);
 }

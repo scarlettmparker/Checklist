@@ -38,9 +38,10 @@ const ItemList = ({ pattern, children }: ItemListProps) => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("page") ? Number(searchParams.get("page")) : 1;
-  const { data } = getPageData<
-    ListChecklistItemsQuery["checklistQueries"]["items"]
-  >("checklistItems", pattern);
+  const { data } = getPageData<ListChecklistItemsQuery["checklistQueries"]["items"]>(
+    "checklistItems",
+    pattern,
+  );
   const allItems = data?.items ?? [];
   const totalPages = Math.max(1, Math.ceil(allItems.length / PAGE_SIZE));
   const current = Math.min(page, totalPages);
@@ -81,12 +82,7 @@ const ItemList = ({ pattern, children }: ItemListProps) => {
                     handleDoubleClick(item.id);
                   }}
                 >
-                  <Icon
-                    name={item.icon}
-                    className={styles.item_icon}
-                    width={16}
-                    height={16}
-                  />
+                  <Icon name={item.icon} className={styles.item_icon} width={16} height={16} />
                   <span className={styles.item_name}>{item.name}</span>
                   <span className={styles.item_actions}>
                     <DropdownMenu>
@@ -101,9 +97,7 @@ const ItemList = ({ pattern, children }: ItemListProps) => {
                         />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuItem
-                          onClick={() => navigate(`/items/${item.id}/edit`)}
-                        >
+                        <DropdownMenuItem onClick={() => navigate(`/items/${item.id}/edit`)}>
                           <PencilSquareOutline width={16} height={16} />
                           {t("edit-label")}
                         </DropdownMenuItem>

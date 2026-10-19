@@ -35,9 +35,11 @@ const CreateTemplateForm = () => {
   // with the page (no client RPC). Suspends until resolved; the page-level
   // skeleton shows while loading.
   const { data: entryItems } = entryId
-    ? getPageData<
-        ListChecklistEntryItemsQuery["checklistQueries"]["entryItems"]
-      >("entryItems", PAGE, { entryId })
+    ? getPageData<ListChecklistEntryItemsQuery["checklistQueries"]["entryItems"]>(
+        "entryItems",
+        PAGE,
+        { entryId },
+      )
     : { data: null };
 
   const [loading, setLoading] = useState(false);
@@ -71,9 +73,7 @@ const CreateTemplateForm = () => {
     try {
       await createChecklistTemplate(name, description, itemIds);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to create template.",
-      );
+      setError(err instanceof Error ? err.message : "Failed to create template.");
     }
 
     setLoading(false);
@@ -87,11 +87,7 @@ const CreateTemplateForm = () => {
             <FormField name="name">
               <FormLabel>{t("name")}</FormLabel>
               <FormItem>
-                <Input
-                  type="text"
-                  placeholder={t("name-placeholder")}
-                  required
-                />
+                <Input type="text" placeholder={t("name-placeholder")} required />
               </FormItem>
             </FormField>
             <FormField name="description">
@@ -107,11 +103,7 @@ const CreateTemplateForm = () => {
             {error && <p className={styles.error}>{error}</p>}
             <FormFooter>
               <Link to={cancelTo}>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  title={t("cancel-title")}
-                >
+                <Button type="button" variant="secondary" title={t("cancel-title")}>
                   {t("cancel-label")}
                 </Button>
               </Link>
@@ -129,9 +121,7 @@ const CreateTemplateForm = () => {
 
       <section className={styles.items_section}>
         <CardTitle className={styles.subtitle}>{t("add-items")}</CardTitle>
-        <Suspense
-          fallback={<Skeleton style={{ width: "100%", height: "8rem" }} />}
-        >
+        <Suspense fallback={<Skeleton style={{ width: "100%", height: "8rem" }} />}>
           <ItemPicker selected={selected} setItem={setItem} />
         </Suspense>
       </section>

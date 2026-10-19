@@ -10,15 +10,10 @@ type ChecklistItemsPrefetchProps = {
  * Forces SSR to load the picker's checklist items so the picker reads hydrated
  * data instead of triggering a client RPC.
  */
-const ChecklistItemsPrefetch = ({
-  id,
-  pattern,
-}: ChecklistItemsPrefetchProps) => {
-  getPageData<ListChecklistItemsQuery["checklistQueries"]["items"]>(
-    "checklistItems",
-    pattern,
-    { id },
-  );
+const ChecklistItemsPrefetch = ({ id, pattern }: ChecklistItemsPrefetchProps) => {
+  getPageData<ListChecklistItemsQuery["checklistQueries"]["items"]>("checklistItems", pattern, {
+    id,
+  });
   return null;
 };
 

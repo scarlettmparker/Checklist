@@ -21,17 +21,16 @@ type ItemPickerProps = {
 const ItemPicker = ({ selected, setItem }: ItemPickerProps) => {
   const { t } = useTranslation("templates");
   const [page, setPage] = useState(1);
-  const { data } = getPageData<
-    ListChecklistItemsQuery["checklistQueries"]["items"]
-  >("checklistItems", "checklist");
+  const { data } = getPageData<ListChecklistItemsQuery["checklistQueries"]["items"]>(
+    "checklistItems",
+    "checklist",
+  );
   const allItems = data?.items ?? [];
   const totalPages = Math.max(1, Math.ceil(allItems.length / PAGE_SIZE));
   const current = Math.min(page, totalPages);
   const start = (current - 1) * PAGE_SIZE;
   const items = allItems.slice(start, start + PAGE_SIZE);
-  const [drag, setDrag] = useState<{ active: boolean; target: boolean } | null>(
-    null,
-  );
+  const [drag, setDrag] = useState<{ active: boolean; target: boolean } | null>(null);
 
   useEffect(() => {
     const end = () => setDrag(null);
@@ -80,11 +79,7 @@ const ItemPicker = ({ selected, setItem }: ItemPickerProps) => {
         </CardBody>
       </Card>
       {totalPages > 1 && (
-        <Pagination
-          page={current}
-          totalPages={totalPages}
-          onPageChange={setPage}
-        />
+        <Pagination page={current} totalPages={totalPages} onPageChange={setPage} />
       )}
     </>
   );

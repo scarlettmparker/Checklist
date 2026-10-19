@@ -33,10 +33,9 @@ defineLoader({
   pattern: "checklist",
   async loader() {
     try {
-      const result = await executeDocument<ListChecklistItemsQuery>(
-        ListChecklistItemsDocument,
-        { pagination: null },
-      );
+      const result = await executeDocument<ListChecklistItemsQuery>(ListChecklistItemsDocument, {
+        pagination: null,
+      });
       if (result?.success && result.data) {
         const checklistItems = result.data.checklistQueries.items;
         if (checklistItems) {
@@ -60,10 +59,9 @@ defineLoader({
     const id = params.id as string;
     if (!id) return null;
     try {
-      const result = await executeDocument<LocateChecklistItemQuery>(
-        LocateChecklistItemDocument,
-        { id },
-      );
+      const result = await executeDocument<LocateChecklistItemQuery>(LocateChecklistItemDocument, {
+        id,
+      });
       if (result?.success && result.data) {
         const item = result.data.checklistQueries.item;
         if (item) {
@@ -93,8 +91,7 @@ defineLoader({
       );
       if (result?.success && result.data) {
         return {
-          itemDetails:
-            result.data.checklistQueries.itemDetails ?? EMPTY_ITEM_DETAILS,
+          itemDetails: result.data.checklistQueries.itemDetails ?? EMPTY_ITEM_DETAILS,
         };
       }
       return { itemDetails: EMPTY_ITEM_DETAILS };
@@ -114,10 +111,9 @@ defineLoader({
     const id = params.id as string;
     if (!id) return null;
     try {
-      const result = await executeDocument<LocateChecklistItemQuery>(
-        LocateChecklistItemDocument,
-        { id },
-      );
+      const result = await executeDocument<LocateChecklistItemQuery>(LocateChecklistItemDocument, {
+        id,
+      });
       if (result?.success && result.data) {
         const item = result.data.checklistQueries.item;
         if (item) {
@@ -137,27 +133,17 @@ defineLoader({
  */
 defineMutation({
   path: "checklist/createItem",
-  async handler(body: {
-    name: string;
-    description?: string;
-    categoryId?: string;
-    icon?: string;
-  }) {
+  async handler(body: { name: string; description?: string; categoryId?: string; icon?: string }) {
     if (typeof body.name !== "string" || body.name.trim() === "") {
-      throw new MutationError(
-        "Name is required and must be a non-empty string.",
-      );
+      throw new MutationError("Name is required and must be a non-empty string.");
     }
 
-    const result = await executeDocument<CreateChecklistItemMutation>(
-      CreateChecklistItemDocument,
-      {
-        name: body.name,
-        description: body.description ?? null,
-        categoryId: body.categoryId ?? null,
-        icon: body.icon ?? null,
-      },
-    );
+    const result = await executeDocument<CreateChecklistItemMutation>(CreateChecklistItemDocument, {
+      name: body.name,
+      description: body.description ?? null,
+      categoryId: body.categoryId ?? null,
+      icon: body.icon ?? null,
+    });
     const response = result.data?.checklistMutations.createItem;
     if (response == null) {
       throw new MutationError(result.error ?? "Failed to create checklist item.");
@@ -179,9 +165,7 @@ defineMutation({
     icon?: string;
   }) {
     if (typeof body.name !== "string" || body.name.trim() === "") {
-      throw new MutationError(
-        "Name is required and must be a non-empty string.",
-      );
+      throw new MutationError("Name is required and must be a non-empty string.");
     }
 
     const input: ChecklistItemInput = {
@@ -192,10 +176,9 @@ defineMutation({
       icon: body.icon || null,
     };
 
-    const result = await executeDocument<SaveChecklistItemMutation>(
-      SaveChecklistItemDocument,
-      { input },
-    );
+    const result = await executeDocument<SaveChecklistItemMutation>(SaveChecklistItemDocument, {
+      input,
+    });
     const response = result.data?.checklistMutations.saveItem;
     if (response == null) {
       throw new MutationError(result.error ?? "Failed to save item.");
@@ -210,10 +193,9 @@ defineMutation({
 defineMutation({
   path: "checklist/retireItem",
   async handler(body: { id: string }) {
-    const result = await executeDocument<RetireChecklistItemMutation>(
-      RetireChecklistItemDocument,
-      { id: body.id },
-    );
+    const result = await executeDocument<RetireChecklistItemMutation>(RetireChecklistItemDocument, {
+      id: body.id,
+    });
     const response = result.data?.checklistMutations.retireItem;
     if (response == null) {
       throw new MutationError(result.error ?? "Failed to archive item.");

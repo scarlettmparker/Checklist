@@ -48,9 +48,7 @@ const ItemDetailsCard = ({ id, pattern }: ItemDetailsCardProps) => {
 
         <label>{t("remote-objects")}</label>
         <p className={styles.detail_value}>
-          {details.remoteObject?.length
-            ? details.remoteObject.join(", ")
-            : t("none")}
+          {details.remoteObject?.length ? details.remoteObject.join(", ") : t("none")}
         </p>
       </CardBody>
     </Card>

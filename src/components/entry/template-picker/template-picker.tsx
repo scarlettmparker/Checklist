@@ -17,9 +17,10 @@ type TemplatePickerProps = {
  * Lists templates as clickable rows.
  */
 const TemplatePicker = ({ onCreate, disabled, t }: TemplatePickerProps) => {
-  const { data } = getPageData<
-    ListChecklistTemplatesQuery["checklistQueries"]["listTemplates"]
-  >("templates", "templates");
+  const { data } = getPageData<ListChecklistTemplatesQuery["checklistQueries"]["listTemplates"]>(
+    "templates",
+    "templates",
+  );
   const templates = data ?? [];
 
   return (
@@ -32,12 +33,7 @@ const TemplatePicker = ({ onCreate, disabled, t }: TemplatePickerProps) => {
           disabled={disabled}
           onClick={() => onCreate(tpl.id)}
         >
-          <Icon
-            name="RectangleStackIcon"
-            className={styles.icon}
-            width={16}
-            height={16}
-          />
+          <Icon name="RectangleStackIcon" className={styles.icon} width={16} height={16} />
           <span className={styles.name}>{tpl.name}</span>
         </Button>
       ))}

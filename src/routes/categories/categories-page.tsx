@@ -23,22 +23,12 @@ const CategoriesPage = () => {
         <CategoryList pattern={PAGE} />
       </Suspense>
       <div className={styles.header}>
-        <Button
-          title={t("create-category-label")}
-          onClick={() => setShowCreate(true)}
-        >
-          <PlusOutline
-            className={styles.button_icon}
-            width={ICON_SIZE}
-            height={ICON_SIZE}
-          />
+        <Button title={t("create-category-label")} onClick={() => setShowCreate(true)}>
+          <PlusOutline className={styles.button_icon} width={ICON_SIZE} height={ICON_SIZE} />
           {t("create-category-label")}
         </Button>
       </div>
-      <CreateCategoryDialog
-        open={showCreate}
-        onClose={() => setShowCreate(false)}
-      />
+      <CreateCategoryDialog open={showCreate} onClose={() => setShowCreate(false)} />
     </div>
   );
 };

@@ -54,9 +54,7 @@ type TemplateItemPayload =
       itemId: string;
     };
 
-type TemplateItemResponse =
-  | AddTemplateItemResponse
-  | RemoveTemplateItemResponse;
+type TemplateItemResponse = AddTemplateItemResponse | RemoveTemplateItemResponse;
 
 type TemplateItemsPage = NonNullable<
   ListChecklistTemplateItemsQuery["checklistQueries"]["templateItems"]
@@ -132,8 +130,7 @@ const EditTemplateForm = ({ templateId, pattern }: EditTemplateFormProps) => {
     ChecklistTemplateItem[]
   >({
     base: fetchedItems,
-    reducer: (current, payload) =>
-      applyTemplateItemChange(templateId, current, payload),
+    reducer: (current, payload) => applyTemplateItemChange(templateId, current, payload),
     action: (payload) => {
       if (payload.kind === "add") {
         return addTemplateItem(templateId, payload.itemId);
@@ -141,27 +138,17 @@ const EditTemplateForm = ({ templateId, pattern }: EditTemplateFormProps) => {
       return removeTemplateItem(templateId, payload.itemId);
     },
     onSuccess: (response, payload) => {
-      patchPageData<TemplateItemsPage>(
-        "templateItems",
-        pattern,
-        { id: templateId },
-        (current) => {
-          const base = current ?? {
-            items: [],
-            pageInfo: EMPTY_PAGE_INFO,
-          };
-          return {
-            ...base,
-            items: applyTemplateItemChange(templateId, base.items, payload),
-          };
-        },
-      );
-      patchPageData(
-        "template",
-        pattern,
-        { id: templateId },
-        () => response.template,
-      );
+      patchPageData<TemplateItemsPage>("templateItems", pattern, { id: templateId }, (current) => {
+        const base = current ?? {
+          items: [],
+          pageInfo: EMPTY_PAGE_INFO,
+        };
+        return {
+          ...base,
+          items: applyTemplateItemChange(templateId, base.items, payload),
+        };
+      });
+      patchPageData("template", pattern, { id: templateId }, () => response.template);
     },
   });
 
@@ -181,11 +168,7 @@ const EditTemplateForm = ({ templateId, pattern }: EditTemplateFormProps) => {
     });
   };
 
-  const handleAdd = (
-    itemId: string,
-    name?: string | null,
-    icon?: string | null,
-  ) => {
+  const handleAdd = (itemId: string, name?: string | null, icon?: string | null) => {
     runItems({ kind: "add", itemId, name, icon });
   };
 
@@ -234,9 +217,7 @@ const EditTemplateForm = ({ templateId, pattern }: EditTemplateFormProps) => {
       </Card>
 
       <section className={styles.items_section}>
-        <CardTitle className={styles.subtitle}>
-          {t("items-in-template")}
-        </CardTitle>
+        <CardTitle className={styles.subtitle}>{t("items-in-template")}</CardTitle>
         <Card>
           <CardBody className={styles.items_body}>
             {optimisticItems.length === 0 ? (
@@ -269,9 +250,7 @@ const EditTemplateForm = ({ templateId, pattern }: EditTemplateFormProps) => {
 
       <section className={styles.items_section}>
         <CardTitle className={styles.subtitle}>{t("add-items")}</CardTitle>
-        <Suspense
-          fallback={<Skeleton style={{ width: "100%", height: "8rem" }} />}
-        >
+        <Suspense fallback={<Skeleton style={{ width: "100%", height: "8rem" }} />}>
           <EditTemplateAddItemPicker
             templateId={templateId}
             pattern={pattern}
