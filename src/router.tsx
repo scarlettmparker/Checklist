@@ -1,5 +1,6 @@
 import { RouteObject, useRoutes } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
+import { preloadableLazy as lazy } from "@sun/ssr";
 
 const EntriesPage = lazy(() => import("./routes/entry"));
 const CreateEntryFromTemplatePage = lazy(() => import("./routes/entry/create"));
