@@ -5,7 +5,10 @@ import { Button } from "@sun/components";
 import { PlusOutline } from "preact-heroicons";
 import ItemList from "~/components/items/item-list";
 import ItemDetailPlaceholder from "~/components/items/item-detail-placeholder";
-import { ItemsPageSkeleton, ItemDetailsPageSkeleton } from "~/components/items/skeletons";
+import {
+  ItemsPageSkeleton,
+  ItemDetailsPageSkeleton,
+} from "~/components/items/skeletons";
 import styles from "./items-page.module.css";
 
 const ItemsPage = () => {
@@ -23,7 +26,7 @@ const ItemsPage = () => {
               to={`/items/create?from=${encodeURIComponent(location.pathname)}`}
               className={styles.create_item_button}
             >
-              <Button title={t("create-new-item-label")} variant="secondary">
+              <Button title={t("create-new-item-label")}>
                 <PlusOutline
                   className={styles.create_item_icon}
                   width={ICON_SIZE}
