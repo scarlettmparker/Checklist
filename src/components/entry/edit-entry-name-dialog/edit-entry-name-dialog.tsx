@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TFunction } from "i18next";
+import type { Translator } from "@sun/i18n";
 import { patchPageData } from "@sun/ssr";
 import {
   Button,
@@ -33,7 +33,7 @@ type EditEntryNameDialogProps = {
   /**
    * i18n translation function for the entry namespace.
    */
-  t: TFunction<"entry">;
+  t: Translator;
 };
 
 /**

@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@sun/components";
-import { TFunction } from "i18next";
+import type { Translator } from "@sun/i18n";
 
 type ConfirmArchiveTemplateDialogProps = {
   /**
@@ -28,7 +28,7 @@ type ConfirmArchiveTemplateDialogProps = {
   /**
    * i18n translation function for the templates namespace.
    */
-  t: TFunction<"templates">;
+  t: Translator;
 };
 
 /**

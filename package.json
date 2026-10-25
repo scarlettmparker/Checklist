@@ -12,6 +12,7 @@
     "schema:pull": "bunx graphql-codegen --config codegen.ts",
     "graphql:watch": "bunx graphql-codegen --config codegen.ts --watch",
     "lint": "bunx oxlint",
+    "typecheck": "bunx tsc --noEmit",
     "preview": "NODE_ENV=production bun --preload ./css-plugin.ts server.js",
     "cypress": "bunx cypress",
     "cypress:run": "bunx cypress run --browser chrome",

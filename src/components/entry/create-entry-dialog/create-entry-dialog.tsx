@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TFunction } from "i18next";
+import type { Translator } from "@sun/i18n";
 import {
   Button,
   Dialog,
@@ -27,7 +27,7 @@ type CreateEntryDialogProps = {
   /**
    * i18n translation function for the entry namespace.
    */
-  t: TFunction<"entry">;
+  t: Translator;
 };
 
 /**

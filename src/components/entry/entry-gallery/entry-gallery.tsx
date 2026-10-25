@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import { useTranslation } from "@sun/i18n";
 import { patchPageData } from "@sun/ssr";
 import { useMutation, usePageData } from "@sun/ssr/react";
@@ -118,12 +118,12 @@ const EntryGallery = ({ entryId }: EntryGalleryProps) => {
    * Handle uploading an image or images to the filestore and attaching them to
    * the entry.
    */
-  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? []);
+  const handleUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.currentTarget.files ?? []);
     if (!files.length) return;
     setUploadError(null);
     runUpload(files);
-    e.target.value = "";
+    e.currentTarget.value = "";
   };
 
   /**

@@ -38,7 +38,7 @@ const ItemPicker = ({ selected, setItem }: ItemPickerProps) => {
     return () => window.removeEventListener("mouseup", end);
   }, []);
 
-  const onRowMouseDown = (id: string) => (e: React.MouseEvent) => {
+  const onRowMouseDown = (id: string) => (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     const target = !selected.has(id);
     setDrag({ active: true, target });
