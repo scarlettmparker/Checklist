@@ -8,6 +8,7 @@ import Layout from "./components/layout";
 import ErrorBoundary from "~/components/error-boundary";
 import { setI18n } from "@sun/i18n";
 import { initClientBootstrap, preloadLazyComponents } from "@sun/ssr";
+import { ensureDefaultTrustedPolicy } from "@sun/security/trusted-types";
 import { loadPersistedTheme } from "@sun/themes";
 import "./utils/configure-framework";
 import "@sun/components/style.css";
@@ -15,6 +16,8 @@ import "@sun/themes/style.css";
 
 // Reapply the user's persisted theme before mount to avoid a flash.
 loadPersistedTheme();
+
+ensureDefaultTrustedPolicy();
 
 setI18n(i18n);
 

@@ -58,7 +58,17 @@ function verifyToken(token) {
   if (parts.length !== 3) return null;
 
   const data = parts[0] + "." + parts[1];
-  const expectedSig = createHmac("sha256", secret).update(data).digest("base64url");
+  let algorithm;
+  try {
+    const header = JSON.parse(Buffer.from(parts[0], "base64url").toString());
+    algorithm = header.alg;
+  } catch {
+    return null;
+  }
+  const hash = { HS256: "sha256", HS384: "sha384", HS512: "sha512" }[algorithm ?? ""];
+  if (!hash) return null;
+
+  const expectedSig = createHmac(hash, secret).update(data).digest("base64url");
 
   const expectedBuf = Buffer.from(expectedSig);
   const actualBuf = Buffer.from(parts[2]);
