@@ -29,11 +29,9 @@ type ItemCardProps = {
 const ItemCard = ({ id, pattern }: ItemCardProps) => {
   const { t } = useTranslation("items");
   const [confirmArchive, setConfirmArchive] = useState(false);
-  const { data: item } = getPageData<LocateChecklistItemQuery["checklistQueries"]["item"]>(
-    "item",
-    pattern,
-    { id },
-  );
+  const { data: item } = getPageData<
+    LocateChecklistItemQuery["checklistQueries"]["item"]
+  >("item", pattern, { id });
 
   if (!item) {
     return null;
@@ -49,12 +47,16 @@ const ItemCard = ({ id, pattern }: ItemCardProps) => {
           </CardTitle>
         </Link>
         <Button
-          variant="secondary"
+          variant="destructive"
           title={t("archive-label")}
           aria-label={t("archive-label")}
           onClick={() => setConfirmArchive(true)}
         >
-          <ArchiveBoxOutline className={styles.button_icon} width={16} height={16} />
+          <ArchiveBoxOutline
+            className={styles.button_icon}
+            width={16}
+            height={16}
+          />
           {t("archive-label")}
         </Button>
       </CardHeader>

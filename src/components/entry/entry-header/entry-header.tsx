@@ -39,11 +39,9 @@ const EntryHeader = ({ id }: EntryHeaderProps) => {
   const { t } = useTranslation("entry");
   const navigate = useNavigate();
   const { setBreadcrumbs, setCurrent } = useBreadcrumbContext();
-  const { data: entry } = usePageData<LocateChecklistEntryQuery["checklistQueries"]["entry"]>(
-    "entry",
-    "entry/:id",
-    { id },
-  );
+  const { data: entry } = usePageData<
+    LocateChecklistEntryQuery["checklistQueries"]["entry"]
+  >("entry", "entry/:id", { id });
   const [editOpen, setEditOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -98,7 +96,10 @@ const EntryHeader = ({ id }: EntryHeaderProps) => {
               />
               {t("create-template-from-entry")}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setArchiveOpen(true)}>
+            <DropdownMenuItem
+              onClick={() => setArchiveOpen(true)}
+              variant="destructive"
+            >
               <ArchiveBoxOutline
                 className={styles.menu_icon}
                 width={ICON_SIZE}
@@ -107,13 +108,22 @@ const EntryHeader = ({ id }: EntryHeaderProps) => {
               {t("archive-label")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setDeleteOpen(true)}>
-              <TrashOutline className={styles.menu_icon} width={ICON_SIZE} height={ICON_SIZE} />
+              <TrashOutline
+                className={styles.menu_icon}
+                width={ICON_SIZE}
+                height={ICON_SIZE}
+              />
               {t("delete-label")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </CardBody>
-      <EditEntryNameDialog open={editOpen} onClose={() => setEditOpen(false)} entry={entry} t={t} />
+      <EditEntryNameDialog
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        entry={entry}
+        t={t}
+      />
       <ConfirmArchiveEntryDialog
         open={archiveOpen}
         onClose={() => setArchiveOpen(false)}

@@ -35,23 +35,37 @@ const TemplateInfo = ({ id, pattern }: TemplateInfoProps) => {
         <CardTitle className={styles.title}>{template.name}</CardTitle>
         <div className={styles.actions}>
           <Link to={`/templates/${id}/edit`}>
-            <Button variant="secondary" title={t("edit-label")} aria-label={t("edit-label")}>
-              <PencilSquareOutline className={styles.button_icon} width={16} height={16} />
+            <Button
+              variant="secondary"
+              title={t("edit-label")}
+              aria-label={t("edit-label")}
+            >
+              <PencilSquareOutline
+                className={styles.button_icon}
+                width={16}
+                height={16}
+              />
               {t("edit-label")}
             </Button>
           </Link>
           <Button
-            variant="secondary"
+            variant="destructive"
             title={t("archive-label")}
             aria-label={t("archive-label")}
             onClick={() => setConfirmArchive(true)}
           >
-            <ArchiveBoxOutline className={styles.button_icon} width={16} height={16} />
+            <ArchiveBoxOutline
+              className={styles.button_icon}
+              width={16}
+              height={16}
+            />
             {t("archive-label")}
           </Button>
         </div>
       </div>
-      {template.description && <p className={styles.description}>{template.description}</p>}
+      {template.description && (
+        <p className={styles.description}>{template.description}</p>
+      )}
       <span className={styles.status}>
         {t("status")}: {template.status}
       </span>
