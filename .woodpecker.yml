@@ -1,0 +1,15 @@
+when:
+  - event: [push, manual]
+    branch: main
+
+steps:
+  e2e:
+    image: alpine:3.21
+    environment:
+      E2E_RUNNER_URL:
+        from_secret: e2e_runner_url
+      E2E_RUNNER_TOKEN:
+        from_secret: e2e_runner_token
+    commands:
+      - apk add --no-cache curl bash
+      - bash ./e2e/trigger.sh Checklist "$CI_COMMIT_SHA"
